@@ -236,6 +236,49 @@ export const analytics = pgTable("analytics", {
   metadata: jsonb("metadata"), // additional context
 });
 
+// Appointment reminders
+export const appointmentReminders = pgTable("appointment_reminders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  appointmentId: varchar("appointment_id").references(() => appointments.id).notNull(),
+  reminderType: varchar("reminder_type").notNull(), // 'email', 'sms', 'push'
+  reminderTime: timestamp("reminder_time").notNull(), // When to send reminder
+  timeBeforeAppointment: integer("time_before_appointment").notNull(), // Minutes before appointment
+  status: varchar("status").default("pending"), // 'pending', 'sent', 'failed'
+  message: text("message"), // Custom reminder message
+  sentAt: timestamp("sent_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Recurring appointment patterns
+export const recurringAppointments = pgTable("recurring_appointments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").references(() => users.id).notNull(),
+  caregiverId: varchar("caregiver_id").references(() => caregivers.id).notNull(),
+  serviceId: varchar("service_id").references(() => services.id),
+  recurrencePattern: varchar("recurrence_pattern").notNull(), // 'daily', 'weekly', 'biweekly', 'monthly'
+  recurrenceInterval: integer("recurrence_interval").default(1), // Every X units
+  daysOfWeek: text("days_of_week"), // JSON array for weekly patterns: ["1", "3", "5"]
+  dayOfMonth: integer("day_of_month"), // For monthly patterns
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"), // Optional end date
+  maxOccurrences: integer("max_occurrences"), // Optional limit
+  duration: integer("duration").notNull(), // minutes
+  startTime: varchar("start_time").notNull(), // Format: "HH:MM"
+  isActive: boolean("is_active").default(true),
+  clientNotes: text("client_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Generated appointments from recurring patterns
+export const generatedAppointments = pgTable("generated_appointments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  recurringAppointmentId: varchar("recurring_appointment_id").references(() => recurringAppointments.id).notNull(),
+  appointmentId: varchar("appointment_id").references(() => appointments.id).notNull(),
+  scheduledDate: timestamp("scheduled_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Create insert schemas
 export const insertClientSchema = createInsertSchema(clients).omit({
   id: true,
@@ -296,6 +339,23 @@ export const insertBillingSchema = createInsertSchema(billings).omit({
   createdAt: true,
 });
 
+export const insertAppointmentReminderSchema = createInsertSchema(appointmentReminders).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+});
+
+export const insertRecurringAppointmentSchema = createInsertSchema(recurringAppointments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGeneratedAppointmentSchema = createInsertSchema(generatedAppointments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Type exports
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -328,3 +388,10 @@ export type InvoiceItem = typeof invoiceItems.$inferSelect;
 export type InsertBilling = z.infer<typeof insertBillingSchema>;
 export type Billing = typeof billings.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
+
+export type InsertAppointmentReminder = z.infer<typeof insertAppointmentReminderSchema>;
+export type AppointmentReminder = typeof appointmentReminders.$inferSelect;
+export type InsertRecurringAppointment = z.infer<typeof insertRecurringAppointmentSchema>;
+export type RecurringAppointment = typeof recurringAppointments.$inferSelect;
+export type InsertGeneratedAppointment = z.infer<typeof insertGeneratedAppointmentSchema>;
+export type GeneratedAppointment = typeof generatedAppointments.$inferSelect;

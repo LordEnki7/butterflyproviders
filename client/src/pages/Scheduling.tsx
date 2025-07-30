@@ -6,11 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Calendar, Clock, User, MapPin, Phone, Star, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, User, MapPin, Phone, Star, CheckCircle2, Repeat, Bell, Smartphone } from "lucide-react";
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 
 export default function Scheduling() {
@@ -22,6 +25,19 @@ export default function Scheduling() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("");
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [clientNotes, setClientNotes] = useState("");
+  
+  // Recurring appointment settings
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrencePattern, setRecurrencePattern] = useState("weekly");
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [endDate, setEndDate] = useState("");
+  const [maxOccurrences, setMaxOccurrences] = useState("");
+  
+  // Reminder settings
+  const [enableReminders, setEnableReminders] = useState(true);
+  const [emailReminder, setEmailReminder] = useState(true);
+  const [smsReminder, setSmsReminder] = useState(false);
+  const [reminderTiming, setReminderTiming] = useState("60"); // minutes before
 
   // Get available caregivers for selected date/duration
   const { data: availableCaregivers = [], isLoading: loadingCaregivers } = useQuery({
@@ -38,17 +54,23 @@ export default function Scheduling() {
   // Book appointment mutation
   const bookAppointmentMutation = useMutation({
     mutationFn: async (bookingData: any) => {
-      return await apiRequest("POST", "/api/scheduling/book-appointment", bookingData);
+      if (isRecurring) {
+        return await apiRequest("POST", "/api/scheduling/book-recurring-appointment", bookingData);
+      } else {
+        return await apiRequest("POST", "/api/scheduling/book-appointment-with-reminders", bookingData);
+      }
     },
     onSuccess: () => {
+      const message = isRecurring 
+        ? "Your recurring appointments have been successfully scheduled!" 
+        : "Your appointment has been successfully scheduled!";
+      
       toast({
         title: "Appointment Booked!",
-        description: "Your appointment has been successfully scheduled. You'll receive a confirmation email shortly.",
+        description: `${message} ${enableReminders ? "You'll receive reminder notifications." : ""}`,
       });
       setBookingDialogOpen(false);
-      setSelectedCaregiver(null);
-      setSelectedTimeSlot("");
-      setClientNotes("");
+      resetForm();
       queryClient.invalidateQueries({ queryKey: ["/api/scheduling/available-caregivers"] });
     },
     onError: (error: any) => {
@@ -60,6 +82,21 @@ export default function Scheduling() {
     },
   });
 
+  const resetForm = () => {
+    setSelectedCaregiver(null);
+    setSelectedTimeSlot("");
+    setClientNotes("");
+    setIsRecurring(false);
+    setRecurrencePattern("weekly");
+    setSelectedDays([]);
+    setEndDate("");
+    setMaxOccurrences("");
+    setEnableReminders(true);
+    setEmailReminder(true);
+    setSmsReminder(false);
+    setReminderTiming("60");
+  };
+
   const handleBookAppointment = () => {
     if (!selectedCaregiver || !selectedTimeSlot) {
       toast({
@@ -70,18 +107,55 @@ export default function Scheduling() {
       return;
     }
 
+    if (isRecurring && selectedDays.length === 0 && recurrencePattern === "weekly") {
+      toast({
+        title: "Missing Information",
+        description: "Please select at least one day for recurring appointments.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const [startTime] = selectedTimeSlot.split(" - ");
     const [hours, minutes] = startTime.split(":").map(Number);
     const scheduledDateTime = new Date(selectedDate);
     scheduledDateTime.setHours(hours, minutes, 0, 0);
 
-    bookAppointmentMutation.mutate({
+    let bookingData: any = {
       caregiverId: selectedCaregiver.id,
-      serviceId: null, // Will be set based on service type selection
+      serviceId: null,
       scheduledDate: scheduledDateTime.toISOString(),
       duration: selectedDuration,
       clientNotes,
-    });
+    };
+
+    // Add recurring appointment data
+    if (isRecurring) {
+      bookingData.recurrencePattern = recurrencePattern;
+      bookingData.daysOfWeek = selectedDays;
+      bookingData.startTime = startTime;
+      if (endDate) bookingData.endDate = endDate;
+      if (maxOccurrences) bookingData.maxOccurrences = parseInt(maxOccurrences);
+    }
+
+    // Add reminder settings
+    if (enableReminders) {
+      bookingData.reminders = [];
+      if (emailReminder) {
+        bookingData.reminders.push({
+          type: "email",
+          minutesBefore: parseInt(reminderTiming),
+        });
+      }
+      if (smsReminder) {
+        bookingData.reminders.push({
+          type: "sms", 
+          minutesBefore: parseInt(reminderTiming),
+        });
+      }
+    }
+
+    bookAppointmentMutation.mutate(bookingData);
   };
 
   // Generate week calendar
@@ -306,40 +380,200 @@ export default function Scheduling() {
                   Book Appointment Now
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Confirm Your Appointment</DialogTitle>
+                  <DialogTitle>Book Your Appointment</DialogTitle>
                   <DialogDescription>
-                    Review your appointment details before booking
+                    Configure your appointment with advanced scheduling options
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="font-medium">{format(selectedDate, "EEEE, MMMM d, yyyy")}</span>
+                
+                <Tabs defaultValue="details" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="recurring">Recurring</TabsTrigger>
+                    <TabsTrigger value="reminders">Reminders</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="details" className="space-y-4 mt-4">
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span className="font-medium">{format(selectedDate, "EEEE, MMMM d, yyyy")}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span>{selectedTimeSlot} ({selectedDuration} minutes)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-gray-500" />
+                        <span>{selectedCaregiver.firstName} {selectedCaregiver.lastName}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span>{selectedTimeSlot} ({selectedDuration} minutes)</span>
+                    <div className="space-y-2">
+                      <Label htmlFor="notes">Special Instructions (optional)</Label>
+                      <Textarea
+                        id="notes"
+                        placeholder="Any special requests or information for your caregiver..."
+                        value={clientNotes}
+                        onChange={(e) => setClientNotes(e.target.value)}
+                        className="min-h-[80px]"
+                      />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-gray-500" />
-                      <span>{selectedCaregiver.firstName} {selectedCaregiver.lastName}</span>
+                  </TabsContent>
+
+                  <TabsContent value="recurring" className="space-y-4 mt-4">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="recurring"
+                          checked={isRecurring}
+                          onCheckedChange={setIsRecurring}
+                        />
+                        <Label htmlFor="recurring" className="flex items-center gap-2">
+                          <Repeat className="w-4 h-4" />
+                          Make this a recurring appointment
+                        </Label>
+                      </div>
+
+                      {isRecurring && (
+                        <div className="space-y-4 p-4 border rounded-lg bg-emerald-50">
+                          <div className="space-y-2">
+                            <Label>Recurrence Pattern</Label>
+                            <Select value={recurrencePattern} onValueChange={setRecurrencePattern}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="daily">Daily</SelectItem>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {(recurrencePattern === "weekly" || recurrencePattern === "biweekly") && (
+                            <div className="space-y-2">
+                              <Label>Select Days</Label>
+                              <div className="grid grid-cols-7 gap-2">
+                                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+                                  <div key={day} className="flex items-center space-x-1">
+                                    <Checkbox
+                                      id={`day-${index}`}
+                                      checked={selectedDays.includes(index.toString())}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          setSelectedDays([...selectedDays, index.toString()]);
+                                        } else {
+                                          setSelectedDays(selectedDays.filter(d => d !== index.toString()));
+                                        }
+                                      }}
+                                    />
+                                    <Label htmlFor={`day-${index}`} className="text-xs">{day}</Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="endDate">End Date (optional)</Label>
+                              <Input
+                                id="endDate"
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                min={format(selectedDate, "yyyy-MM-dd")}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="maxOccurrences">Max Occurrences (optional)</Label>
+                              <Input
+                                id="maxOccurrences"
+                                type="number"
+                                placeholder="e.g., 10"
+                                value={maxOccurrences}
+                                onChange={(e) => setMaxOccurrences(e.target.value)}
+                                min="1"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Special Instructions (optional)</Label>
-                    <Textarea
-                      id="notes"
-                      placeholder="Any special requests or information for your caregiver..."
-                      value={clientNotes}
-                      onChange={(e) => setClientNotes(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setBookingDialogOpen(false)}>
+                  </TabsContent>
+
+                  <TabsContent value="reminders" className="space-y-4 mt-4">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="reminders"
+                          checked={enableReminders}
+                          onCheckedChange={setEnableReminders}
+                        />
+                        <Label htmlFor="reminders" className="flex items-center gap-2">
+                          <Bell className="w-4 h-4" />
+                          Enable appointment reminders
+                        </Label>
+                      </div>
+
+                      {enableReminders && (
+                        <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
+                          <div className="space-y-2">
+                            <Label>Reminder Timing</Label>
+                            <Select value={reminderTiming} onValueChange={setReminderTiming}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="15">15 minutes before</SelectItem>
+                                <SelectItem value="30">30 minutes before</SelectItem>
+                                <SelectItem value="60">1 hour before</SelectItem>
+                                <SelectItem value="120">2 hours before</SelectItem>
+                                <SelectItem value="1440">1 day before</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-3">
+                            <Label>Notification Methods</Label>
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="email"
+                                  checked={emailReminder}
+                                  onCheckedChange={setEmailReminder}
+                                />
+                                <Label htmlFor="email" className="flex items-center gap-2">
+                                  📧 Email notification
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="sms"
+                                  checked={smsReminder}
+                                  onCheckedChange={setSmsReminder}
+                                />
+                                <Label htmlFor="sms" className="flex items-center gap-2">
+                                  <Smartphone className="w-4 h-4" />
+                                  SMS/Text message
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+
+                <DialogFooter className="mt-6">
+                  <Button variant="outline" onClick={() => {
+                    setBookingDialogOpen(false);
+                    resetForm();
+                  }}>
                     Cancel
                   </Button>
                   <Button 
@@ -347,7 +581,8 @@ export default function Scheduling() {
                     disabled={bookAppointmentMutation.isPending}
                     className="bg-emerald-600 hover:bg-emerald-700"
                   >
-                    {bookAppointmentMutation.isPending ? "Booking..." : "Confirm Booking"}
+                    {bookAppointmentMutation.isPending ? "Booking..." : 
+                     isRecurring ? "Book Recurring Appointments" : "Confirm Booking"}
                   </Button>
                 </DialogFooter>
               </DialogContent>

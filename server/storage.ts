@@ -7,6 +7,9 @@ import {
   caregiverTimeOff,
   appointments,
   appointmentRecurring,
+  appointmentReminders,
+  recurringAppointments,
+  generatedAppointments,
   careUpdates,
   services,
   invoices,
@@ -29,6 +32,12 @@ import {
   type InsertAppointment,
   type AppointmentRecurring,
   type InsertAppointmentRecurring,
+  type AppointmentReminder,
+  type InsertAppointmentReminder,
+  type RecurringAppointment,
+  type InsertRecurringAppointment,
+  type GeneratedAppointment,
+  type InsertGeneratedAppointment,
   type CareUpdate,
   type InsertCareUpdate,
   type Service,
@@ -751,6 +760,238 @@ export class DatabaseStorage implements IStorage {
       recentCareUpdates,
       upcomingAppointments,
     };
+  }
+
+  // ===== APPOINTMENT REMINDERS =====
+  
+  async createAppointmentReminder(reminderData: InsertAppointmentReminder): Promise<AppointmentReminder> {
+    const [reminder] = await db
+      .insert(appointmentReminders)
+      .values(reminderData)
+      .returning();
+    return reminder;
+  }
+
+  async getPendingReminders(): Promise<AppointmentReminder[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(appointmentReminders)
+      .where(
+        and(
+          eq(appointmentReminders.status, "pending"),
+          lte(appointmentReminders.reminderTime, now)
+        )
+      )
+      .orderBy(appointmentReminders.reminderTime);
+  }
+
+  async markReminderAsSent(reminderId: string): Promise<void> {
+    await db
+      .update(appointmentReminders)
+      .set({ 
+        status: "sent", 
+        sentAt: new Date() 
+      })
+      .where(eq(appointmentReminders.id, reminderId));
+  }
+
+  async getAppointmentReminders(appointmentId: string): Promise<AppointmentReminder[]> {
+    return await db
+      .select()
+      .from(appointmentReminders)
+      .where(eq(appointmentReminders.appointmentId, appointmentId))
+      .orderBy(appointmentReminders.reminderTime);
+  }
+
+  // ===== RECURRING APPOINTMENTS =====
+  
+  async createRecurringAppointment(recurringData: InsertRecurringAppointment): Promise<RecurringAppointment> {
+    const [recurring] = await db
+      .insert(recurringAppointments)
+      .values(recurringData)
+      .returning();
+    return recurring;
+  }
+
+  async getRecurringAppointments(clientId?: string): Promise<RecurringAppointment[]> {
+    const query = db.select().from(recurringAppointments);
+    
+    if (clientId) {
+      return await query.where(
+        and(
+          eq(recurringAppointments.clientId, clientId),
+          eq(recurringAppointments.isActive, true)
+        )
+      );
+    }
+    
+    return await query.where(eq(recurringAppointments.isActive, true));
+  }
+
+  async updateRecurringAppointment(id: string, updateData: Partial<InsertRecurringAppointment>): Promise<RecurringAppointment> {
+    const [updated] = await db
+      .update(recurringAppointments)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(recurringAppointments.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deactivateRecurringAppointment(id: string): Promise<void> {
+    await db
+      .update(recurringAppointments)
+      .set({ isActive: false })
+      .where(eq(recurringAppointments.id, id));
+  }
+
+  async generateRecurringAppointments(recurringId: string, daysAhead: number = 30): Promise<number> {
+    const recurring = await db
+      .select()
+      .from(recurringAppointments)
+      .where(eq(recurringAppointments.id, recurringId))
+      .limit(1);
+
+    if (!recurring.length || !recurring[0].isActive) {
+      return 0;
+    }
+
+    const pattern = recurring[0];
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + daysAhead);
+
+    // Check if pattern has an end date
+    if (pattern.endDate && pattern.endDate < endDate) {
+      endDate.setTime(pattern.endDate.getTime());
+    }
+
+    let generatedCount = 0;
+    const currentDate = new Date(Math.max(startDate.getTime(), pattern.startDate.getTime()));
+
+    while (currentDate <= endDate) {
+      let shouldGenerate = false;
+
+      // Determine if appointment should be generated for this date
+      switch (pattern.recurrencePattern) {
+        case 'daily':
+          shouldGenerate = true;
+          break;
+        case 'weekly':
+          if (pattern.daysOfWeek) {
+            const daysArray = JSON.parse(pattern.daysOfWeek);
+            shouldGenerate = daysArray.includes(currentDate.getDay().toString());
+          }
+          break;
+        case 'biweekly':
+          if (pattern.daysOfWeek) {
+            const daysArray = JSON.parse(pattern.daysOfWeek);
+            const weeksSinceStart = Math.floor((currentDate.getTime() - pattern.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+            shouldGenerate = weeksSinceStart % 2 === 0 && daysArray.includes(currentDate.getDay().toString());
+          }
+          break;
+        case 'monthly':
+          shouldGenerate = pattern.dayOfMonth === currentDate.getDate();
+          break;
+      }
+
+      if (shouldGenerate) {
+        // Check if appointment already exists for this date
+        const existingAppointment = await db
+          .select()
+          .from(generatedAppointments)
+          .where(
+            and(
+              eq(generatedAppointments.recurringAppointmentId, recurringId),
+              eq(generatedAppointments.scheduledDate, currentDate)
+            )
+          )
+          .limit(1);
+
+        if (!existingAppointment.length) {
+          // Create appointment for this date
+          const appointmentDate = new Date(currentDate);
+          const [hours, minutes] = pattern.startTime.split(':').map(Number);
+          appointmentDate.setHours(hours, minutes, 0, 0);
+
+          const endDate = new Date(appointmentDate.getTime() + pattern.duration * 60000);
+
+          const [appointment] = await db
+            .insert(appointments)
+            .values({
+              clientId: pattern.clientId,
+              caregiverId: pattern.caregiverId,
+              serviceId: pattern.serviceId,
+              scheduledDate: appointmentDate,
+              endDate,
+              duration: pattern.duration,
+              serviceType: "Recurring Care",
+              status: "scheduled",
+              priority: "normal",
+              clientNotes: pattern.clientNotes,
+              estimatedCost: 0,
+            })
+            .returning();
+
+          // Link to recurring pattern
+          await db
+            .insert(generatedAppointments)
+            .values({
+              recurringAppointmentId: recurringId,
+              appointmentId: appointment.id,
+              scheduledDate: currentDate,
+            });
+
+          generatedCount++;
+        }
+      }
+
+      // Move to next date
+      currentDate.setDate(currentDate.getDate() + 1);
+
+      // Check max occurrences
+      if (pattern.maxOccurrences && generatedCount >= pattern.maxOccurrences) {
+        break;
+      }
+    }
+
+    return generatedCount;
+  }
+
+  // ===== ENHANCED APPOINTMENT BOOKING WITH REMINDERS =====
+  
+  async bookAppointmentWithReminders(
+    appointmentData: InsertAppointment,
+    reminderSettings?: Array<{
+      type: 'email' | 'sms' | 'push';
+      minutesBefore: number;
+      message?: string;
+    }>
+  ): Promise<{ appointment: Appointment; reminders: AppointmentReminder[] }> {
+    const [appointment] = await db
+      .insert(appointments)
+      .values(appointmentData)
+      .returning();
+
+    const reminders: AppointmentReminder[] = [];
+
+    if (reminderSettings && reminderSettings.length > 0) {
+      for (const setting of reminderSettings) {
+        const reminderTime = new Date(appointmentData.scheduledDate.getTime() - setting.minutesBefore * 60000);
+        
+        const reminder = await this.createAppointmentReminder({
+          appointmentId: appointment.id,
+          reminderType: setting.type,
+          reminderTime,
+          timeBeforeAppointment: setting.minutesBefore,
+          message: setting.message || `Reminder: You have an appointment scheduled for ${appointmentData.scheduledDate.toLocaleString()}`,
+        });
+        
+        reminders.push(reminder);
+      }
+    }
+
+    return { appointment, reminders };
   }
 }
 

@@ -775,6 +775,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced booking with reminders
+  app.post('/api/scheduling/book-appointment-with-reminders', isAuthenticated, async (req: any, res) => {
+    try {
+      const { caregiverId, serviceId, scheduledDate, duration, clientNotes, reminders } = req.body;
+      const userId = req.user.claims.sub;
+      
+      // Find or create client record
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check availability before booking
+      const appointmentDate = new Date(scheduledDate);
+      const isAvailable = await storage.checkAvailability(caregiverId, appointmentDate, duration);
+      
+      if (!isAvailable) {
+        return res.status(409).json({ message: "Time slot is no longer available" });
+      }
+      
+      // Create the appointment with reminders
+      const endDate = new Date(appointmentDate.getTime() + duration * 60000);
+      const appointmentData = {
+        clientId: userId,
+        caregiverId,
+        serviceId,
+        scheduledDate: appointmentDate,
+        endDate,
+        duration,
+        serviceType: "Home Care",
+        status: "scheduled",
+        priority: "normal",
+        clientNotes,
+        estimatedCost: 0,
+      };
+
+      const result = await storage.bookAppointmentWithReminders(appointmentData, reminders);
+      
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Error booking appointment with reminders:", error);
+      res.status(500).json({ message: "Failed to book appointment" });
+    }
+  });
+
+  // Book recurring appointment
+  app.post('/api/scheduling/book-recurring-appointment', isAuthenticated, async (req: any, res) => {
+    try {
+      const { 
+        caregiverId, 
+        serviceId, 
+        scheduledDate, 
+        duration, 
+        clientNotes,
+        recurrencePattern,
+        daysOfWeek,
+        startTime,
+        endDate,
+        maxOccurrences,
+        reminders
+      } = req.body;
+      const userId = req.user.claims.sub;
+      
+      // Find or create client record
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Create recurring appointment pattern
+      const recurringAppointment = await storage.createRecurringAppointment({
+        clientId: userId,
+        caregiverId,
+        serviceId,
+        recurrencePattern,
+        daysOfWeek: daysOfWeek ? JSON.stringify(daysOfWeek) : null,
+        startDate: new Date(scheduledDate),
+        endDate: endDate ? new Date(endDate) : null,
+        maxOccurrences: maxOccurrences ? parseInt(maxOccurrences) : null,
+        duration,
+        startTime,
+        clientNotes,
+      });
+
+      // Generate appointments for the next 30 days
+      const generatedCount = await storage.generateRecurringAppointments(recurringAppointment.id, 30);
+
+      res.status(201).json({
+        recurringAppointment,
+        generatedCount,
+        message: `Created recurring appointment pattern. Generated ${generatedCount} upcoming appointments.`
+      });
+    } catch (error) {
+      console.error("Error booking recurring appointment:", error);
+      res.status(500).json({ message: "Failed to book recurring appointment" });
+    }
+  });
+
   // Caregiver availability management
   app.get('/api/admin/caregivers/:id/availability', isAdminAuth, async (req, res) => {
     try {
