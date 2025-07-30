@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import AdminLogin from "./AdminLogin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +79,22 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
+  // Check if admin is already authenticated on mount
+  useEffect(() => {
+    const checkAdminAuth = async () => {
+      try {
+        const response = await fetch("/api/admin/check-auth");
+        if (response.ok) {
+          setIsAdminAuthenticated(true);
+        }
+      } catch (error) {
+        // Admin not authenticated, will show login form
+      }
+    };
+    checkAdminAuth();
+  }, []);
 
   // Dashboard stats query
   const { data: dashboardStats = {}, isLoading: statsLoading } = useQuery({
@@ -428,12 +445,44 @@ export default function Admin() {
     );
   };
 
+  // Show admin login if not authenticated
+  if (!isAdminAuthenticated) {
+    return (
+      <AdminLogin 
+        onSuccess={() => setIsAdminAuthenticated(true)} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage clients, caregivers, appointments, and more</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Manage clients, caregivers, appointments, and more</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                await fetch("/api/admin/logout", { method: "POST" });
+                setIsAdminAuthenticated(false);
+                toast({
+                  title: "Logged out",
+                  description: "Admin session ended successfully",
+                });
+              } catch (error) {
+                toast({
+                  title: "Error",
+                  description: "Failed to log out",
+                  variant: "destructive",
+                });
+              }
+            }}
+          >
+            Logout
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -122,14 +122,7 @@ export default function Home() {
                 Here's an overview of your care services and recent updates.
               </p>
             </div>
-            {(user as any)?.role === 'admin' && (
-              <Link href="/admin">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Admin Dashboard
-                </Button>
-              </Link>
-            )}
+
           </div>
         </div>
 

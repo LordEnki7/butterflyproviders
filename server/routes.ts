@@ -13,21 +13,18 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-// Admin authentication middleware
-const isAdmin = async (req: any, res: any, next: any) => {
+// Admin password - in production, this should be an environment variable
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "butterfly2025";
+
+// Admin authentication middleware for password-based access
+const isAdminAuth = async (req: any, res: any, next: any) => {
   try {
-    const userId = req.user?.claims?.sub;
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+    // Check if admin session exists
+    if (req.session?.adminAuthenticated) {
+      return next();
     }
     
-    const user = await storage.getUser(userId);
-    if (!user || user.role !== 'admin') {
-      return res.status(403).json({ message: "Admin access required" });
-    }
-    
-    req.adminUser = user;
-    next();
+    return res.status(401).json({ message: "Admin authentication required" });
   } catch (error) {
     res.status(500).json({ message: "Authentication error" });
   }
@@ -99,10 +96,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== ADMIN AUTHENTICATION ROUTES =====
+
+  // Admin login with password
+  app.post('/api/admin/login', async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      if (password === ADMIN_PASSWORD) {
+        req.session.adminAuthenticated = true;
+        res.json({ success: true, message: "Admin authenticated successfully" });
+      } else {
+        res.status(401).json({ message: "Invalid admin password" });
+      }
+    } catch (error) {
+      console.error("Error in admin login:", error);
+      res.status(500).json({ message: "Authentication failed" });
+    }
+  });
+
+  // Check admin authentication status
+  app.get('/api/admin/check-auth', (req, res) => {
+    if (req.session?.adminAuthenticated) {
+      res.json({ authenticated: true });
+    } else {
+      res.status(401).json({ authenticated: false });
+    }
+  });
+
+  // Admin logout
+  app.post('/api/admin/logout', (req, res) => {
+    req.session.adminAuthenticated = false;
+    res.json({ success: true, message: "Admin logged out successfully" });
+  });
+
   // ===== ADMIN ROUTES =====
 
   // Admin dashboard with analytics
-  app.get('/api/admin/dashboard', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/dashboard', isAdminAuth, async (req: any, res) => {
     try {
       const stats = await storage.getDashboardStats();
       res.json(stats);
@@ -113,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User Management Routes
-  app.get('/api/admin/users', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/users', isAdminAuth, async (req: any, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -123,7 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/users/:id/role', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/users/:id/role', isAdminAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
       const { role } = req.body;
@@ -136,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Contact Inquiries Management
-  app.get('/api/admin/contact-inquiries', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/contact-inquiries', isAdminAuth, async (req: any, res) => {
     try {
       const inquiries = await storage.getAllContactInquiries();
       res.json(inquiries);
@@ -147,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Client Management Routes
-  app.get('/api/admin/clients', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/clients', isAdminAuth, async (req: any, res) => {
     try {
       const clients = await storage.getAllClients();
       res.json(clients);
@@ -157,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/clients', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/clients', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertClientSchema.parse(req.body);
       const client = await storage.createClient(validatedData);
@@ -172,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/clients/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/clients/:id', isAdminAuth, async (req: any, res) => {
     try {
       const client = await storage.getClient(req.params.id);
       if (!client) {
@@ -185,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/clients/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/clients/:id', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertClientSchema.partial().parse(req.body);
       const client = await storage.updateClient(req.params.id, validatedData);
@@ -200,7 +231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/clients/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.delete('/api/admin/clients/:id', isAdminAuth, async (req: any, res) => {
     try {
       await storage.deleteClient(req.params.id);
       res.status(204).send();
@@ -211,7 +242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Caregiver Management Routes
-  app.get('/api/admin/caregivers', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/caregivers', isAdminAuth, async (req: any, res) => {
     try {
       const caregivers = await storage.getAllCaregivers();
       res.json(caregivers);
@@ -221,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/caregivers', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/caregivers', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertCaregiverSchema.parse(req.body);
       const caregiver = await storage.createCaregiver(validatedData);
@@ -236,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/caregivers/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/caregivers/:id', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertCaregiverSchema.partial().parse(req.body);
       const caregiver = await storage.updateCaregiver(req.params.id, validatedData);
@@ -251,7 +282,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/caregivers/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.delete('/api/admin/caregivers/:id', isAdminAuth, async (req: any, res) => {
     try {
       await storage.deleteCaregiver(req.params.id);
       res.status(204).send();
@@ -262,7 +293,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Appointment Management Routes
-  app.get('/api/admin/appointments', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/appointments', isAdminAuth, async (req: any, res) => {
     try {
       const appointments = await storage.getAllAppointments();
       res.json(appointments);
@@ -272,7 +303,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/appointments', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/appointments', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertAppointmentSchema.parse(req.body);
       const appointment = await storage.createAppointment(validatedData);
@@ -287,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/appointments/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/appointments/:id', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertAppointmentSchema.partial().parse(req.body);
       const appointment = await storage.updateAppointment(req.params.id, validatedData);
@@ -302,7 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/appointments/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.delete('/api/admin/appointments/:id', isAdminAuth, async (req: any, res) => {
     try {
       await storage.deleteAppointment(req.params.id);
       res.status(204).send();
@@ -313,7 +344,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Care Updates Management Routes
-  app.post('/api/admin/care-updates', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/care-updates', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertCareUpdateSchema.parse(req.body);
       const careUpdate = await storage.createCareUpdate(validatedData);
@@ -328,7 +359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/care-updates/client/:clientId', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/care-updates/client/:clientId', isAdminAuth, async (req: any, res) => {
     try {
       const updates = await storage.getCareUpdatesByClient(req.params.clientId);
       res.json(updates);
@@ -339,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Service Management Routes
-  app.get('/api/admin/services', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/services', isAdminAuth, async (req: any, res) => {
     try {
       const services = await storage.getAllServices();
       res.json(services);
@@ -349,7 +380,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/services', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/services', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertServiceSchema.parse(req.body);
       const service = await storage.createService(validatedData);
@@ -364,7 +395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/services/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/services/:id', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertServiceSchema.partial().parse(req.body);
       const service = await storage.updateService(req.params.id, validatedData);
@@ -379,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/services/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.delete('/api/admin/services/:id', isAdminAuth, async (req: any, res) => {
     try {
       await storage.deleteService(req.params.id);
       res.status(204).send();
@@ -390,7 +421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Billing Management Routes
-  app.get('/api/admin/billings', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/billings', isAdminAuth, async (req: any, res) => {
     try {
       const billings = await storage.getAllBillings();
       res.json(billings);
@@ -400,7 +431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/billings', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.post('/api/admin/billings', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertBillingSchema.parse(req.body);
       const billing = await storage.createBilling(validatedData);
@@ -415,7 +446,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/billings/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put('/api/admin/billings/:id', isAdminAuth, async (req: any, res) => {
     try {
       const validatedData = insertBillingSchema.partial().parse(req.body);
       const billing = await storage.updateBilling(req.params.id, validatedData);
@@ -430,7 +461,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/billings/client/:clientId', isAuthenticated, isAdmin, async (req: any, res) => {
+  app.get('/api/admin/billings/client/:clientId', isAdminAuth, async (req: any, res) => {
     try {
       const billings = await storage.getBillingsByClient(req.params.clientId);
       res.json(billings);

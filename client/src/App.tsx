@@ -19,9 +19,9 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
-          <Route path="/admin" component={Admin} />
         </>
       )}
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );
