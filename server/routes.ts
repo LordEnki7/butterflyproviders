@@ -9,6 +9,8 @@ import {
   insertAppointmentSchema,
   insertCareUpdateSchema,
   insertServiceSchema,
+  insertInvoiceSchema,
+  insertInvoiceItemSchema,
   insertBillingSchema
 } from "@shared/schema";
 import { z } from "zod";
@@ -468,6 +470,201 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching client billings:", error);
       res.status(500).json({ message: "Failed to fetch client billings" });
+    }
+  });
+
+  // ===== INVOICE MANAGEMENT ROUTES =====
+
+  // Get all invoices
+  app.get('/api/admin/invoices', isAdminAuth, async (req, res) => {
+    try {
+      const invoices = await storage.getAllInvoices();
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ message: "Failed to fetch invoices" });
+    }
+  });
+
+  // Get single invoice with items
+  app.get('/api/admin/invoices/:id', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const invoice = await storage.getInvoice(id);
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      const items = await storage.getInvoiceItems(id);
+      res.json({ ...invoice, items });
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      res.status(500).json({ message: "Failed to fetch invoice" });
+    }
+  });
+
+  // Create new invoice
+  app.post('/api/admin/invoices', isAdminAuth, async (req, res) => {
+    try {
+      const { items, ...invoiceData } = req.body;
+      
+      // Generate invoice number
+      const invoiceNumber = await storage.generateInvoiceNumber();
+      
+      // Create invoice
+      const invoice = await storage.createInvoice({
+        ...invoiceData,
+        invoiceNumber,
+      });
+
+      // Create invoice items
+      if (items && items.length > 0) {
+        for (const item of items) {
+          await storage.createInvoiceItem({
+            ...item,
+            invoiceId: invoice.id,
+          });
+        }
+      }
+
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      res.status(500).json({ message: "Failed to create invoice" });
+    }
+  });
+
+  // Update invoice
+  app.put('/api/admin/invoices/:id', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { items, ...invoiceData } = req.body;
+      
+      // Update invoice
+      const invoice = await storage.updateInvoice(id, invoiceData);
+      
+      // If items are provided, update them
+      if (items) {
+        // Delete existing items
+        const existingItems = await storage.getInvoiceItems(id);
+        for (const item of existingItems) {
+          await storage.deleteInvoiceItem(item.id);
+        }
+        
+        // Create new items
+        for (const item of items) {
+          await storage.createInvoiceItem({
+            ...item,
+            invoiceId: id,
+          });
+        }
+      }
+
+      res.json(invoice);
+    } catch (error) {
+      console.error("Error updating invoice:", error);
+      res.status(500).json({ message: "Failed to update invoice" });
+    }
+  });
+
+  // Delete invoice
+  app.delete('/api/admin/invoices/:id', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteInvoice(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting invoice:", error);
+      res.status(500).json({ message: "Failed to delete invoice" });
+    }
+  });
+
+  // Get invoices by client
+  app.get('/api/admin/clients/:clientId/invoices', isAdminAuth, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const invoices = await storage.getInvoicesByClient(clientId);
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching client invoices:", error);
+      res.status(500).json({ message: "Failed to fetch client invoices" });
+    }
+  });
+
+  // Mark invoice as paid
+  app.post('/api/admin/invoices/:id/mark-paid', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { paymentMethod, paidAt } = req.body;
+      
+      const invoice = await storage.updateInvoice(id, {
+        status: 'paid',
+        paymentMethod,
+        paidAt: paidAt ? new Date(paidAt) : new Date(),
+      });
+      
+      res.json(invoice);
+    } catch (error) {
+      console.error("Error marking invoice as paid:", error);
+      res.status(500).json({ message: "Failed to mark invoice as paid" });
+    }
+  });
+
+  // Generate invoice from appointments
+  app.post('/api/admin/invoices/generate', isAdminAuth, async (req, res) => {
+    try {
+      const { clientId, appointmentIds, dueDate, notes } = req.body;
+      
+      let subtotal = 0;
+      const items = [];
+      
+      // Process each appointment
+      for (const appointmentId of appointmentIds) {
+        const appointment = await storage.getAppointment(appointmentId);
+        if (!appointment) continue;
+        
+        const service = await storage.getService(appointment.serviceType);
+        const rate = service?.basePrice || 50; // Default rate
+        const hours = appointment.duration / 60;
+        const amount = Number(rate) * hours;
+        
+        items.push({
+          appointmentId,
+          serviceDescription: `${service?.name || appointment.serviceType} - ${appointment.duration} minutes`,
+          quantity: hours,
+          rate,
+          amount,
+          serviceDate: appointment.scheduledDate,
+        });
+        
+        subtotal += amount;
+      }
+      
+      // Generate invoice number
+      const invoiceNumber = await storage.generateInvoiceNumber();
+      
+      // Create invoice
+      const invoice = await storage.createInvoice({
+        invoiceNumber,
+        clientId,
+        subtotal,
+        tax: 0,
+        total: subtotal,
+        dueDate: new Date(dueDate),
+        notes,
+      });
+      
+      // Create invoice items
+      for (const item of items) {
+        await storage.createInvoiceItem({
+          ...item,
+          invoiceId: invoice.id,
+        });
+      }
+      
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({ message: "Failed to generate invoice" });
     }
   });
 

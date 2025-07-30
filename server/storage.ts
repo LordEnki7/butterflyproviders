@@ -6,6 +6,8 @@ import {
   appointments,
   careUpdates,
   services,
+  invoices,
+  invoiceItems,
   billings,
   analytics,
   type User,
@@ -22,6 +24,10 @@ import {
   type InsertCareUpdate,
   type Service,
   type InsertService,
+  type Invoice,
+  type InsertInvoice,
+  type InvoiceItem,
+  type InsertInvoiceItem,
   type Billing,
   type InsertBilling,
   type Analytics,
@@ -77,6 +83,21 @@ export interface IStorage {
   getService(id: string): Promise<Service | undefined>;
   updateService(id: string, service: Partial<InsertService>): Promise<Service>;
   deleteService(id: string): Promise<void>;
+  
+  // Invoice operations
+  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
+  getAllInvoices(): Promise<Invoice[]>;
+  getInvoice(id: string): Promise<Invoice | undefined>;
+  getInvoicesByClient(clientId: string): Promise<Invoice[]>;
+  updateInvoice(id: string, invoice: Partial<InsertInvoice>): Promise<Invoice>;
+  deleteInvoice(id: string): Promise<void>;
+  generateInvoiceNumber(): Promise<string>;
+  
+  // Invoice item operations
+  createInvoiceItem(item: InsertInvoiceItem): Promise<InvoiceItem>;
+  getInvoiceItems(invoiceId: string): Promise<InvoiceItem[]>;
+  updateInvoiceItem(id: string, item: Partial<InsertInvoiceItem>): Promise<InvoiceItem>;
+  deleteInvoiceItem(id: string): Promise<void>;
   
   // Billing operations
   createBilling(billing: InsertBilling): Promise<Billing>;
@@ -312,6 +333,85 @@ export class DatabaseStorage implements IStorage {
       .where(eq(billings.id, id))
       .returning();
     return billing;
+  }
+
+  // Invoice operations
+  async createInvoice(invoiceData: InsertInvoice): Promise<Invoice> {
+    const [invoice] = await db.insert(invoices).values(invoiceData).returning();
+    return invoice;
+  }
+
+  async getAllInvoices(): Promise<Invoice[]> {
+    return await db.select().from(invoices).orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoice(id: string): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice;
+  }
+
+  async getInvoicesByClient(clientId: string): Promise<Invoice[]> {
+    return await db.select().from(invoices).where(eq(invoices.clientId, clientId)).orderBy(desc(invoices.createdAt));
+  }
+
+  async updateInvoice(id: string, invoiceData: Partial<InsertInvoice>): Promise<Invoice> {
+    const [invoice] = await db
+      .update(invoices)
+      .set({ ...invoiceData, updatedAt: new Date() })
+      .where(eq(invoices.id, id))
+      .returning();
+    return invoice;
+  }
+
+  async deleteInvoice(id: string): Promise<void> {
+    // First delete all invoice items
+    await db.delete(invoiceItems).where(eq(invoiceItems.invoiceId, id));
+    // Then delete the invoice
+    await db.delete(invoices).where(eq(invoices.id, id));
+  }
+
+  async generateInvoiceNumber(): Promise<string> {
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    
+    // Get the count of invoices this month
+    const [{ count: invoiceCount }] = await db
+      .select({ count: count() })
+      .from(invoices)
+      .where(
+        and(
+          gte(invoices.createdAt, new Date(year, month - 1, 1)),
+          lte(invoices.createdAt, new Date(year, month, 0))
+        )
+      );
+
+    const monthStr = month.toString().padStart(2, '0');
+    const sequenceStr = (invoiceCount + 1).toString().padStart(4, '0');
+    
+    return `BP-${year}${monthStr}-${sequenceStr}`;
+  }
+
+  // Invoice item operations
+  async createInvoiceItem(itemData: InsertInvoiceItem): Promise<InvoiceItem> {
+    const [item] = await db.insert(invoiceItems).values(itemData).returning();
+    return item;
+  }
+
+  async getInvoiceItems(invoiceId: string): Promise<InvoiceItem[]> {
+    return await db.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, invoiceId));
+  }
+
+  async updateInvoiceItem(id: string, itemData: Partial<InsertInvoiceItem>): Promise<InvoiceItem> {
+    const [item] = await db
+      .update(invoiceItems)
+      .set(itemData)
+      .where(eq(invoiceItems.id, id))
+      .returning();
+    return item;
+  }
+
+  async deleteInvoiceItem(id: string): Promise<void> {
+    await db.delete(invoiceItems).where(eq(invoiceItems.id, id));
   }
 
   // Analytics operations

@@ -30,7 +30,8 @@ import {
   CalendarPlus,
   FileText,
   Settings,
-  Mail
+  Mail,
+  Receipt
 } from "lucide-react";
 
 // Form schemas
@@ -486,7 +487,7 @@ export default function Admin() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Dashboard
@@ -510,6 +511,10 @@ export default function Admin() {
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Services
+            </TabsTrigger>
+            <TabsTrigger value="invoices" className="flex items-center gap-2">
+              <Receipt className="w-4 h-4" />
+              Invoices
             </TabsTrigger>
             <TabsTrigger value="billing" className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
@@ -667,6 +672,127 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="invoices">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Invoice Management</CardTitle>
+                    <CardDescription>Create and manage client invoices</CardDescription>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="bg-emerald-600 hover:bg-emerald-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Invoice
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Create New Invoice</DialogTitle>
+                        <DialogDescription>
+                          Generate a new invoice for a client
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Client</label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select client" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="client1">John Doe</SelectItem>
+                              <SelectItem value="client2">Jane Smith</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Due Date</label>
+                          <Input type="date" className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Notes</label>
+                          <Textarea placeholder="Invoice notes..." className="mt-1" />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">
+                          Create Invoice
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Invoice #</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Due Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">BP-202501-0001</TableCell>
+                      <TableCell>John Doe</TableCell>
+                      <TableCell>$150.00</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                          Pending
+                        </Badge>
+                      </TableCell>
+                      <TableCell>Jan 15, 2025</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-600 hover:bg-green-50"
+                          >
+                            Mark Paid
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">BP-202501-0002</TableCell>
+                      <TableCell>Jane Smith</TableCell>
+                      <TableCell>$200.00</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          Paid
+                        </Badge>
+                      </TableCell>
+                      <TableCell>Jan 10, 2025</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </CardContent>

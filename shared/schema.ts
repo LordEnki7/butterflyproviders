@@ -124,7 +124,37 @@ export const services = pgTable("services", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Billing table
+// Invoices table - for billing records and invoice generation
+export const invoices = pgTable("invoices", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  invoiceNumber: varchar("invoice_number").notNull().unique(),
+  clientId: varchar("client_id").references(() => clients.id),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  issueDate: timestamp("issue_date").defaultNow(),
+  dueDate: timestamp("due_date").notNull(),
+  status: varchar("status").default("pending"), // pending, paid, overdue, cancelled
+  paymentMethod: varchar("payment_method"), // cash, check, bank_transfer, etc.
+  paidAt: timestamp("paid_at"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Invoice line items - individual services on an invoice
+export const invoiceItems = pgTable("invoice_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  invoiceId: varchar("invoice_id").references(() => invoices.id),
+  appointmentId: varchar("appointment_id").references(() => appointments.id),
+  serviceDescription: text("service_description").notNull(),
+  quantity: decimal("quantity", { precision: 8, scale: 2 }).default("1"),
+  rate: decimal("rate", { precision: 8, scale: 2 }).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  serviceDate: timestamp("service_date"),
+});
+
+// Billing table - simplified for payment tracking
 export const billings = pgTable("billings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   clientId: varchar("client_id").references(() => clients.id),
@@ -178,6 +208,16 @@ export const insertServiceSchema = createInsertSchema(services).omit({
   updatedAt: true,
 });
 
+export const insertInvoiceSchema = createInsertSchema(invoices).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertInvoiceItemSchema = createInsertSchema(invoiceItems).omit({
+  id: true,
+});
+
 export const insertBillingSchema = createInsertSchema(billings).omit({
   id: true,
   createdAt: true,
@@ -199,6 +239,10 @@ export type InsertCareUpdate = z.infer<typeof insertCareUpdateSchema>;
 export type CareUpdate = typeof careUpdates.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 export type Service = typeof services.$inferSelect;
+export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
+export type Invoice = typeof invoices.$inferSelect;
+export type InsertInvoiceItem = z.infer<typeof insertInvoiceItemSchema>;
+export type InvoiceItem = typeof invoiceItems.$inferSelect;
 export type InsertBilling = z.infer<typeof insertBillingSchema>;
 export type Billing = typeof billings.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
