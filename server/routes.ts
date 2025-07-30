@@ -6,7 +6,10 @@ import {
   insertContactInquirySchema,
   insertClientSchema,
   insertCaregiverSchema,
+  insertCaregiverAvailabilitySchema,
+  insertCaregiverTimeOffSchema,
   insertAppointmentSchema,
+  insertAppointmentRecurringSchema,
   insertCareUpdateSchema,
   insertServiceSchema,
   insertInvoiceSchema,
@@ -665,6 +668,247 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating invoice:", error);
       res.status(500).json({ message: "Failed to generate invoice" });
+    }
+  });
+
+  // ===== SCHEDULING API ROUTES =====
+  
+  // Get available caregivers for a specific date/duration
+  app.get('/api/scheduling/available-caregivers', async (req, res) => {
+    try {
+      const { date, duration } = req.query;
+      if (!date || !duration) {
+        return res.status(400).json({ message: "Date and duration are required" });
+      }
+      
+      const appointmentDate = new Date(date as string);
+      const durationMinutes = parseInt(duration as string);
+      
+      const availableCaregivers = await storage.getAvailableCaregivers(appointmentDate, durationMinutes);
+      res.json(availableCaregivers);
+    } catch (error) {
+      console.error("Error fetching available caregivers:", error);
+      res.status(500).json({ message: "Failed to fetch available caregivers" });
+    }
+  });
+
+  // Get available time slots for a caregiver
+  app.get('/api/scheduling/time-slots/:caregiverId', async (req, res) => {
+    try {
+      const { caregiverId } = req.params;
+      const { date, duration } = req.query;
+      
+      if (!date || !duration) {
+        return res.status(400).json({ message: "Date and duration are required" });
+      }
+      
+      const appointmentDate = new Date(date as string);
+      const durationMinutes = parseInt(duration as string);
+      
+      const timeSlots = await storage.getAvailableTimeSlots(caregiverId, appointmentDate, durationMinutes);
+      res.json(timeSlots);
+    } catch (error) {
+      console.error("Error fetching time slots:", error);
+      res.status(500).json({ message: "Failed to fetch time slots" });
+    }
+  });
+
+  // Check availability for instant booking
+  app.post('/api/scheduling/check-availability', async (req, res) => {
+    try {
+      const { caregiverId, date, duration } = req.body;
+      
+      if (!caregiverId || !date || !duration) {
+        return res.status(400).json({ message: "Caregiver ID, date, and duration are required" });
+      }
+      
+      const appointmentDate = new Date(date);
+      const isAvailable = await storage.checkAvailability(caregiverId, appointmentDate, duration);
+      
+      res.json({ available: isAvailable });
+    } catch (error) {
+      console.error("Error checking availability:", error);
+      res.status(500).json({ message: "Failed to check availability" });
+    }
+  });
+
+  // Instant booking endpoint
+  app.post('/api/scheduling/book-appointment', isAuthenticated, async (req: any, res) => {
+    try {
+      const { caregiverId, serviceId, scheduledDate, duration, clientNotes } = req.body;
+      const userId = req.user.claims.sub;
+      
+      // Find or create client record
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check availability before booking
+      const appointmentDate = new Date(scheduledDate);
+      const isAvailable = await storage.checkAvailability(caregiverId, appointmentDate, duration);
+      
+      if (!isAvailable) {
+        return res.status(409).json({ message: "Time slot is no longer available" });
+      }
+      
+      // Create the appointment
+      const endDate = new Date(appointmentDate.getTime() + duration * 60000);
+      const appointment = await storage.createAppointment({
+        clientId: userId, // Using user ID as client ID for now
+        caregiverId,
+        serviceId,
+        scheduledDate: appointmentDate,
+        endDate,
+        duration,
+        serviceType: "Home Care", // Default service type
+        status: "scheduled",
+        priority: "normal",
+        clientNotes,
+        estimatedCost: 0, // Will be calculated based on service
+      });
+      
+      res.status(201).json(appointment);
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      res.status(500).json({ message: "Failed to book appointment" });
+    }
+  });
+
+  // Caregiver availability management
+  app.get('/api/admin/caregivers/:id/availability', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const availability = await storage.getCaregiverAvailability(id);
+      res.json(availability);
+    } catch (error) {
+      console.error("Error fetching caregiver availability:", error);
+      res.status(500).json({ message: "Failed to fetch caregiver availability" });
+    }
+  });
+
+  app.post('/api/admin/caregivers/:id/availability', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertCaregiverAvailabilitySchema.parse({
+        ...req.body,
+        caregiverId: id
+      });
+      
+      const availability = await storage.setCaregiverAvailability(validatedData);
+      res.status(201).json(availability);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid availability data", errors: error.errors });
+      } else {
+        console.error("Error setting caregiver availability:", error);
+        res.status(500).json({ message: "Failed to set caregiver availability" });
+      }
+    }
+  });
+
+  app.put('/api/admin/availability/:id', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertCaregiverAvailabilitySchema.partial().parse(req.body);
+      
+      const availability = await storage.updateCaregiverAvailability(id, validatedData);
+      res.json(availability);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid availability data", errors: error.errors });
+      } else {
+        console.error("Error updating caregiver availability:", error);
+        res.status(500).json({ message: "Failed to update caregiver availability" });
+      }
+    }
+  });
+
+  app.delete('/api/admin/availability/:id', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCaregiverAvailability(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting caregiver availability:", error);
+      res.status(500).json({ message: "Failed to delete caregiver availability" });
+    }
+  });
+
+  // Caregiver time-off management
+  app.get('/api/admin/caregivers/:id/time-off', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const timeOff = await storage.getCaregiverTimeOff(id);
+      res.json(timeOff);
+    } catch (error) {
+      console.error("Error fetching caregiver time-off:", error);
+      res.status(500).json({ message: "Failed to fetch caregiver time-off" });
+    }
+  });
+
+  app.post('/api/admin/caregivers/:id/time-off', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertCaregiverTimeOffSchema.parse({
+        ...req.body,
+        caregiverId: id
+      });
+      
+      const timeOff = await storage.createCaregiverTimeOff(validatedData);
+      res.status(201).json(timeOff);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid time-off data", errors: error.errors });
+      } else {
+        console.error("Error creating caregiver time-off:", error);
+        res.status(500).json({ message: "Failed to create caregiver time-off" });
+      }
+    }
+  });
+
+  // Appointment status management
+  app.post('/api/admin/appointments/:id/confirm', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const appointment = await storage.confirmAppointment(id);
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error confirming appointment:", error);
+      res.status(500).json({ message: "Failed to confirm appointment" });
+    }
+  });
+
+  app.post('/api/admin/appointments/:id/cancel', isAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+      const appointment = await storage.cancelAppointment(id, reason);
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      res.status(500).json({ message: "Failed to cancel appointment" });
+    }
+  });
+
+  // Get appointments by date range for calendar view
+  app.get('/api/admin/appointments/calendar', isAdminAuth, async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start date and end date are required" });
+      }
+      
+      const appointments = await storage.getAppointmentsByDateRange(
+        new Date(startDate as string),
+        new Date(endDate as string)
+      );
+      
+      res.json(appointments);
+    } catch (error) {
+      console.error("Error fetching calendar appointments:", error);
+      res.status(500).json({ message: "Failed to fetch calendar appointments" });
     }
   });
 

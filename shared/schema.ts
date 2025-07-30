@@ -73,28 +73,86 @@ export const clients = pgTable("clients", {
 export const caregivers = pgTable("caregivers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  email: varchar("email").unique(),
+  phone: varchar("phone"),
   certification: varchar("certification"),
   experience: integer("experience"), // years
   specialties: text("specialties"), // JSON array of specialties
   hourlyRate: decimal("hourly_rate", { precision: 8, scale: 2 }),
-  availability: text("availability"), // JSON schedule
+  bio: text("bio"),
+  profileImage: varchar("profile_image"),
+  timezone: varchar("timezone").default("America/Phoenix"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Appointments table
+// Caregiver availability patterns (recurring schedule)
+export const caregiverAvailability = pgTable("caregiver_availability", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  caregiverId: varchar("caregiver_id").references(() => caregivers.id),
+  dayOfWeek: integer("day_of_week"), // 0 = Sunday, 1 = Monday, etc.
+  startTime: varchar("start_time"), // HH:MM format
+  endTime: varchar("end_time"), // HH:MM format
+  isAvailable: boolean("is_available").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Caregiver time-off and exceptions
+export const caregiverTimeOff = pgTable("caregiver_time_off", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  caregiverId: varchar("caregiver_id").references(() => caregivers.id),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  reason: varchar("reason"), // vacation, sick, personal, etc.
+  isAllDay: boolean("is_all_day").default(true),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Appointments table - enhanced for online scheduling
 export const appointments = pgTable("appointments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   clientId: varchar("client_id").references(() => clients.id),
   caregiverId: varchar("caregiver_id").references(() => caregivers.id),
+  serviceId: varchar("service_id").references(() => services.id),
   scheduledDate: timestamp("scheduled_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
   duration: integer("duration").notNull(), // minutes
   serviceType: varchar("service_type").notNull(),
-  status: varchar("status").default("scheduled"), // scheduled, completed, cancelled, in-progress
-  notes: text("notes"),
+  status: varchar("status").default("scheduled"), // scheduled, confirmed, in-progress, completed, cancelled, no-show
+  priority: varchar("priority").default("normal"), // low, normal, high, urgent
+  location: varchar("location"), // home, facility, etc.
+  specialInstructions: text("special_instructions"),
+  estimatedCost: decimal("estimated_cost", { precision: 8, scale: 2 }),
+  actualCost: decimal("actual_cost", { precision: 8, scale: 2 }),
+  clientNotes: text("client_notes"),
+  caregiverNotes: text("caregiver_notes"),
+  adminNotes: text("admin_notes"),
+  reminderSent: boolean("reminder_sent").default(false),
+  bookedAt: timestamp("booked_at").defaultNow(),
+  confirmedAt: timestamp("confirmed_at"),
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  cancelReason: varchar("cancel_reason"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Appointment recurring patterns
+export const appointmentRecurring = pgTable("appointment_recurring", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  appointmentId: varchar("appointment_id").references(() => appointments.id),
+  pattern: varchar("pattern").notNull(), // daily, weekly, biweekly, monthly
+  interval: integer("interval").default(1), // every X days/weeks/months
+  daysOfWeek: text("days_of_week"), // JSON array for weekly patterns
+  endDate: timestamp("end_date"),
+  maxOccurrences: integer("max_occurrences"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Care updates table
@@ -191,6 +249,21 @@ export const insertCaregiverSchema = createInsertSchema(caregivers).omit({
   updatedAt: true,
 });
 
+export const insertCaregiverAvailabilitySchema = createInsertSchema(caregiverAvailability).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCaregiverTimeOffSchema = createInsertSchema(caregiverTimeOff).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAppointmentRecurringSchema = createInsertSchema(appointmentRecurring).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   id: true,
   createdAt: true,
@@ -233,6 +306,15 @@ export type InsertClient = z.infer<typeof insertClientSchema>;
 export type Client = typeof clients.$inferSelect;
 export type InsertCaregiver = z.infer<typeof insertCaregiverSchema>;
 export type Caregiver = typeof caregivers.$inferSelect;
+
+export type InsertCaregiverAvailability = z.infer<typeof insertCaregiverAvailabilitySchema>;
+export type CaregiverAvailability = typeof caregiverAvailability.$inferSelect;
+
+export type InsertCaregiverTimeOff = z.infer<typeof insertCaregiverTimeOffSchema>;
+export type CaregiverTimeOff = typeof caregiverTimeOff.$inferSelect;
+
+export type InsertAppointmentRecurring = z.infer<typeof insertAppointmentRecurringSchema>;
+export type AppointmentRecurring = typeof appointmentRecurring.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Appointment = typeof appointments.$inferSelect;
 export type InsertCareUpdate = z.infer<typeof insertCareUpdateSchema>;

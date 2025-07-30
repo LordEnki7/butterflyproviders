@@ -217,7 +217,15 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-8">No upcoming appointments scheduled.</p>
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">No upcoming appointments scheduled.</p>
+                    <Link href="/schedule">
+                      <Button className="bg-emerald-600 hover:bg-emerald-700">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Schedule New Appointment
+                      </Button>
+                    </Link>
+                  </div>
                 )}
               </CardContent>
             </Card>

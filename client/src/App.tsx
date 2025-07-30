@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
+import Scheduling from "@/pages/Scheduling";
 import Admin from "@/pages/Admin";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/schedule" component={Scheduling} />
         </>
       )}
       <Route path="/admin" component={Admin} />

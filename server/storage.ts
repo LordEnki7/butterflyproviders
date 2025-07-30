@@ -3,7 +3,10 @@ import {
   contactInquiries,
   clients,
   caregivers,
+  caregiverAvailability,
+  caregiverTimeOff,
   appointments,
+  appointmentRecurring,
   careUpdates,
   services,
   invoices,
@@ -18,8 +21,14 @@ import {
   type InsertClient,
   type Caregiver,
   type InsertCaregiver,
+  type CaregiverAvailability,
+  type InsertCaregiverAvailability,
+  type CaregiverTimeOff,
+  type InsertCaregiverTimeOff,
   type Appointment,
   type InsertAppointment,
+  type AppointmentRecurring,
+  type InsertAppointmentRecurring,
   type CareUpdate,
   type InsertCareUpdate,
   type Service,
@@ -61,6 +70,19 @@ export interface IStorage {
   getCaregiver(id: string): Promise<Caregiver | undefined>;
   updateCaregiver(id: string, caregiver: Partial<InsertCaregiver>): Promise<Caregiver>;
   deleteCaregiver(id: string): Promise<void>;
+  getAvailableCaregivers(date: Date, duration: number): Promise<Caregiver[]>;
+  
+  // Caregiver availability operations
+  setCaregiverAvailability(availability: InsertCaregiverAvailability): Promise<CaregiverAvailability>;
+  getCaregiverAvailability(caregiverId: string): Promise<CaregiverAvailability[]>;
+  updateCaregiverAvailability(id: string, availability: Partial<InsertCaregiverAvailability>): Promise<CaregiverAvailability>;
+  deleteCaregiverAvailability(id: string): Promise<void>;
+  
+  // Caregiver time-off operations
+  createCaregiverTimeOff(timeOff: InsertCaregiverTimeOff): Promise<CaregiverTimeOff>;
+  getCaregiverTimeOff(caregiverId: string): Promise<CaregiverTimeOff[]>;
+  updateCaregiverTimeOff(id: string, timeOff: Partial<InsertCaregiverTimeOff>): Promise<CaregiverTimeOff>;
+  deleteCaregiverTimeOff(id: string): Promise<void>;
   
   // Appointment operations
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
@@ -68,8 +90,21 @@ export interface IStorage {
   getAppointment(id: string): Promise<Appointment | undefined>;
   getAppointmentsByClient(clientId: string): Promise<Appointment[]>;
   getAppointmentsByCaregiver(caregiverId: string): Promise<Appointment[]>;
+  getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]>;
   updateAppointment(id: string, appointment: Partial<InsertAppointment>): Promise<Appointment>;
   deleteAppointment(id: string): Promise<void>;
+  confirmAppointment(id: string): Promise<Appointment>;
+  cancelAppointment(id: string, reason?: string): Promise<Appointment>;
+  
+  // Recurring appointment operations
+  createRecurringAppointment(recurring: InsertAppointmentRecurring): Promise<AppointmentRecurring>;
+  getRecurringAppointments(appointmentId: string): Promise<AppointmentRecurring[]>;
+  updateRecurringAppointment(id: string, recurring: Partial<InsertAppointmentRecurring>): Promise<AppointmentRecurring>;
+  deleteRecurringAppointment(id: string): Promise<void>;
+  
+  // Scheduling operations
+  checkAvailability(caregiverId: string, date: Date, duration: number): Promise<boolean>;
+  getAvailableTimeSlots(caregiverId: string, date: Date, duration: number): Promise<{startTime: string, endTime: string}[]>;
   
   // Care update operations
   createCareUpdate(update: InsertCareUpdate): Promise<CareUpdate>;
@@ -220,6 +255,72 @@ export class DatabaseStorage implements IStorage {
     await db.delete(caregivers).where(eq(caregivers.id, id));
   }
 
+  async getAvailableCaregivers(date: Date, duration: number): Promise<Caregiver[]> {
+    // Get all active caregivers
+    const allCaregivers = await db.select().from(caregivers).where(eq(caregivers.isActive, true));
+    
+    // Filter caregivers based on availability and existing appointments
+    const availableCaregivers = [];
+    for (const caregiver of allCaregivers) {
+      const isAvailable = await this.checkAvailability(caregiver.id, date, duration);
+      if (isAvailable) {
+        availableCaregivers.push(caregiver);
+      }
+    }
+    
+    return availableCaregivers;
+  }
+
+  // Caregiver availability operations
+  async setCaregiverAvailability(availability: InsertCaregiverAvailability): Promise<CaregiverAvailability> {
+    const [created] = await db.insert(caregiverAvailability).values(availability).returning();
+    return created;
+  }
+
+  async getCaregiverAvailability(caregiverId: string): Promise<CaregiverAvailability[]> {
+    return await db.select().from(caregiverAvailability)
+      .where(eq(caregiverAvailability.caregiverId, caregiverId))
+      .orderBy(caregiverAvailability.dayOfWeek);
+  }
+
+  async updateCaregiverAvailability(id: string, availabilityData: Partial<InsertCaregiverAvailability>): Promise<CaregiverAvailability> {
+    const [updated] = await db
+      .update(caregiverAvailability)
+      .set(availabilityData)
+      .where(eq(caregiverAvailability.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCaregiverAvailability(id: string): Promise<void> {
+    await db.delete(caregiverAvailability).where(eq(caregiverAvailability.id, id));
+  }
+
+  // Caregiver time-off operations
+  async createCaregiverTimeOff(timeOff: InsertCaregiverTimeOff): Promise<CaregiverTimeOff> {
+    const [created] = await db.insert(caregiverTimeOff).values(timeOff).returning();
+    return created;
+  }
+
+  async getCaregiverTimeOff(caregiverId: string): Promise<CaregiverTimeOff[]> {
+    return await db.select().from(caregiverTimeOff)
+      .where(eq(caregiverTimeOff.caregiverId, caregiverId))
+      .orderBy(desc(caregiverTimeOff.startDate));
+  }
+
+  async updateCaregiverTimeOff(id: string, timeOffData: Partial<InsertCaregiverTimeOff>): Promise<CaregiverTimeOff> {
+    const [updated] = await db
+      .update(caregiverTimeOff)
+      .set(timeOffData)
+      .where(eq(caregiverTimeOff.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCaregiverTimeOff(id: string): Promise<void> {
+    await db.delete(caregiverTimeOff).where(eq(caregiverTimeOff.id, id));
+  }
+
   // Appointment operations
   async createAppointment(appointment: InsertAppointment): Promise<Appointment> {
     const [createdAppointment] = await db.insert(appointments).values(appointment).returning();
@@ -254,6 +355,166 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAppointment(id: string): Promise<void> {
     await db.delete(appointments).where(eq(appointments.id, id));
+  }
+
+  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]> {
+    return await db.select().from(appointments)
+      .where(and(
+        gte(appointments.scheduledDate, startDate),
+        lte(appointments.scheduledDate, endDate)
+      ))
+      .orderBy(appointments.scheduledDate);
+  }
+
+  async confirmAppointment(id: string): Promise<Appointment> {
+    const [appointment] = await db
+      .update(appointments)
+      .set({ 
+        status: "confirmed", 
+        confirmedAt: new Date(),
+        updatedAt: new Date() 
+      })
+      .where(eq(appointments.id, id))
+      .returning();
+    return appointment;
+  }
+
+  async cancelAppointment(id: string, reason?: string): Promise<Appointment> {
+    const [appointment] = await db
+      .update(appointments)
+      .set({ 
+        status: "cancelled", 
+        cancelledAt: new Date(),
+        cancelReason: reason,
+        updatedAt: new Date() 
+      })
+      .where(eq(appointments.id, id))
+      .returning();
+    return appointment;
+  }
+
+  // Recurring appointment operations
+  async createRecurringAppointment(recurring: InsertAppointmentRecurring): Promise<AppointmentRecurring> {
+    const [created] = await db.insert(appointmentRecurring).values(recurring).returning();
+    return created;
+  }
+
+  async getRecurringAppointments(appointmentId: string): Promise<AppointmentRecurring[]> {
+    return await db.select().from(appointmentRecurring)
+      .where(eq(appointmentRecurring.appointmentId, appointmentId));
+  }
+
+  async updateRecurringAppointment(id: string, recurringData: Partial<InsertAppointmentRecurring>): Promise<AppointmentRecurring> {
+    const [updated] = await db
+      .update(appointmentRecurring)
+      .set(recurringData)
+      .where(eq(appointmentRecurring.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteRecurringAppointment(id: string): Promise<void> {
+    await db.delete(appointmentRecurring).where(eq(appointmentRecurring.id, id));
+  }
+
+  // Scheduling operations
+  async checkAvailability(caregiverId: string, date: Date, duration: number): Promise<boolean> {
+    const dayOfWeek = date.getDay();
+    const requestedTime = date.getHours() * 60 + date.getMinutes(); // minutes from midnight
+    const endTime = requestedTime + duration;
+
+    // Check caregiver's regular availability for this day of week
+    const availability = await db.select().from(caregiverAvailability)
+      .where(and(
+        eq(caregiverAvailability.caregiverId, caregiverId),
+        eq(caregiverAvailability.dayOfWeek, dayOfWeek),
+        eq(caregiverAvailability.isAvailable, true)
+      ));
+
+    if (availability.length === 0) return false;
+
+    // Check if requested time falls within any availability window
+    const isWithinSchedule = availability.some(slot => {
+      const [startHour, startMin] = slot.startTime!.split(':').map(Number);
+      const [endHour, endMin] = slot.endTime!.split(':').map(Number);
+      const slotStart = startHour * 60 + startMin;
+      const slotEnd = endHour * 60 + endMin;
+      
+      return requestedTime >= slotStart && endTime <= slotEnd;
+    });
+
+    if (!isWithinSchedule) return false;
+
+    // Check for time-off conflicts
+    const timeOff = await db.select().from(caregiverTimeOff)
+      .where(and(
+        eq(caregiverTimeOff.caregiverId, caregiverId),
+        lte(caregiverTimeOff.startDate, date),
+        gte(caregiverTimeOff.endDate, date)
+      ));
+
+    if (timeOff.length > 0) return false;
+
+    // Check for existing appointment conflicts
+    const conflictingAppointments = await db.select().from(appointments)
+      .where(and(
+        eq(appointments.caregiverId, caregiverId),
+        lte(appointments.scheduledDate, new Date(date.getTime() + duration * 60000)),
+        gte(appointments.endDate, date),
+        sql`status NOT IN ('cancelled', 'completed')`
+      ));
+
+    return conflictingAppointments.length === 0;
+  }
+
+  async getAvailableTimeSlots(caregiverId: string, date: Date, duration: number): Promise<{startTime: string, endTime: string}[]> {
+    const dayOfWeek = date.getDay();
+    const slots: {startTime: string, endTime: string}[] = [];
+
+    // Get caregiver's availability for this day
+    const availability = await db.select().from(caregiverAvailability)
+      .where(and(
+        eq(caregiverAvailability.caregiverId, caregiverId),
+        eq(caregiverAvailability.dayOfWeek, dayOfWeek),
+        eq(caregiverAvailability.isAvailable, true)
+      ));
+
+    if (availability.length === 0) return slots;
+
+    // Check each availability window
+    for (const window of availability) {
+      const [startHour, startMin] = window.startTime!.split(':').map(Number);
+      const [endHour, endMin] = window.endTime!.split(':').map(Number);
+      
+      // Generate 30-minute time slots within the window
+      for (let hour = startHour; hour < endHour; hour++) {
+        for (let min = (hour === startHour ? startMin : 0); min < 60; min += 30) {
+          if (hour === endHour && min >= endMin) break;
+          
+          const slotStart = new Date(date);
+          slotStart.setHours(hour, min, 0, 0);
+          
+          const slotEnd = new Date(slotStart.getTime() + duration * 60000);
+          
+          // Don't exceed the availability window
+          if (slotEnd.getHours() > endHour || 
+              (slotEnd.getHours() === endHour && slotEnd.getMinutes() > endMin)) {
+            break;
+          }
+
+          // Check if this slot is available
+          const isAvailable = await this.checkAvailability(caregiverId, slotStart, duration);
+          if (isAvailable) {
+            slots.push({
+              startTime: slotStart.toTimeString().slice(0, 5),
+              endTime: slotEnd.toTimeString().slice(0, 5)
+            });
+          }
+        }
+      }
+    }
+
+    return slots;
   }
 
   // Care update operations
