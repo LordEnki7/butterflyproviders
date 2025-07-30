@@ -32,8 +32,8 @@ export default function Hero() {
           </div>
           <div className="relative">
             <img 
-              src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&h=600" 
-              alt="Professional female caregiver assisting elderly woman with mobility support" 
+              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&h=600" 
+              alt="Young woman caregiver helping elderly woman with daily activities at home" 
               className="rounded-2xl shadow-2xl w-full h-auto object-cover" 
             />
             <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg">

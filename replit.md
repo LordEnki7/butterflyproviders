@@ -8,6 +8,12 @@ This is a full-stack web application for Butterfly Providers, a non-medical home
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+- Updated hero section image to show young woman caregiver helping elderly woman (January 30, 2025)
+- Website is fully mobile-responsive with hamburger menu and adaptive layouts
+- All core features completed: landing page, services, client portal, contact form
+
 ## System Architecture
 
 ### Frontend Architecture
