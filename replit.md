@@ -10,19 +10,27 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- Enhanced scheduling system with advanced appointment management features (January 30, 2025)
+- Added appointment reminders with email/SMS notifications and customizable timing options
+- Implemented recurring appointments with daily/weekly/biweekly/monthly patterns
+- Created day selection interface for weekly patterns and maximum occurrence limits
+- Built tabbed booking dialog with Details/Recurring/Reminders sections for improved UX
+- Added comprehensive backend API routes for enhanced and recurring appointment bookings
+- Integrated reminder creation system with appointment booking workflow
+- Enhanced mobile optimization and accessibility for scheduling interface
+- Fixed Lisa Rodriguez profile picture in testimonials section with fallback avatars
 - Implemented comprehensive billing and invoice management system (January 30, 2025)
 - Added invoice generation with automatic numbering (BP-YYYYMM-####)
 - Created invoice line items for detailed service billing
 - Built complete invoice API with CRUD operations and payment tracking
 - Added professional invoice management interface in admin dashboard
-- Enhanced database schema with invoices and invoice_items tables
+- Enhanced database schema with invoices, invoice_items, appointment_reminders, and recurring_appointments tables
 - Implemented comprehensive admin dashboard with full CRUD operations (January 30, 2025)
 - Added admin authentication middleware and role-based access control  
 - Created complete admin storage layer with analytics and dashboard stats
 - Built admin API routes for users, clients, caregivers, appointments, services, billing
 - Updated hero section image to show young woman caregiver helping elderly woman (January 30, 2025)
 - Website is fully mobile-responsive with hamburger menu and adaptive layouts
-- All core features completed: landing page, services, client portal, contact form, admin dashboard
 
 ## System Architecture
 
