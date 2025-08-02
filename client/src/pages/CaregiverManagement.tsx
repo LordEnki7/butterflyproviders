@@ -252,12 +252,6 @@ export default function CaregiverManagement() {
               Schedule Appointment
             </a>
           </Button>
-          <Button variant="outline" asChild>
-            <a href="/admin" className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              Admin Dashboard
-            </a>
-          </Button>
         </div>
 
         <div className="mb-8">
