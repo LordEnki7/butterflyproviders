@@ -913,6 +913,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Cancel appointment endpoint
+  app.post('/api/scheduling/cancel-appointment', isAuthenticated, async (req: any, res) => {
+    try {
+      const { appointmentId, reason, policyType = 'standard' } = req.body;
+      const userId = (req.session as any)?.userId;
+
+      if (!appointmentId || !reason) {
+        return res.status(400).json({ message: "Appointment ID and cancellation reason are required" });
+      }
+
+      // Get the appointment to calculate fees
+      const appointment = await storage.getAppointment(appointmentId);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+
+      // Verify the user owns this appointment
+      if (appointment.clientId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to cancel this appointment" });
+      }
+
+      // Calculate cancellation fee
+      const cost = parseFloat(appointment.estimatedCost || "0");
+      const appointmentDate = new Date(appointment.scheduledDate);
+      const now = new Date();
+      const hoursUntilAppt = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+      
+      let feePercent = 0;
+      if (policyType === 'standard') {
+        if (hoursUntilAppt < 4) feePercent = 50;
+        else if (hoursUntilAppt < 24) feePercent = 25;
+      } else if (policyType === 'premium') {
+        if (hoursUntilAppt < 4) feePercent = 75;
+        else if (hoursUntilAppt < 24) feePercent = 35;
+        else if (hoursUntilAppt < 48) feePercent = 15;
+      } else if (policyType === 'emergency') {
+        if (hoursUntilAppt < 2) feePercent = 100;
+      }
+
+      const cancellationFee = (cost * feePercent) / 100;
+      const refundAmount = cost - cancellationFee;
+
+      // Cancel the appointment
+      const cancelledAppointment = await storage.cancelAppointment(appointmentId, {
+        cancelReason: reason,
+        cancelledBy: 'client',
+        cancellationFee,
+        refundAmount
+      });
+
+      res.json({
+        success: true,
+        appointment: cancelledAppointment,
+        cancellationFee,
+        refundAmount,
+        message: `Appointment cancelled. ${feePercent > 0 ? `Cancellation fee: $${cancellationFee.toFixed(2)}, Refund: $${refundAmount.toFixed(2)}` : 'No cancellation fee applies.'}`
+      });
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      res.status(500).json({ message: "Failed to cancel appointment" });
+    }
+  });
+
   // Enhanced booking with reminders
   app.post('/api/scheduling/book-appointment-with-reminders', isAuthenticated, async (req: any, res) => {
     try {

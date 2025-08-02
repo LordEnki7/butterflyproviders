@@ -11,6 +11,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Scheduling from "@/pages/Scheduling";
 import SchedulingDemo from "@/pages/SchedulingDemo";
+import CancellationPolicies from "@/pages/CancellationPolicies";
 import Billing from "@/pages/Billing";
 import CaregiverManagement from "@/pages/CaregiverManagement";
 import Admin from "@/pages/Admin";
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/caregivers" component={CaregiverManagement} />
       <Route path="/scheduling-demo" component={SchedulingDemo} />
+      <Route path="/cancellation-policies" component={CancellationPolicies} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (

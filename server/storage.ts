@@ -96,6 +96,12 @@ export interface IStorage {
   
   // Appointment operations
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
+  cancelAppointment(appointmentId: string, cancellationData: {
+    cancelReason: string;
+    cancelledBy: string;
+    cancellationFee?: number;
+    refundAmount?: number;
+  }): Promise<Appointment>;
   getAllAppointments(): Promise<Appointment[]>;
   getAppointment(id: string): Promise<Appointment | undefined>;
   getAppointmentsByClient(clientId: string): Promise<Appointment[]>;
@@ -403,6 +409,29 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAppointment(id: string): Promise<void> {
     await db.delete(appointments).where(eq(appointments.id, id));
+  }
+
+  // Cancel appointment with fee calculation
+  async cancelAppointment(appointmentId: string, cancellationData: {
+    cancelReason: string;
+    cancelledBy: string;
+    cancellationFee?: number;
+    refundAmount?: number;
+  }): Promise<Appointment> {
+    const [cancelledAppointment] = await db
+      .update(appointments)
+      .set({
+        status: 'cancelled',
+        cancelReason: cancellationData.cancelReason,
+        cancelledBy: cancellationData.cancelledBy,
+        cancellationFee: cancellationData.cancellationFee?.toString(),
+        refundAmount: cancellationData.refundAmount?.toString(),
+        cancelledAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(appointments.id, appointmentId))
+      .returning();
+    return cancelledAppointment;
   }
 
   async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]> {
