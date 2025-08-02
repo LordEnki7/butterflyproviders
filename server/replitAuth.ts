@@ -14,6 +14,7 @@ if (!process.env.REPLIT_DOMAINS) {
 
 const getOidcConfig = memoize(
   async () => {
+    console.log("Initializing OIDC config with REPL_ID:", process.env.REPL_ID);
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
       process.env.REPL_ID!
@@ -122,14 +123,12 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    // In development mode, use the actual Replit domain instead of localhost
-    let domain = req.hostname;
+    const domain = req.hostname;
+    
+    // If accessing via localhost, redirect to proper Replit domain
     if (domain === 'localhost') {
-      // Try butterflyproviders.com first, then fall back to default Replit domain
-      const allDomains = process.env.REPLIT_DOMAINS!.split(",");
-      domain = allDomains.includes("butterflyproviders.com") 
-        ? "butterflyproviders.com" 
-        : allDomains[0];
+      const replitDomain = process.env.REPLIT_DOMAINS!.split(",")[0];
+      return res.redirect(`https://${replitDomain}/api/login`);
     }
     
     console.log(`Login attempt from hostname: ${req.hostname}, using domain: ${domain}`);
@@ -141,15 +140,7 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    // In development mode, use the actual Replit domain instead of localhost
-    let domain = req.hostname;
-    if (domain === 'localhost') {
-      // Try butterflyproviders.com first, then fall back to default Replit domain
-      const allDomains = process.env.REPLIT_DOMAINS!.split(",");
-      domain = allDomains.includes("butterflyproviders.com") 
-        ? "butterflyproviders.com" 
-        : allDomains[0];
-    }
+    const domain = req.hostname;
     
     console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
     
