@@ -17,7 +17,7 @@ const testimonials = [
   {
     name: "Lisa Rodriguez",
     role: "Family caregiver",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b1c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
     testimonial: "Professional, reliable, and caring. I couldn't ask for better support for my mother. Highly recommend Butterfly Providers."
   }
 ];
@@ -47,7 +47,10 @@ export default function Testimonials() {
                   <img 
                     src={testimonial.image}
                     alt={`${testimonial.name} testimonial`}
-                    className="w-12 h-12 rounded-full object-cover" 
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" 
+                    onError={(e) => {
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=10b981&color=fff&size=100`;
+                    }}
                   />
                   <div>
                     <p className="font-semibold text-gray-900">{testimonial.name}</p>

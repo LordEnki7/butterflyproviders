@@ -14,6 +14,7 @@ if (!process.env.REPLIT_DOMAINS) {
 
 const getOidcConfig = memoize(
   async () => {
+    console.log("Initializing OIDC config with REPL_ID:", process.env.REPL_ID);
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
       process.env.REPL_ID!
@@ -31,15 +32,19 @@ export function getSession() {
     ttl: sessionTtl,
     tableName: "sessions",
   });
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    name: 'connect.sid',
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: isProduction, // Only secure in production
       maxAge: sessionTtl,
+      sameSite: isProduction ? 'none' : 'lax', // Allow cross-site cookies for OAuth
     },
   });
 }
@@ -57,13 +62,21 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  console.log("Upserting user with claims:", claims);
+  try {
+    const user = await storage.upsertUser({
+      id: claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+    });
+    console.log("User upserted successfully:", user);
+    return user;
+  } catch (error) {
+    console.error("Error upserting user:", error);
+    throw error;
+  }
 }
 
 export async function setupAuth(app: Express) {
@@ -78,14 +91,35 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
+    try {
+      console.log("Authentication verify callback triggered");
+      const user = {};
+      updateUserSession(user, tokens);
+      const claims = tokens.claims();
+      if (claims) {
+        await upsertUser(claims);
+        console.log("User authenticated successfully:", claims.sub);
+      } else {
+        console.error("No claims found in tokens");
+      }
+      verified(null, user);
+    } catch (error) {
+      console.error("Authentication verification failed:", error);
+      verified(error, null);
+    }
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  // Get all domains including custom domains
+  const allDomains = process.env.REPLIT_DOMAINS!.split(",");
+  
+  // Add butterflyproviders.com if not already included
+  if (!allDomains.includes("butterflyproviders.com")) {
+    allDomains.push("butterflyproviders.com");
+  }
+  
+  console.log("Setting up authentication for domains:", allDomains);
+
+  for (const domain of allDomains) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -96,22 +130,60 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
+    console.log(`Configured authentication strategy for domain: ${domain}`);
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    const domain = req.hostname;
+    
+    // If accessing via localhost, redirect to proper Replit domain
+    if (domain === 'localhost') {
+      const replitDomain = process.env.REPLIT_DOMAINS!.split(",")[0];
+      return res.redirect(`https://${replitDomain}/api/login`);
+    }
+    
+    console.log(`Login attempt from hostname: ${req.hostname}, using domain: ${domain}`);
+    
+    passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+    const domain = req.hostname;
+    
+    console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
+    console.log("Request headers:", req.headers);
+    
+    const strategyName = `replitauth:${domain}`;
+    console.log(`Attempting to use strategy: ${strategyName}`);
+    
+    passport.authenticate(strategyName, (err: any, user: any, info: any) => {
+      console.log("Authentication callback result:", { err, user, info });
+      
+      if (err) {
+        console.error("Authentication error:", err);
+        return res.redirect("/api/login?error=auth_failed");
+      }
+      
+      if (!user) {
+        console.log("No user returned from authentication, info:", info);
+        return res.redirect("/api/login?error=no_user");
+      }
+      
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error("Login error:", loginErr);
+          return res.redirect("/api/login?error=login_failed");
+        }
+        
+        console.log("User successfully logged in, redirecting to home");
+        return res.redirect("/");
+      });
     })(req, res, next);
   });
 
@@ -129,8 +201,16 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
+  
+  console.log("isAuthenticated check:", {
+    isAuthenticated: req.isAuthenticated(),
+    hasUser: !!user,
+    userExpiresAt: user?.expires_at,
+    sessionID: req.sessionID
+  });
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
+    console.log("Authentication failed: no valid session or user");
     return res.status(401).json({ message: "Unauthorized" });
   }
 

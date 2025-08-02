@@ -7,7 +7,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, FileText, MessageSquare, User, Clock, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, FileText, MessageSquare, User, Clock, CheckCircle, Settings } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface DashboardData {
   user: any;
@@ -111,12 +113,17 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {(user as any)?.firstName || 'Client'}!
-          </h1>
-          <p className="text-gray-600">
-            Here's an overview of your care services and recent updates.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {(user as any)?.firstName || 'Client'}!
+              </h1>
+              <p className="text-gray-600">
+                Here's an overview of your care services and recent updates.
+              </p>
+            </div>
+
+          </div>
         </div>
 
         {/* Dashboard Grid */}
@@ -210,7 +217,15 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-8">No upcoming appointments scheduled.</p>
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">No upcoming appointments scheduled.</p>
+                    <Link href="/schedule">
+                      <Button className="bg-emerald-600 hover:bg-emerald-700">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Schedule New Appointment
+                      </Button>
+                    </Link>
+                  </div>
                 )}
               </CardContent>
             </Card>

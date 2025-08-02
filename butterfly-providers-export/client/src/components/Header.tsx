@@ -1,118 +1,156 @@
 import { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
-import ButterflyLogo from './ButterflyLogo';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, LogOut, User, Calendar, CreditCard, Users, Settings } from 'lucide-react';
+import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const [location] = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    window.location.href = '/api/logout';
+  };
+
+  const navigationItems = [
+    { href: '/', label: 'Home', icon: User },
+    { href: '/scheduling', label: 'Scheduling', icon: Calendar },
+    { href: '/billing', label: 'Billing', icon: CreditCard },
+    { href: '/caregivers', label: 'Caregivers', icon: Users },
+    { href: '/admin', label: 'Admin', icon: Settings },
+  ];
+
+  if (!isAuthenticated) {
+    return (
+      <header className="bg-white shadow-sm border-b relative overflow-hidden" style={{height: '136px'}}>
+        <div className="container mx-auto px-4 py-0 relative">
+          <div className="flex justify-between items-center relative -my-16">
+            <Link href="/" className="flex-shrink-0 relative z-10">
+              <div>
+                <img 
+                  src={butterflyLogo} 
+                  alt="Butterfly Providers Logo" 
+                  className="h-72 w-auto"
+                />
+              </div>
+            </Link>
+            <div className="flex space-x-4">
+              <Link href="/login">
+                <Button variant="outline">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <ButterflyLogo size="md" />
+    <header className="bg-white shadow-sm border-b relative overflow-hidden" style={{height: '136px'}}>
+      <div className="container mx-auto px-4 py-0 relative">
+        <div className="flex justify-between items-center relative -my-16">
+          <Link href="/" className="flex-shrink-0 relative z-10">
             <div>
-              <h1 className="text-2xl font-bold text-emerald-600">Butterfly Providers</h1>
-              <p className="text-sm text-gray-600">Non-Medical Home Care</p>
+              <img 
+                src={butterflyLogo} 
+                alt="Butterfly Providers Logo" 
+                className="h-72 w-auto"
+              />
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#services" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-              Services
-            </a>
-            <a href="#about" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-              About
-            </a>
-            <a href="#contact" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-              Contact
-            </a>
-            <div className="flex items-center space-x-4">
-              <a href="tel:602-830-0966" className="text-emerald-600 font-semibold flex items-center gap-2 hover:text-emerald-700 transition-colors">
-                <Phone size={16} />
-                602-830-0966
-              </a>
-              {isAuthenticated ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">Welcome, {(user as any)?.firstName || 'Client'}</span>
-                  <Button 
-                    onClick={() => window.location.href = '/api/logout'}
-                    variant="outline"
-                    className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+          <nav className="hidden md:flex items-center space-x-6">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.href;
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`flex items-center space-x-2 ${
+                      isActive ? "bg-emerald-600 hover:bg-emerald-700" : ""
+                    }`}
                   >
-                    Logout
+                    <Icon className="h-4 w-4" />
+                    <span className="font-medium">{item.label}</span>
                   </Button>
-                </div>
-              ) : (
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  Client Login
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+                </Link>
+              );
+            })}
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-emerald-600"
+              variant="outline"
+              onClick={handleLogout}
+              className="flex items-center space-x-2"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
             </Button>
-          </div>
-        </div>
+          </nav>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <div className="flex flex-col space-y-4">
-              <a href="#services" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-                Services
-              </a>
-              <a href="#about" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-                About
-              </a>
-              <a href="#contact" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-                Contact
-              </a>
-              <a href="tel:602-830-0966" className="text-emerald-600 font-semibold flex items-center gap-2">
-                <Phone size={16} />
-                602-830-0966
-              </a>
-              {isAuthenticated ? (
-                <div className="flex flex-col space-y-2">
-                  <span className="text-gray-700">Welcome, {(user as any)?.firstName || 'Client'}</span>
-                  <Button 
-                    onClick={() => window.location.href = '/api/logout'}
-                    variant="outline"
-                    className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white w-fit"
-                  >
-                    Logout
-                  </Button>
+          {/* Mobile Navigation */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="outline" size="icon">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72 bg-gradient-to-b from-emerald-50 to-purple-50">
+              <div className="flex flex-col space-y-3 mt-8">
+                <div className="text-lg font-semibold text-emerald-800 mb-4 text-center">
+                  Navigation Menu
                 </div>
-              ) : (
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="bg-emerald-600 text-white hover:bg-emerald-700 w-fit"
+                <div className="pb-4 border-b border-emerald-200 bg-white rounded-lg p-3 shadow-sm">
+                  <p className="font-medium text-emerald-800">Welcome, {user?.firstName || 'User'}!</p>
+                  <p className="text-sm text-emerald-600">{user?.email}</p>
+                </div>
+                {navigationItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        className={`w-full justify-start space-x-3 rounded-full py-3 transition-all duration-200 ${
+                          isActive 
+                            ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-md" 
+                            : "hover:bg-white hover:shadow-sm"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </Button>
+                    </Link>
+                  );
+                })}
+                <div className="h-px bg-gray-300 my-2"></div>
+                <Button
+                  variant="outline"
+                  onClick={handleLogout}
+                  className="w-full justify-start space-x-3 rounded-full py-3 border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                 >
-                  Client Login
+                  <LogOut className="h-5 w-5" />
+                  <span className="font-medium">Logout</span>
                 </Button>
-              )}
-            </div>
-          </div>
-        )}
-      </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
     </header>
   );
 }
