@@ -12,19 +12,19 @@ const services = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-4">
+    <footer className="bg-gray-900 text-white py-1">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-2">
+            <div className="flex items-center space-x-3 mb-1">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
                 className="h-72 w-auto"
               />
             </div>
-            <p className="text-gray-400 mb-2">
+            <p className="text-gray-400 mb-1 text-sm">
               Providing compassionate, professional non-medical home care services to help you maintain independence and dignity in your own home.
             </p>
             <div className="flex space-x-4">
@@ -42,8 +42,8 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Services</h4>
-            <ul className="space-y-3">
+            <h4 className="text-base font-semibold mb-2">Services</h4>
+            <ul className="space-y-1">
               {services.map((service, index) => (
                 <li key={index}>
                   <a href="#services" className="text-gray-400 hover:text-white transition-colors">
@@ -56,8 +56,8 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Contact</h4>
-            <ul className="space-y-3">
+            <h4 className="text-base font-semibold mb-2">Contact</h4>
+            <ul className="space-y-1">
               <li className="text-gray-400">
                 <Phone className="inline mr-3" size={16} />
                 <a href="tel:602-830-0966" className="hover:text-white transition-colors">
@@ -82,7 +82,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-4 pt-2">
+        <div className="border-t border-gray-800 mt-1 pt-1">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               © 2024 Butterfly Providers. All rights reserved. Licensed Non-Medical Home Care Provider.
