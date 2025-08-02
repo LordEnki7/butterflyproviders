@@ -26,10 +26,10 @@ export default function Header() {
   if (!isAuthenticated) {
     return (
       <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-        <div className="container mx-auto px-4 py-1">
+        <div className="container mx-auto px-2">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex-shrink-0">
-              <div className="bg-white rounded-lg p-1 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <div className="bg-white rounded-md p-0.5 shadow-md hover:shadow-lg transition-shadow duration-200">
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
@@ -37,7 +37,7 @@ export default function Header() {
                 />
               </div>
             </Link>
-            <div className="flex items-center space-x-3 bg-white rounded-full px-6 py-3 shadow-md">
+            <div className="flex items-center space-x-2 bg-white rounded-full px-4 py-2 shadow-md">
               <Link href="/login">
                 <Button variant="outline" className="rounded-full border-emerald-300 hover:bg-emerald-50">
                   Login
@@ -57,10 +57,10 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-      <div className="container mx-auto px-4 py-1">
+      <div className="container mx-auto px-2">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex-shrink-0">
-            <div className="bg-white rounded-lg p-1 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <div className="bg-white rounded-md p-0.5 shadow-md hover:shadow-lg transition-shadow duration-200">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
@@ -70,7 +70,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center bg-white rounded-full px-4 py-2 shadow-md space-x-2">
+          <nav className="hidden md:flex items-center bg-white rounded-full px-3 py-1 shadow-md space-x-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
