@@ -33,7 +33,7 @@ export default function Header() {
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
-                  className="h-20 w-auto"
+                  className="h-32 w-auto"
                 />
               </div>
             </Link>
@@ -60,7 +60,7 @@ export default function Header() {
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
-                className="h-20 w-auto"
+                className="h-32 w-auto"
               />
             </div>
           </Link>
