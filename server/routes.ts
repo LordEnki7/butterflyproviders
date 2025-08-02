@@ -1148,6 +1148,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== BILLING CLIENT API ROUTES =====
+  
+  app.get('/api/billing/invoices', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const invoices = await storage.getInvoicesByUserId(userId);
+      
+      // Transform invoices to include formatted data for frontend
+      const formattedInvoices = invoices.map(invoice => ({
+        id: invoice.id,
+        invoiceNumber: invoice.invoiceNumber,
+        amount: Number(invoice.total),
+        status: invoice.status,
+        issueDate: invoice.issueDate,
+        dueDate: invoice.dueDate,
+        description: invoice.notes,
+        createdAt: invoice.createdAt,
+      }));
+      
+      res.json(formattedInvoices);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ message: "Failed to fetch invoices" });
+    }
+  });
+
+  app.get('/api/billing/summary', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const summary = await storage.getBillingSummaryByUserId(userId);
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching billing summary:", error);
+      res.status(500).json({ message: "Failed to fetch billing summary" });
+    }
+  });
+
+  app.get('/api/billing/payments', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const payments = await storage.getPaymentHistoryByUserId(userId);
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching payment history:", error);
+      res.status(500).json({ message: "Failed to fetch payment history" });
+    }
+  });
+
+  app.get('/api/billing/invoices/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = (req.session as any).userId;
+      
+      const invoice = await storage.getInvoice(id);
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      // Verify user owns this invoice by checking client relationship
+      const userInvoices = await storage.getInvoicesByUserId(userId);
+      const userOwnsInvoice = userInvoices.some(inv => inv.id === id);
+      
+      if (!userOwnsInvoice) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const items = await storage.getInvoiceItemsByInvoiceId(id);
+      
+      const formattedInvoice = {
+        id: invoice.id,
+        invoiceNumber: invoice.invoiceNumber,
+        amount: Number(invoice.total),
+        status: invoice.status,
+        issueDate: invoice.issueDate,
+        dueDate: invoice.dueDate,
+        description: invoice.notes,
+        items: items.map(item => ({
+          id: item.id,
+          description: item.serviceDescription,
+          quantity: Number(item.quantity),
+          rate: Number(item.rate),
+          amount: Number(item.amount),
+        })),
+      };
+      
+      res.json(formattedInvoice);
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      res.status(500).json({ message: "Failed to fetch invoice" });
+    }
+  });
+
+  app.get('/api/billing/invoices/:id/download', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = (req.session as any).userId;
+      
+      const invoice = await storage.getInvoice(id);
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      // Verify user owns this invoice
+      const userInvoices = await storage.getInvoicesByUserId(userId);
+      const userOwnsInvoice = userInvoices.some(inv => inv.id === id);
+      
+      if (!userOwnsInvoice) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Generate simple PDF content (in production, use a proper PDF library)
+      const pdfContent = `
+BUTTERFLY PROVIDERS
+Non-Medical Home Care Services
+Phone: 602-830-0966
+
+INVOICE
+
+Invoice Number: ${invoice.invoiceNumber}
+Issue Date: ${new Date(invoice.issueDate).toLocaleDateString()}
+Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}
+
+Amount Due: $${Number(invoice.total).toFixed(2)}
+Status: ${invoice.status.toUpperCase()}
+
+Description: ${invoice.notes || 'Care services provided'}
+
+Thank you for choosing Butterfly Providers for your care needs.
+      `;
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoice.invoiceNumber}.pdf"`);
+      res.send(Buffer.from(pdfContent, 'utf-8'));
+    } catch (error) {
+      console.error("Error downloading invoice:", error);
+      res.status(500).json({ message: "Failed to download invoice" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

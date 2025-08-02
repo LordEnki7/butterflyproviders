@@ -134,9 +134,14 @@ export interface IStorage {
   getAllInvoices(): Promise<Invoice[]>;
   getInvoice(id: string): Promise<Invoice | undefined>;
   getInvoicesByClient(clientId: string): Promise<Invoice[]>;
+  getInvoicesByUserId(userId: string): Promise<Invoice[]>;
   updateInvoice(id: string, invoice: Partial<InsertInvoice>): Promise<Invoice>;
   deleteInvoice(id: string): Promise<void>;
   generateInvoiceNumber(): Promise<string>;
+  getBillingSummaryByUserId(userId: string): Promise<any>;
+  getPaymentHistoryByUserId(userId: string): Promise<any[]>;
+  createInvoiceItem(item: InsertInvoiceItem): Promise<InvoiceItem>;
+  getInvoiceItemsByInvoiceId(invoiceId: string): Promise<InvoiceItem[]>;
   
   // Invoice item operations
   createInvoiceItem(item: InsertInvoiceItem): Promise<InvoiceItem>;
@@ -630,6 +635,84 @@ export class DatabaseStorage implements IStorage {
 
   async getInvoicesByClient(clientId: string): Promise<Invoice[]> {
     return await db.select().from(invoices).where(eq(invoices.clientId, clientId)).orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoicesByUserId(userId: string): Promise<Invoice[]> {
+    // First find the client record for this user
+    const [client] = await db.select().from(clients).where(eq(clients.userId, userId));
+    if (!client) {
+      return [];
+    }
+    return await db.select().from(invoices).where(eq(invoices.clientId, client.id))
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  async getBillingSummaryByUserId(userId: string): Promise<any> {
+    const [client] = await db.select().from(clients).where(eq(clients.userId, userId));
+    if (!client) {
+      return { totalOutstanding: 0, totalInvoices: 0, paidThisMonth: 0, overdueCount: 0 };
+    }
+
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const [totalOutstanding] = await db
+      .select({ total: sum(invoices.total) })
+      .from(invoices)
+      .where(and(eq(invoices.clientId, client.id), eq(invoices.status, 'pending')));
+
+    const [totalInvoices] = await db
+      .select({ count: count() })
+      .from(invoices)
+      .where(eq(invoices.clientId, client.id));
+
+    const [paidThisMonth] = await db
+      .select({ total: sum(invoices.total) })
+      .from(invoices)
+      .where(and(
+        eq(invoices.clientId, client.id),
+        eq(invoices.status, 'paid'),
+        gte(invoices.paidAt, firstDayOfMonth)
+      ));
+
+    const [overdueCount] = await db
+      .select({ count: count() })
+      .from(invoices)
+      .where(and(
+        eq(invoices.clientId, client.id),
+        eq(invoices.status, 'overdue')
+      ));
+
+    return {
+      totalOutstanding: Number(totalOutstanding?.total || 0),
+      totalInvoices: totalInvoices?.count || 0,
+      paidThisMonth: Number(paidThisMonth?.total || 0),
+      overdueCount: overdueCount?.count || 0,
+    };
+  }
+
+  async getPaymentHistoryByUserId(userId: string): Promise<any[]> {
+    const [client] = await db.select().from(clients).where(eq(clients.userId, userId));
+    if (!client) {
+      return [];
+    }
+
+    return await db
+      .select({
+        id: invoices.id,
+        invoiceId: invoices.invoiceNumber,
+        amount: invoices.total,
+        paymentDate: invoices.paidAt,
+        paymentMethod: invoices.paymentMethod,
+        notes: invoices.notes,
+      })
+      .from(invoices)
+      .where(and(eq(invoices.clientId, client.id), eq(invoices.status, 'paid')))
+      .orderBy(desc(invoices.paidAt));
+  }
+
+  async getInvoiceItemsByInvoiceId(invoiceId: string): Promise<InvoiceItem[]> {
+    return await db.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, invoiceId));
   }
 
   async updateInvoice(id: string, invoiceData: Partial<InsertInvoice>): Promise<Invoice> {

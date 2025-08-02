@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Scheduling from "@/pages/Scheduling";
+import Billing from "@/pages/Billing";
 import Admin from "@/pages/Admin";
 import SignUp from "@/pages/SignUp";
 
@@ -31,6 +32,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/scheduling" component={Scheduling} />
+          <Route path="/billing" component={Billing} />
         </>
       ) : (
         <Route path="/" component={Landing} />
