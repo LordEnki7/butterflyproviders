@@ -144,10 +144,27 @@ export async function setupAuth(app: Express) {
     
     console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
     
-    passport.authenticate(`replitauth:${domain}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
-    })(req, res, next);
+    // Check if the strategy exists before trying to authenticate
+    const strategyName = `replitauth:${domain}`;
+    const availableStrategies = Object.keys((passport as any)._strategies || {});
+    
+    if (!availableStrategies.includes(strategyName)) {
+      console.error(`Strategy ${strategyName} not found. Available strategies:`, availableStrategies);
+      // Fallback to the first available Replit domain strategy
+      const replitDomain = process.env.REPLIT_DOMAINS!.split(",")[0];
+      const fallbackStrategy = `replitauth:${replitDomain}`;
+      console.log(`Falling back to ${fallbackStrategy}`);
+      
+      passport.authenticate(fallbackStrategy, {
+        successReturnToOrRedirect: "/",
+        failureRedirect: "/api/login",
+      })(req, res, next);
+    } else {
+      passport.authenticate(strategyName, {
+        successReturnToOrRedirect: "/",
+        failureRedirect: "/api/login",
+      })(req, res, next);
+    }
   });
 
   app.get("/api/logout", (req, res) => {
