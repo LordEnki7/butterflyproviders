@@ -42,7 +42,14 @@ export default function Header() {
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-700">Welcome, {(user as any)?.firstName || 'Client'}</span>
                   <Button 
-                    onClick={() => window.location.href = '/api/logout'}
+                    onClick={async () => {
+                      try {
+                        await fetch('/api/logout', { method: 'POST' });
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Logout error:', error);
+                      }
+                    }}
                     variant="outline"
                     className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
                   >
@@ -51,7 +58,7 @@ export default function Header() {
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <Link href="/signup">
+                  <Link href="/register">
                     <Button 
                       variant="outline"
                       className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
@@ -59,12 +66,13 @@ export default function Header() {
                       Sign Up
                     </Button>
                   </Link>
-                  <Button 
-                    onClick={() => window.location.href = '/api/login'}
-                    className="bg-emerald-600 text-white hover:bg-emerald-700"
-                  >
-                    Client Login
-                  </Button>
+                  <Link href="/login">
+                    <Button 
+                      className="bg-emerald-600 text-white hover:bg-emerald-700"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>

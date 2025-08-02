@@ -1,10 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { isAuthenticated, isAdminAuth, login, register } from "./auth";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import { 
   insertContactInquirySchema,
   clientSignupSchema,
+  loginSchema,
+  registerSchema,
   insertClientSchema,
   insertCaregiverSchema,
   insertCaregiverAvailabilitySchema,
@@ -19,33 +23,130 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
+// Setup session middleware
+function setupSession(app: Express) {
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const pgStore = connectPg(session);
+  const sessionStore = new pgStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: false,
+    ttl: sessionTtl,
+    tableName: "sessions",
+  });
+  
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  app.use(session({
+    secret: process.env.SESSION_SECRET!,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    name: 'connect.sid',
+    cookie: {
+      httpOnly: true,
+      secure: isProduction,
+      maxAge: sessionTtl,
+      sameSite: isProduction ? 'none' : 'lax',
+    },
+  }));
+}
+
 // Admin password - in production, this should be an environment variable
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "butterfly2025";
 
-// Admin authentication middleware for password-based access
-const isAdminAuth = async (req: any, res: any, next: any) => {
-  try {
-    // Check if admin session exists
-    if ((req.session as any)?.adminAuthenticated) {
-      return next();
-    }
-    
-    return res.status(401).json({ message: "Admin authentication required" });
-  } catch (error) {
-    res.status(500).json({ message: "Authentication error" });
-  }
-};
-
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Setup session middleware
+  setupSession(app);
 
-  // Auth routes
+  // ===== AUTHENTICATION ROUTES =====
+  
+  // Login endpoint
+  app.post('/api/login', async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      const user = await login(validatedData.email, validatedData.password);
+      
+      // Set user session
+      (req.session as any).userId = user.id;
+      (req.session as any).userRole = user.role;
+      
+      res.json({
+        success: true,
+        message: "Login successful",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(401).json({ message: error instanceof Error ? error.message : "Login failed" });
+    }
+  });
+
+  // Register endpoint
+  app.post('/api/register', async (req, res) => {
+    try {
+      const validatedData = registerSchema.parse(req.body);
+      const user = await register(validatedData);
+      
+      // Set user session
+      (req.session as any).userId = user.id;
+      (req.session as any).userRole = user.role;
+      
+      res.status(201).json({
+        success: true,
+        message: "Registration successful",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        }
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid form data", errors: error.errors });
+      } else {
+        console.error("Registration error:", error);
+        res.status(400).json({ message: error instanceof Error ? error.message : "Registration failed" });
+      }
+    }
+  });
+
+  // Logout endpoint
+  app.post('/api/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ success: true, message: "Logout successful" });
+    });
+  });
+
+  // Get current user
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any).userId;
       const user = await storage.getUser(userId);
-      res.json(user);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

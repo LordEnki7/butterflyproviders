@@ -25,16 +25,19 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// User storage table with email/password authentication
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
+  email: varchar("email").unique().notNull(),
+  passwordHash: varchar("password_hash"), // For email/password auth
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").default("client"), // client, admin, caregiver
   isActive: boolean("is_active").default(true),
+  emailVerified: boolean("email_verified").default(false),
+  resetToken: varchar("reset_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -372,6 +375,26 @@ export const insertGeneratedAppointmentSchema = createInsertSchema(generatedAppo
 // Type exports
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+// Login schemas for email/password authentication
+export const loginSchema = z.object({
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export const registerSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password confirmation is required'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+export type LoginData = z.infer<typeof loginSchema>;
+export type RegisterData = z.infer<typeof registerSchema>;
 export type InsertContactInquiry = z.infer<typeof insertContactInquirySchema>;
 export type ContactInquiry = typeof contactInquiries.$inferSelect;
 
