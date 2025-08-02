@@ -12,11 +12,11 @@ const services = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-1">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <footer className="bg-gray-900 text-white relative overflow-hidden" style={{height: '136px'}}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative -my-16">
           {/* Company Info */}
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-2 relative z-10">
             <div className="flex items-center space-x-3 mb-1">
               <img 
                 src={butterflyLogo} 

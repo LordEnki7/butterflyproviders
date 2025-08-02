@@ -25,10 +25,10 @@ export default function Header() {
 
   if (!isAuthenticated) {
     return (
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-0">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex-shrink-0">
+      <header className="bg-white shadow-sm border-b relative overflow-hidden" style={{height: '136px'}}>
+        <div className="container mx-auto px-4 py-0 relative">
+          <div className="flex justify-between items-center relative -my-16">
+            <Link href="/" className="flex-shrink-0 relative z-10">
               <div>
                 <img 
                   src={butterflyLogo} 
@@ -56,10 +56,10 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-0">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="flex-shrink-0">
+    <header className="bg-white shadow-sm border-b relative overflow-hidden" style={{height: '136px'}}>
+      <div className="container mx-auto px-4 py-0 relative">
+        <div className="flex justify-between items-center relative -my-16">
+          <Link href="/" className="flex-shrink-0 relative z-10">
             <div>
               <img 
                 src={butterflyLogo} 
