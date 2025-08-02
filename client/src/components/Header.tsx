@@ -26,10 +26,10 @@ export default function Header() {
   if (!isAuthenticated) {
     return (
       <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-        <div className="container mx-auto px-6 py-3">
+        <div className="container mx-auto px-4 py-1">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex-shrink-0">
-              <div className="bg-white rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <div className="bg-white rounded-lg p-1 shadow-md hover:shadow-lg transition-shadow duration-200">
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
@@ -57,10 +57,10 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-      <div className="container mx-auto px-6 py-3">
+      <div className="container mx-auto px-4 py-1">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex-shrink-0">
-            <div className="bg-white rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <div className="bg-white rounded-lg p-1 shadow-md hover:shadow-lg transition-shadow duration-200">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
