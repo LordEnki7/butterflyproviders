@@ -32,15 +32,19 @@ export function getSession() {
     ttl: sessionTtl,
     tableName: "sessions",
   });
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    name: 'connect.sid',
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction, // Only secure in production
       maxAge: sessionTtl,
+      sameSite: isProduction ? 'none' : 'lax', // Allow cross-site cookies for OAuth
     },
   });
 }
@@ -58,13 +62,21 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  console.log("Upserting user with claims:", claims);
+  try {
+    const user = await storage.upsertUser({
+      id: claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+    });
+    console.log("User upserted successfully:", user);
+    return user;
+  } catch (error) {
+    console.error("Error upserting user:", error);
+    throw error;
+  }
 }
 
 export async function setupAuth(app: Express) {
@@ -86,8 +98,10 @@ export async function setupAuth(app: Express) {
       const claims = tokens.claims();
       if (claims) {
         await upsertUser(claims);
+        console.log("User authenticated successfully:", claims.sub);
+      } else {
+        console.error("No claims found in tokens");
       }
-      console.log("User authenticated successfully:", tokens.claims().sub);
       verified(null, user);
     } catch (error) {
       console.error("Authentication verification failed:", error);
@@ -143,28 +157,34 @@ export async function setupAuth(app: Express) {
     const domain = req.hostname;
     
     console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
+    console.log("Request headers:", req.headers);
     
-    // Check if the strategy exists before trying to authenticate
     const strategyName = `replitauth:${domain}`;
-    const availableStrategies = Object.keys((passport as any)._strategies || {});
+    console.log(`Attempting to use strategy: ${strategyName}`);
     
-    if (!availableStrategies.includes(strategyName)) {
-      console.error(`Strategy ${strategyName} not found. Available strategies:`, availableStrategies);
-      // Fallback to the first available Replit domain strategy
-      const replitDomain = process.env.REPLIT_DOMAINS!.split(",")[0];
-      const fallbackStrategy = `replitauth:${replitDomain}`;
-      console.log(`Falling back to ${fallbackStrategy}`);
+    passport.authenticate(strategyName, (err: any, user: any, info: any) => {
+      console.log("Authentication callback result:", { err, user, info });
       
-      passport.authenticate(fallbackStrategy, {
-        successReturnToOrRedirect: "/",
-        failureRedirect: "/api/login",
-      })(req, res, next);
-    } else {
-      passport.authenticate(strategyName, {
-        successReturnToOrRedirect: "/",
-        failureRedirect: "/api/login",
-      })(req, res, next);
-    }
+      if (err) {
+        console.error("Authentication error:", err);
+        return res.redirect("/api/login?error=auth_failed");
+      }
+      
+      if (!user) {
+        console.log("No user returned from authentication, info:", info);
+        return res.redirect("/api/login?error=no_user");
+      }
+      
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error("Login error:", loginErr);
+          return res.redirect("/api/login?error=login_failed");
+        }
+        
+        console.log("User successfully logged in, redirecting to home");
+        return res.redirect("/");
+      });
+    })(req, res, next);
   });
 
   app.get("/api/logout", (req, res) => {
