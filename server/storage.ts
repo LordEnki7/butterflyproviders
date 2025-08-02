@@ -715,6 +715,75 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, invoiceId));
   }
 
+  // Caregiver schedule operations
+  async getCaregiverSchedulesByWeek(startDate: Date, endDate: Date): Promise<any[]> {
+    const results = await db
+      .select()
+      .from(appointments)
+      .where(
+        and(
+          gte(appointments.scheduledDate, startDate),
+          lte(appointments.scheduledDate, endDate)
+        )
+      )
+      .orderBy(appointments.scheduledDate);
+
+    // Transform the results to include formatted fields
+    return results.map(appointment => ({
+      id: appointment.id,
+      caregiverId: appointment.caregiverId,
+      clientId: appointment.clientId,
+      date: appointment.scheduledDate,
+      startTime: new Date(appointment.scheduledDate).toTimeString().slice(0, 5),
+      endTime: new Date(appointment.endDate).toTimeString().slice(0, 5),
+      serviceType: appointment.serviceType,
+      status: appointment.status,
+      clientName: 'Client Name',
+      notes: appointment.clientNotes,
+    }));
+  }
+
+  async getCaregiverSchedulesByCaregiver(caregiverId: string, startDate: Date, endDate: Date): Promise<any[]> {
+    const results = await db
+      .select()
+      .from(appointments)
+      .where(
+        and(
+          eq(appointments.caregiverId, caregiverId),
+          gte(appointments.scheduledDate, startDate),
+          lte(appointments.scheduledDate, endDate)
+        )
+      )
+      .orderBy(appointments.scheduledDate);
+
+    // Transform the results to include formatted fields
+    return results.map(appointment => ({
+      id: appointment.id,
+      caregiverId: appointment.caregiverId,
+      clientId: appointment.clientId,
+      date: appointment.scheduledDate,
+      startTime: new Date(appointment.scheduledDate).toTimeString().slice(0, 5),
+      endTime: new Date(appointment.endDate).toTimeString().slice(0, 5),
+      serviceType: appointment.serviceType,
+      status: appointment.status,
+      clientName: 'Client Name',
+      notes: appointment.clientNotes,
+    }));
+  }
+
+  async createCaregiverSchedule(scheduleData: any): Promise<any> {
+    // This would create an appointment that becomes part of the schedule
+    return await this.createAppointment(scheduleData);
+  }
+
+  async updateCaregiverSchedule(id: string, scheduleData: any): Promise<any> {
+    return await this.updateAppointment(id, scheduleData);
+  }
+
+  async deleteCaregiverSchedule(id: string): Promise<void> {
+    await this.deleteAppointment(id);
+  }
+
   async updateInvoice(id: string, invoiceData: Partial<InsertInvoice>): Promise<Invoice> {
     const [invoice] = await db
       .update(invoices)

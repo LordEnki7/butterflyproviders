@@ -11,6 +11,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Scheduling from "@/pages/Scheduling";
 import Billing from "@/pages/Billing";
+import CaregiverManagement from "@/pages/CaregiverManagement";
 import Admin from "@/pages/Admin";
 import SignUp from "@/pages/SignUp";
 
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/signup" component={SignUp} />
       <Route path="/admin" component={Admin} />
+      <Route path="/caregivers" component={CaregiverManagement} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (

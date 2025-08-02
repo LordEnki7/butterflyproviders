@@ -1287,6 +1287,83 @@ Thank you for choosing Butterfly Providers for your care needs.
     }
   });
 
+  // ===== CAREGIVER SCHEDULE MANAGEMENT API ROUTES =====
+
+  // Get weekly caregiver schedules
+  app.get('/api/admin/caregiver-schedules/:weekStart', isAdminAuth, async (req: any, res) => {
+    try {
+      const weekStart = new Date(req.params.weekStart);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      
+      const schedules = await storage.getCaregiverSchedulesByWeek(weekStart, weekEnd);
+      res.json(schedules);
+    } catch (error) {
+      console.error("Error fetching caregiver schedules:", error);
+      res.status(500).json({ message: "Failed to fetch caregiver schedules" });
+    }
+  });
+
+  // Get caregiver schedules for specific caregiver
+  app.get('/api/admin/caregiver-schedules/caregiver/:caregiverId', isAdminAuth, async (req: any, res) => {
+    try {
+      const { caregiverId } = req.params;
+      const { startDate, endDate } = req.query;
+      
+      const start = startDate ? new Date(startDate as string) : new Date();
+      const end = endDate ? new Date(endDate as string) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      
+      const schedules = await storage.getCaregiverSchedulesByCaregiver(caregiverId, start, end);
+      res.json(schedules);
+    } catch (error) {
+      console.error("Error fetching caregiver schedules:", error);
+      res.status(500).json({ message: "Failed to fetch caregiver schedules" });
+    }
+  });
+
+  // Create caregiver schedule (appointment)
+  app.post('/api/admin/caregiver-schedules', isAdminAuth, async (req: any, res) => {
+    try {
+      const validatedData = insertAppointmentSchema.parse(req.body);
+      const schedule = await storage.createCaregiverSchedule(validatedData);
+      res.status(201).json(schedule);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid schedule data", errors: error.errors });
+      } else {
+        console.error("Error creating caregiver schedule:", error);
+        res.status(500).json({ message: "Failed to create caregiver schedule" });
+      }
+    }
+  });
+
+  // Update caregiver schedule
+  app.put('/api/admin/caregiver-schedules/:id', isAdminAuth, async (req: any, res) => {
+    try {
+      const validatedData = insertAppointmentSchema.partial().parse(req.body);
+      const schedule = await storage.updateCaregiverSchedule(req.params.id, validatedData);
+      res.json(schedule);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid schedule data", errors: error.errors });
+      } else {
+        console.error("Error updating caregiver schedule:", error);
+        res.status(500).json({ message: "Failed to update caregiver schedule" });
+      }
+    }
+  });
+
+  // Delete caregiver schedule
+  app.delete('/api/admin/caregiver-schedules/:id', isAdminAuth, async (req: any, res) => {
+    try {
+      await storage.deleteCaregiverSchedule(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting caregiver schedule:", error);
+      res.status(500).json({ message: "Failed to delete caregiver schedule" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
