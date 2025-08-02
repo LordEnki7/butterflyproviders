@@ -26,7 +26,7 @@ export default function Header() {
   if (!isAuthenticated) {
     return (
       <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-2">
+        <div className="container mx-auto px-4 py-0">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex-shrink-0">
               <div>
@@ -57,7 +57,7 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-2">
+      <div className="container mx-auto px-4 py-0">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex-shrink-0">
             <div>

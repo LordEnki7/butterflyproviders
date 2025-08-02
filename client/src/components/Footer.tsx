@@ -12,19 +12,19 @@ const services = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-16">
+    <footer className="bg-gray-900 text-white py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
+            <div className="flex items-center space-x-3 mb-2">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
                 className="h-72 w-auto"
               />
             </div>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-2">
               Providing compassionate, professional non-medical home care services to help you maintain independence and dignity in your own home.
             </p>
             <div className="flex space-x-4">
@@ -82,7 +82,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8">
+        <div className="border-t border-gray-800 mt-4 pt-2">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               © 2024 Butterfly Providers. All rights reserved. Licensed Non-Medical Home Care Provider.
