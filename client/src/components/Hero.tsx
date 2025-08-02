@@ -30,6 +30,17 @@ export default function Hero() {
                 Learn More
               </Button>
             </div>
+            <div className="flex flex-wrap gap-3 justify-center mt-6">
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+                <a href="/scheduling-demo">📅 View Scheduling Demo</a>
+              </Button>
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+                <a href="/cancellation-policies">📋 Cancellation Policies</a>
+              </Button>
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+                <a href="/caregivers">👥 Meet Our Caregivers</a>
+              </Button>
+            </div>
           </div>
           <div className="relative">
             <img 

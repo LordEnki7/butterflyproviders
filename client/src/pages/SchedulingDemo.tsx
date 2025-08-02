@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User, Star, CheckCircle2, Smartphone, Bell, Repeat } from "lucide-react";
+import { Calendar, Clock, User, Star, CheckCircle2, Smartphone, Bell, Repeat, ArrowLeft, Home } from "lucide-react";
 import { format, addDays } from "date-fns";
+import { Shield } from "lucide-react";
 import Header from '@/components/Header';
 
 export default function SchedulingDemo() {
@@ -47,6 +48,28 @@ export default function SchedulingDemo() {
       <Header />
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto space-y-8">
+          {/* Navigation */}
+          <div className="flex items-center gap-4 mb-6">
+            <Button variant="outline" asChild>
+              <a href="/" className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/scheduling" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Live Scheduling
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/cancellation-policies" className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Cancellation Policies
+              </a>
+            </Button>
+          </div>
+
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-gray-900">Online Appointment Scheduling System</h1>

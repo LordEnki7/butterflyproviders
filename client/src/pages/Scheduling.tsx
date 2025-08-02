@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Calendar, Clock, User, MapPin, Phone, Star, CheckCircle2, Repeat, Bell, Smartphone } from "lucide-react";
+import { Calendar, Clock, User, MapPin, Phone, Star, CheckCircle2, Repeat, Bell, Smartphone, ArrowLeft, Shield } from "lucide-react";
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 
 export default function Scheduling() {
@@ -166,6 +166,28 @@ export default function Scheduling() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
+        {/* Navigation */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="outline" asChild>
+            <a href="/" className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="/scheduling-demo" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              View Demo
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="/cancellation-policies" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Cancellation Policies
+            </a>
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gray-900">Schedule Care Services</h1>

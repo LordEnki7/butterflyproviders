@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, DollarSign, Shield, AlertTriangle, CheckCircle2, XCircle, Calendar, Phone } from "lucide-react";
+import { Clock, DollarSign, Shield, AlertTriangle, CheckCircle2, XCircle, Calendar, Phone, ArrowLeft, Home } from "lucide-react";
 import { format, addHours, differenceInHours } from "date-fns";
 import Header from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
@@ -91,6 +91,22 @@ export default function CancellationPolicies() {
       <Header />
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto space-y-8">
+          {/* Navigation */}
+          <div className="flex items-center gap-4 mb-6">
+            <Button variant="outline" asChild>
+              <a href="/" className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/scheduling" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Schedule Appointment
+              </a>
+            </Button>
+          </div>
+
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-gray-900">Cancellation Policies</h1>
