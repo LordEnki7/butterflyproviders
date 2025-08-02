@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, User, Phone, MapPin, Plus, Edit, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, User, Phone, MapPin, Plus, Edit, Trash2, CheckCircle, AlertCircle, ArrowLeft, Home } from 'lucide-react';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
 import Header from '@/components/Header';
 
@@ -238,6 +238,28 @@ export default function CaregiverManagement() {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
+        {/* Navigation */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="outline" asChild>
+            <a href="/" className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="/scheduling" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Schedule Appointment
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="/admin" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Admin Dashboard
+            </a>
+          </Button>
+        </div>
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Caregiver Management</h1>
           <p className="text-gray-600">Manage caregiver profiles, schedules, and availability</p>
