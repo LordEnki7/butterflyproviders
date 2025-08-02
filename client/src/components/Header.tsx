@@ -50,12 +50,22 @@ export default function Header() {
                   </Button>
                 </div>
               ) : (
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  Client Login
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Link href="/signup">
+                    <Button 
+                      variant="outline"
+                      className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                  <Button 
+                    onClick={() => window.location.href = '/api/login'}
+                    className="bg-emerald-600 text-white hover:bg-emerald-700"
+                  >
+                    Client Login
+                  </Button>
+                </div>
               )}
             </div>
           </div>

@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { 
   insertContactInquirySchema,
+  clientSignupSchema,
   insertClientSchema,
   insertCaregiverSchema,
   insertCaregiverAvailabilitySchema,
@@ -63,6 +64,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         console.error("Error creating contact inquiry:", error);
         res.status(500).json({ message: "Failed to submit contact inquiry" });
+      }
+    }
+  });
+
+  // Client signup endpoint
+  app.post('/api/signup', async (req, res) => {
+    try {
+      const validatedData = clientSignupSchema.parse(req.body);
+      
+      // Create user and client record
+      const user = await storage.createUser({
+        email: validatedData.email,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        role: 'client'
+      });
+
+      const client = await storage.createClient({
+        userId: user.id,
+        emergencyContact: validatedData.emergencyContact,
+        emergencyPhone: validatedData.emergencyPhone,
+        address: validatedData.address,
+        status: 'pending' // Requires approval
+      });
+
+      res.status(201).json({ 
+        message: "Application submitted successfully", 
+        userId: user.id,
+        clientId: client.id 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid form data", errors: error.errors });
+      } else {
+        console.error("Error creating client signup:", error);
+        res.status(500).json({ message: "Failed to submit application" });
       }
     }
   });

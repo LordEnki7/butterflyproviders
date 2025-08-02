@@ -55,6 +55,19 @@ export const insertContactInquirySchema = createInsertSchema(contactInquiries).o
   createdAt: true,
 });
 
+// Client signup schema
+export const clientSignupSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Valid email is required'),
+  phone: z.string().min(10, 'Phone number is required'),
+  address: z.string().min(1, 'Address is required'),
+  emergencyContact: z.string().min(1, 'Emergency contact is required'),
+  emergencyPhone: z.string().min(10, 'Emergency contact phone is required'),
+});
+
+export type ClientSignup = z.infer<typeof clientSignupSchema>;
+
 // Clients table - extends user information for care management
 export const clients = pgTable("clients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
