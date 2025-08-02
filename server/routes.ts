@@ -26,7 +26,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "butterfly2025";
 const isAdminAuth = async (req: any, res: any, next: any) => {
   try {
     // Check if admin session exists
-    if (req.session?.adminAuthenticated) {
+    if ((req.session as any)?.adminAuthenticated) {
       return next();
     }
     
@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password } = req.body;
       
       if (password === ADMIN_PASSWORD) {
-        req.session.adminAuthenticated = true;
+        (req.session as any).adminAuthenticated = true;
         res.json({ success: true, message: "Admin authenticated successfully" });
       } else {
         res.status(401).json({ message: "Invalid admin password" });
@@ -159,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Check admin authentication status
   app.get('/api/admin/check-auth', (req, res) => {
-    if (req.session?.adminAuthenticated) {
+    if ((req.session as any)?.adminAuthenticated) {
       res.json({ authenticated: true });
     } else {
       res.status(401).json({ authenticated: false });
@@ -168,7 +168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin logout
   app.post('/api/admin/logout', (req, res) => {
-    req.session.adminAuthenticated = false;
+    (req.session as any).adminAuthenticated = false;
     res.json({ success: true, message: "Admin logged out successfully" });
   });
 
