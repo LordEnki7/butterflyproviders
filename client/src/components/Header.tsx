@@ -25,9 +25,9 @@ export default function Header() {
 
   if (!isAuthenticated) {
     return (
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-2">
-          <div className="flex justify-between items-center min-h-0">
+      <header className="bg-white shadow-sm border-b py-0">
+        <div className="container mx-auto px-1">
+          <div className="flex justify-between items-center h-auto">
             <Link href="/">
               <div className="flex items-center space-x-3">
                 <img 
@@ -52,9 +52,9 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-2">
-        <div className="flex justify-between items-center min-h-0">
+    <header className="bg-white shadow-sm border-b py-0">
+      <div className="container mx-auto px-1">
+        <div className="flex justify-between items-center h-auto">
           <Link href="/">
             <div className="flex items-center space-x-3">
               <img 
