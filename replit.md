@@ -30,6 +30,8 @@ Preferred communication style: Simple, everyday language.
 - Created complete admin storage layer with analytics and dashboard stats
 - Built admin API routes for users, clients, caregivers, appointments, services, billing
 - Updated hero section image to show young woman caregiver helping elderly woman (January 30, 2025)
+- Fixed Client Login authentication for both localhost development and custom domain deployment (February 2, 2025)
+- Configured authentication strategies for multiple domains including butterflyproviders.com
 - Website is fully mobile-responsive with hamburger menu and adaptive layouts
 
 ## System Architecture

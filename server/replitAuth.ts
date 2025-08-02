@@ -84,8 +84,17 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  // Get all domains including custom domains
+  const allDomains = process.env.REPLIT_DOMAINS!.split(",");
+  
+  // Add butterflyproviders.com if not already included
+  if (!allDomains.includes("butterflyproviders.com")) {
+    allDomains.push("butterflyproviders.com");
+  }
+  
+  console.log("Setting up authentication for domains:", allDomains);
+
+  for (const domain of allDomains) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -96,6 +105,7 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
+    console.log(`Configured authentication strategy for domain: ${domain}`);
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
@@ -103,9 +113,16 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", (req, res, next) => {
     // In development mode, use the actual Replit domain instead of localhost
-    const domain = req.hostname === 'localhost' 
-      ? process.env.REPLIT_DOMAINS!.split(",")[0] 
-      : req.hostname;
+    let domain = req.hostname;
+    if (domain === 'localhost') {
+      // Try butterflyproviders.com first, then fall back to default Replit domain
+      const allDomains = process.env.REPLIT_DOMAINS!.split(",");
+      domain = allDomains.includes("butterflyproviders.com") 
+        ? "butterflyproviders.com" 
+        : allDomains[0];
+    }
+    
+    console.log(`Login attempt from hostname: ${req.hostname}, using domain: ${domain}`);
     
     passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
@@ -115,9 +132,16 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/callback", (req, res, next) => {
     // In development mode, use the actual Replit domain instead of localhost
-    const domain = req.hostname === 'localhost' 
-      ? process.env.REPLIT_DOMAINS!.split(",")[0] 
-      : req.hostname;
+    let domain = req.hostname;
+    if (domain === 'localhost') {
+      // Try butterflyproviders.com first, then fall back to default Replit domain
+      const allDomains = process.env.REPLIT_DOMAINS!.split(",");
+      domain = allDomains.includes("butterflyproviders.com") 
+        ? "butterflyproviders.com" 
+        : allDomains[0];
+    }
+    
+    console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}`);
     
     passport.authenticate(`replitauth:${domain}`, {
       successReturnToOrRedirect: "/",
