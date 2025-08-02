@@ -298,9 +298,9 @@ export default function Scheduling() {
                           </div>
                           <p className="text-sm text-gray-600">{caregiver.experience} years experience</p>
                           <div className="flex gap-1 flex-wrap">
-                            {caregiver.specialties && JSON.parse(caregiver.specialties || "[]").slice(0, 2).map((specialty: string) => (
+                            {caregiver.specialties && caregiver.specialties.split(',').slice(0, 2).map((specialty: string) => (
                               <Badge key={specialty} variant="secondary" className="text-xs">
-                                {specialty}
+                                {specialty.trim()}
                               </Badge>
                             ))}
                           </div>

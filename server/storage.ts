@@ -278,12 +278,38 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAvailableCaregivers(date: Date, duration: number): Promise<Caregiver[]> {
-    // Get all active caregivers
-    const allCaregivers = await db.select().from(caregivers).where(eq(caregivers.isActive, true));
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
     
+    // Get caregivers who are available on this day of week
+    const caregiverQuery = await db
+      .select({
+        id: caregivers.id,
+        firstName: caregivers.firstName,
+        lastName: caregivers.lastName,
+        email: caregivers.email,
+        phone: caregivers.phone,
+        specialties: caregivers.specialties,
+        hourlyRate: caregivers.hourlyRate,
+        experience: caregivers.experience,
+        certification: caregivers.certification,
+        bio: caregivers.bio,
+        isActive: caregivers.isActive,
+        createdAt: caregivers.createdAt,
+        updatedAt: caregivers.updatedAt,
+      })
+      .from(caregivers)
+      .innerJoin(caregiverAvailability, eq(caregivers.id, caregiverAvailability.caregiverId))
+      .where(
+        and(
+          eq(caregivers.isActive, true),
+          eq(caregiverAvailability.dayOfWeek, dayOfWeek),
+          eq(caregiverAvailability.isAvailable, true)
+        )
+      );
+
     // Filter caregivers based on availability and existing appointments
     const availableCaregivers = [];
-    for (const caregiver of allCaregivers) {
+    for (const caregiver of caregiverQuery) {
       const isAvailable = await this.checkAvailability(caregiver.id, date, duration);
       if (isAvailable) {
         availableCaregivers.push(caregiver);

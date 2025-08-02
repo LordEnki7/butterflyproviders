@@ -208,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Protected client portal data endpoint
   app.get('/api/client/dashboard', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any)?.userId;
       const user = await storage.getUser(userId);
       
       // Return client portal data
@@ -874,7 +874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/scheduling/book-appointment', isAuthenticated, async (req: any, res) => {
     try {
       const { caregiverId, serviceId, scheduledDate, duration, clientNotes } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any)?.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
@@ -917,7 +917,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/scheduling/book-appointment-with-reminders', isAuthenticated, async (req: any, res) => {
     try {
       const { caregiverId, serviceId, scheduledDate, duration, clientNotes, reminders } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any)?.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
@@ -974,7 +974,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxOccurrences,
         reminders
       } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any)?.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
