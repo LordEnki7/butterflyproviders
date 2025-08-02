@@ -26,14 +26,14 @@ export default function Header() {
   if (!isAuthenticated) {
     return (
       <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
+        <div className="container mx-auto px-2">
+          <div className="flex justify-between items-center min-h-0">
             <Link href="/">
               <div className="flex items-center space-x-3">
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
-                  className="h-48 w-auto"
+                  className="h-72 w-auto"
                 />
               </div>
             </Link>
@@ -53,14 +53,14 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto px-2">
+        <div className="flex justify-between items-center min-h-0">
           <Link href="/">
             <div className="flex items-center space-x-3">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
-                className="h-48 w-auto"
+                className="h-72 w-auto"
               />
             </div>
           </Link>
