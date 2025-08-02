@@ -38,7 +38,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
     },
   });
@@ -78,10 +78,20 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
+    try {
+      console.log("Authentication verify callback triggered");
+      const user = {};
+      updateUserSession(user, tokens);
+      const claims = tokens.claims();
+      if (claims) {
+        await upsertUser(claims);
+      }
+      console.log("User authenticated successfully:", tokens.claims().sub);
+      verified(null, user);
+    } catch (error) {
+      console.error("Authentication verification failed:", error);
+      verified(error, null);
+    }
   };
 
   // Get all domains including custom domains
@@ -141,7 +151,7 @@ export async function setupAuth(app: Express) {
         : allDomains[0];
     }
     
-    console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}`);
+    console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
     
     passport.authenticate(`replitauth:${domain}`, {
       successReturnToOrRedirect: "/",
@@ -163,8 +173,16 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
+  
+  console.log("isAuthenticated check:", {
+    isAuthenticated: req.isAuthenticated(),
+    hasUser: !!user,
+    userExpiresAt: user?.expires_at,
+    sessionID: req.sessionID
+  });
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
+    console.log("Authentication failed: no valid session or user");
     return res.status(401).json({ message: "Unauthorized" });
   }
 
