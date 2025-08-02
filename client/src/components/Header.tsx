@@ -25,11 +25,11 @@ export default function Header() {
 
   if (!isAuthenticated) {
     return (
-      <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-        <div className="container mx-auto px-2">
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex-shrink-0">
-              <div className="bg-white rounded-md p-0.5 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <div>
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
@@ -37,14 +37,14 @@ export default function Header() {
                 />
               </div>
             </Link>
-            <div className="flex items-center space-x-2 bg-white rounded-full px-4 py-2 shadow-md">
+            <div className="flex space-x-4">
               <Link href="/login">
-                <Button variant="outline" className="rounded-full border-emerald-300 hover:bg-emerald-50">
+                <Button variant="outline">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 rounded-full shadow-md">
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
                   Sign Up
                 </Button>
               </Link>
@@ -56,11 +56,11 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-emerald-50 to-purple-50 shadow-lg border-b-2 border-emerald-200">
-      <div className="container mx-auto px-2">
+    <header className="bg-white shadow-sm border-b">
+      <div className="container mx-auto px-4 py-2">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex-shrink-0">
-            <div className="bg-white rounded-md p-0.5 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <div>
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
@@ -70,7 +70,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center bg-white rounded-full px-3 py-1 shadow-md space-x-1">
+          <nav className="hidden md:flex items-center space-x-6">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
@@ -78,10 +78,8 @@ export default function Header() {
                 <Link key={item.href} href={item.href}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
-                    className={`flex items-center space-x-2 rounded-full transition-all duration-200 ${
-                      isActive 
-                        ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-md" 
-                        : "hover:bg-emerald-50"
+                    className={`flex items-center space-x-2 ${
+                      isActive ? "bg-emerald-600 hover:bg-emerald-700" : ""
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -90,22 +88,21 @@ export default function Header() {
                 </Link>
               );
             })}
-            <div className="w-px h-6 bg-gray-300 mx-2"></div>
             <Button
               variant="outline"
               onClick={handleLogout}
-              className="flex items-center space-x-2 rounded-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+              className="flex items-center space-x-2"
             >
               <LogOut className="h-4 w-4" />
-              <span className="font-medium">Logout</span>
+              <span>Logout</span>
             </Button>
           </nav>
 
           {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon" className="rounded-full bg-white shadow-md border-emerald-200 hover:bg-emerald-50">
-                <Menu className="h-5 w-5 text-emerald-600" />
+              <Button variant="outline" size="icon">
+                <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-gradient-to-b from-emerald-50 to-purple-50">
