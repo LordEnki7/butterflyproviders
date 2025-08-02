@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import caregiverImage from '@assets/pictue of a black caregiver helping an elderly person_1753906192114.png';
+import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 export default function Hero() {
   return (

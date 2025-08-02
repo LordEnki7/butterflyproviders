@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User, Calendar, CreditCard, Users, Settings } from 'lucide-react';
+import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -28,9 +29,12 @@ export default function Header() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link href="/">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-purple-500 rounded-full"></div>
-                <span className="text-xl font-bold text-gray-900">Butterfly Providers</span>
+              <div className="flex items-center space-x-3">
+                <img 
+                  src={butterflyLogo} 
+                  alt="Butterfly Providers Logo" 
+                  className="h-10 w-auto"
+                />
               </div>
             </Link>
             <div className="flex space-x-4">
@@ -52,9 +56,12 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link href="/">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-purple-500 rounded-full"></div>
-              <span className="text-xl font-bold text-gray-900">Butterfly Providers</span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src={butterflyLogo} 
+                alt="Butterfly Providers Logo" 
+                className="h-10 w-auto"
+              />
             </div>
           </Link>
 

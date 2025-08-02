@@ -1,5 +1,5 @@
-import ButterflyLogo from './ButterflyLogo';
 import { Phone, Mail, Clock, Shield, Facebook, Instagram, Linkedin } from 'lucide-react';
+import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 const services = [
   "Personal Care",
@@ -18,11 +18,11 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <ButterflyLogo size="sm" />
-              <div>
-                <h3 className="text-xl font-bold text-white">Butterfly Providers</h3>
-                <p className="text-gray-400 text-sm">Non-Medical Home Care</p>
-              </div>
+              <img 
+                src={butterflyLogo} 
+                alt="Butterfly Providers Logo" 
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-gray-400 mb-6">
               Providing compassionate, professional non-medical home care services to help you maintain independence and dignity in your own home.
