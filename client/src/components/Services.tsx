@@ -1,5 +1,6 @@
 import { Users, Utensils, Car, Brain, Home, HandHeart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
 
 const services = [
   {
@@ -7,42 +8,48 @@ const services = [
     description: "Assistance with daily activities including bathing, dressing, grooming, and mobility support to maintain dignity and independence.",
     icon: HandHeart,
     color: "purple",
-    bgGradient: "from-purple-100 to-purple-50"
+    bgGradient: "from-purple-100 to-purple-50",
+    link: "/services/personal-care"
   },
   {
     title: "Companionship",
     description: "Meaningful social interaction, conversation, and emotional support to combat loneliness and maintain mental well-being.",
     icon: Users,
     color: "orange",
-    bgGradient: "from-orange-100 to-orange-50"
+    bgGradient: "from-orange-100 to-orange-50",
+    link: "/services/companionship"
   },
   {
     title: "Meal Prep & Light Cleaning",
     description: "Nutritious meal preparation and light housekeeping to maintain a clean, comfortable living environment.",
     icon: Utensils,
     color: "yellow",
-    bgGradient: "from-yellow-100 to-yellow-50"
+    bgGradient: "from-yellow-100 to-yellow-50",
+    link: "/services/meal-prep"
   },
   {
     title: "Transportation & Errands",
     description: "Safe transportation to appointments, shopping assistance, and help with daily errands to maintain independence.",
     icon: Car,
     color: "pink",
-    bgGradient: "from-pink-100 to-pink-50"
+    bgGradient: "from-pink-100 to-pink-50",
+    link: "/services/transportation"
   },
   {
     title: "Alzheimer's & Dementia Support",
     description: "Specialized care for individuals with memory challenges, providing routine, comfort, and cognitive stimulation.",
     icon: Brain,
     color: "emerald",
-    bgGradient: "from-emerald-100 to-emerald-50"
+    bgGradient: "from-emerald-100 to-emerald-50",
+    link: "/services/dementia-support"
   },
   {
     title: "Respite Care for Families",
     description: "Temporary relief for family caregivers, providing professional care so you can rest, work, or attend to other needs.",
     icon: Home,
     color: "gray",
-    bgGradient: "from-gray-100 to-gray-50"
+    bgGradient: "from-gray-100 to-gray-50",
+    link: "/services/respite-care"
   }
 ];
 
@@ -82,12 +89,14 @@ export default function Services() {
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">{service.title}</h3>
                 <p className="text-gray-700 mb-6">{service.description}</p>
-                <Button 
-                  variant="link" 
-                  className={`${textColor} font-semibold hover:underline p-0 h-auto`}
-                >
-                  Learn More →
-                </Button>
+                <Link href={service.link}>
+                  <Button 
+                    variant="link" 
+                    className={`${textColor} font-semibold hover:underline p-0 h-auto`}
+                  >
+                    Learn More →
+                  </Button>
+                </Link>
               </div>
             );
           })}

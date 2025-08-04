@@ -16,6 +16,12 @@ import Billing from "@/pages/Billing";
 import CaregiverManagement from "@/pages/CaregiverManagement";
 import Admin from "@/pages/Admin";
 import SignUp from "@/pages/SignUp";
+import PersonalCare from "@/pages/PersonalCare";
+import Companionship from "@/pages/Companionship";
+import MealPrep from "@/pages/MealPrep";
+import Transportation from "@/pages/Transportation";
+import DementiaSupport from "@/pages/DementiaSupport";
+import RespiteCare from "@/pages/RespiteCare";
 
 // No longer need domain redirect with email/password authentication
 
@@ -32,6 +38,12 @@ function Router() {
       <Route path="/caregivers" component={CaregiverManagement} />
       <Route path="/scheduling-demo" component={SchedulingDemo} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />
+      <Route path="/services/personal-care" component={PersonalCare} />
+      <Route path="/services/companionship" component={Companionship} />
+      <Route path="/services/meal-prep" component={MealPrep} />
+      <Route path="/services/transportation" component={Transportation} />
+      <Route path="/services/dementia-support" component={DementiaSupport} />
+      <Route path="/services/respite-care" component={RespiteCare} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (
