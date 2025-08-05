@@ -35,12 +35,6 @@ export default function Footer() {
                 <li className="text-gray-400">
                   8:00 AM - 5:00 PM
                 </li>
-                <li className="text-emerald-400 font-semibold">
-                  24/7 Care Available
-                </li>
-                <li className="text-gray-400">
-                  Upon Request
-                </li>
               </ul>
             </div>
 

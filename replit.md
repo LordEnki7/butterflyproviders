@@ -91,6 +91,7 @@ Preferred communication style: Simple, everyday language.
 - Updated all page padding to accommodate 80px fixed header size
 - Fixed header layout to ensure navigation items are fully visible
 - Removed Contact Us section from main landing page, contact information now only appears in footer (February 5, 2025)
+- Removed "24/7 Care Available" from footer hours section, now shows only Monday-Friday 8am-5pm (February 5, 2025)
 
 ## System Architecture
 
