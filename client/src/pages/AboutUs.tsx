@@ -14,7 +14,7 @@ export default function AboutUs() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '84px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '74px' }}>
       <MainNavigation />
       
       <main className="pt-8">
