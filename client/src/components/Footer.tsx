@@ -12,15 +12,15 @@ const policies = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white relative overflow-hidden" style={{height: '90px'}}>
+    <footer className="bg-gray-900 text-white relative overflow-hidden" style={{height: '180px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-full">
         <div className="flex items-center justify-between h-full relative">
           {/* Logo Section */}
-          <div className="flex-shrink-0 relative -my-2">
+          <div className="flex-shrink-0 relative -my-8">
             <img 
               src={butterflyLogo} 
               alt="Butterfly Providers Logo" 
-              className="h-20 sm:h-24 md:h-28 w-auto"
+              className="h-32 sm:h-36 md:h-40 w-auto"
             />
           </div>
 
