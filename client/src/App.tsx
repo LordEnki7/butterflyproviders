@@ -22,6 +22,9 @@ import MealPrep from "@/pages/MealPrep";
 import Transportation from "@/pages/Transportation";
 import DementiaSupport from "@/pages/DementiaSupport";
 import RespiteCare from "@/pages/RespiteCare";
+import AboutUs from "@/pages/AboutUs";
+import Services from "@/pages/Services";
+import JoinOurTeam from "@/pages/JoinOurTeam";
 
 // No longer need domain redirect with email/password authentication
 
@@ -35,6 +38,9 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/signup" component={SignUp} />
       <Route path="/admin" component={Admin} />
+      <Route path="/about-us" component={AboutUs} />
+      <Route path="/services" component={Services} />
+      <Route path="/join-our-team" component={JoinOurTeam} />
       <Route path="/caregivers" component={CaregiverManagement} />
       <Route path="/scheduling-demo" component={SchedulingDemo} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />

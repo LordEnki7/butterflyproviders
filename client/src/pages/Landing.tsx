@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Header from '@/components/Header';
+import MainNavigation from '@/components/MainNavigation';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import ClientPortal from '@/components/ClientPortal';
@@ -27,7 +27,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <MainNavigation />
       <main>
         <Hero />
         <Services />

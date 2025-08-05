@@ -35,12 +35,6 @@ export default function Hero() {
               <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
                 <a href="/scheduling-demo">📅 View Scheduling Demo</a>
               </Button>
-              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
-                <a href="/cancellation-policies">📋 Cancellation Policies</a>
-              </Button>
-              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
-                <a href="/caregivers">👥 Meet Our Caregivers</a>
-              </Button>
             </div>
           </div>
           <div className="relative">
