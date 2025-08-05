@@ -33,9 +33,9 @@ export default function MainNavigation() {
   return (
     <header className={`bg-white shadow-sm border-b relative overflow-hidden transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
       isScrolled ? 'shadow-md backdrop-blur-sm' : 'shadow-sm'
-    }`} style={{height: '80px'}}>
+    }`} style={{height: '120px'}}>
       <div className="container mx-auto px-4 py-0 relative">
-        <div className="flex justify-between items-center relative -my-20">
+        <div className="flex justify-between items-center relative -my-16">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
             <div className="transition-transform duration-300 group-hover:scale-105">
               <img 
