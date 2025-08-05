@@ -90,6 +90,7 @@ Preferred communication style: Simple, everyday language.
 - Changed footer contact section heading from "Contact" to "Get In Touch"
 - Updated all page padding to accommodate 80px fixed header size
 - Fixed header layout to ensure navigation items are fully visible
+- Removed Contact Us section from main landing page, contact information now only appears in footer (February 5, 2025)
 
 ## System Architecture
 
