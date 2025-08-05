@@ -25,9 +25,9 @@ export default function MainNavigation() {
   }, [location]);
 
   const navigationItems = [
-    { href: '/about-us', label: 'About Us' },
-    { href: '/services', label: 'Services' },
-    { href: '/join-our-team', label: 'Join Our Team' }
+    { href: '/about-us', label: 'ABOUT US' },
+    { href: '/services', label: 'SERVICES' },
+    { href: '/join-our-team', label: 'JOIN OUR TEAM' }
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function MainNavigation() {
       isScrolled ? 'shadow-md backdrop-blur-sm' : 'shadow-sm'
     }`} style={{height: '74px'}}>
       <div className="container mx-auto px-4 py-0 relative">
-        <div className="flex justify-between items-center relative -my-20">
+        <div className="flex items-center relative -my-20">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
             <div className="transition-transform duration-300 group-hover:scale-105">
               <img 
@@ -47,8 +47,8 @@ export default function MainNavigation() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Desktop Navigation - positioned to the left after logo */}
+          <nav className="hidden md:flex items-center space-x-6 ml-12 flex-1">
             {navigationItems.map((item) => {
               const isActive = location === item.href;
               return (
@@ -59,24 +59,26 @@ export default function MainNavigation() {
                       isActive ? "bg-emerald-600 hover:bg-emerald-700 shadow-md" : "hover:bg-emerald-50 hover:text-emerald-700"
                     }`}
                   >
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-bold tracking-wider text-sm">{item.label}</span>
                   </Button>
                 </Link>
               );
             })}
-            <div className="flex space-x-2">
-              <Link href="/login">
-                <Button variant="outline" className="transition-all duration-200 hover:scale-105 hover:border-emerald-600 hover:text-emerald-600">
-                  Login
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg">
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
           </nav>
+
+          {/* Login/Register buttons - positioned to the right */}
+          <div className="hidden md:flex space-x-2 ml-auto">
+            <Link href="/login">
+              <Button variant="outline" className="transition-all duration-200 hover:scale-105 hover:border-emerald-600 hover:text-emerald-600">
+                Login
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
 
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center space-x-2">
