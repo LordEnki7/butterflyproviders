@@ -42,7 +42,7 @@ export default function MainNavigation() {
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
                 className={`w-auto transition-all duration-300 ${
-                  isScrolled ? 'h-16 sm:h-18 md:h-20' : 'h-20 sm:h-24 md:h-28'
+                  isScrolled ? 'h-16 sm:h-20 md:h-24' : 'h-20 sm:h-24 md:h-28'
                 }`}
               />
             </div>
