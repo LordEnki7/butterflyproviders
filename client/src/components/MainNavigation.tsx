@@ -31,19 +31,18 @@ export default function MainNavigation() {
   ];
 
   return (
-    <header className={`bg-white shadow-sm border-b relative transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
+    <header className={`bg-white shadow-sm border-b relative overflow-hidden transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
       isScrolled ? 'shadow-md backdrop-blur-sm' : 'shadow-sm'
     }`} style={{height: '80px'}}>
       <div className="container mx-auto px-4 py-0 relative">
-        <div className="flex justify-between items-center h-full">
+        <div className="flex justify-between items-center relative -my-2">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
             <div className="transition-transform duration-300 group-hover:scale-105">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
-                className={`w-auto transition-all duration-300 ${
-                  isScrolled ? 'h-16 sm:h-20 md:h-24' : 'h-20 sm:h-24 md:h-28'
-                }`}
+                className="w-auto h-20 transition-all duration-300"
+                style={{ height: '80px' }}
               />
             </div>
           </Link>
