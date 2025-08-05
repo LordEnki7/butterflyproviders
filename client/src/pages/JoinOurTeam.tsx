@@ -13,7 +13,7 @@ export default function JoinOurTeam() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '45px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '80px' }}>
       <MainNavigation />
       
       <main className="pt-8">
