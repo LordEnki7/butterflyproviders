@@ -59,7 +59,7 @@ export default function HoursContact() {
         <div className="max-w-4xl mx-auto">
           {/* Contact Information */}
           <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Get In Touch</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Contact Us</h3>
             <p className="text-lg md:text-xl text-gray-700 mb-8">
               Ready to learn more about our care services? Contact us today for a free consultation.
             </p>
