@@ -9,36 +9,36 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Compassionate Care <br />
               <span className="text-emerald-600">In Your Home</span>
             </h2>
-            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
               Professional, non-medical home care services designed to help you or your loved ones maintain independence and dignity in the comfort of home.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-emerald-600 text-white px-8 py-4 text-lg font-semibold hover:bg-emerald-700 h-auto"
+                className="bg-emerald-600 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold hover:bg-emerald-700 h-auto transition-all duration-200 hover:scale-105"
               >
                 Schedule Consultation
               </Button>
               <Button 
                 variant="outline"
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="border-2 border-emerald-600 text-emerald-600 px-8 py-4 text-lg font-semibold hover:bg-emerald-600 hover:text-white h-auto"
+                className="border-2 border-emerald-600 text-emerald-600 px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold hover:bg-emerald-600 hover:text-white h-auto transition-all duration-200 hover:scale-105"
               >
                 Learn More
               </Button>
             </div>
-            <div className="flex flex-wrap gap-3 justify-center mt-6">
-              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+            <div className="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start mt-6">
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
                 <a href="/scheduling-demo">📅 View Scheduling Demo</a>
               </Button>
-              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
                 <a href="/cancellation-policies">📋 Cancellation Policies</a>
               </Button>
-              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium">
+              <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
                 <a href="/caregivers">👥 Meet Our Caregivers</a>
               </Button>
             </div>
@@ -47,7 +47,8 @@ export default function Hero() {
             <img 
               src={caregiverImage}
               alt="Smiling Black woman caregiver helping elderly woman with puzzle - compassionate home care and companionship" 
-              className="rounded-2xl shadow-2xl w-full h-auto object-cover" 
+              className="rounded-2xl shadow-2xl w-full h-auto object-cover transition-transform duration-300 hover:scale-105" 
+              loading="lazy"
             />
             <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg">
               <div className="flex items-center space-x-3">

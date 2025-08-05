@@ -20,12 +20,12 @@ export default function Footer() {
             <img 
               src={butterflyLogo} 
               alt="Butterfly Providers Logo" 
-              className="h-72 w-auto"
+              className="h-56 sm:h-64 md:h-72 w-auto"
             />
           </div>
 
           {/* Content Grid - Positioned to the right of logo */}
-          <div className="flex-1 ml-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm relative z-10">
+          <div className="flex-1 ml-4 md:ml-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-sm relative z-10">
             {/* Services */}
             <div>
               <h4 className="text-sm font-semibold mb-2">Services</h4>

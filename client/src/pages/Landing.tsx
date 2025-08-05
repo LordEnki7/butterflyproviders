@@ -7,6 +7,7 @@ import HoursContact from '@/components/HoursContact';
 import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import Footer from '@/components/Footer';
+import ScrollToTop from '@/components/ScrollToTop';
 
 export default function Landing() {
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function Landing() {
         <About />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

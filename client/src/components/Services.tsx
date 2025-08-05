@@ -67,8 +67,8 @@ export default function Services() {
     <section id="services" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Care Services</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Care Services</h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Comprehensive non-medical home care services tailored to meet your unique needs and preferences.
           </p>
         </div>
@@ -82,13 +82,13 @@ export default function Services() {
             return (
               <div 
                 key={index}
-                className={`bg-gradient-to-br ${service.bgGradient} p-8 rounded-2xl hover:shadow-lg transition-shadow`}
+                className={`bg-gradient-to-br ${service.bgGradient} p-6 md:p-8 rounded-2xl hover:shadow-lg transition-all duration-300 hover:scale-105`}
               >
                 <div className={`w-16 h-16 ${iconBgColor} rounded-xl flex items-center justify-center mb-6`}>
                   <Icon className="text-white" size={32} />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{service.title}</h3>
-                <p className="text-gray-700 mb-6">{service.description}</p>
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">{service.title}</h3>
+                <p className="text-sm md:text-base text-gray-700 mb-6">{service.description}</p>
                 <Link href={service.link}>
                   <Button 
                     variant="link" 

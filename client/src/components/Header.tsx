@@ -33,18 +33,18 @@ export default function Header() {
                 <img 
                   src={butterflyLogo} 
                   alt="Butterfly Providers Logo" 
-                  className="h-72 w-auto"
+                  className="h-56 sm:h-64 md:h-72 w-auto"
                 />
               </div>
             </Link>
-            <div className="flex space-x-4">
+            <div className="flex space-x-2 md:space-x-4">
               <Link href="/login">
-                <Button variant="outline">
+                <Button variant="outline" className="text-sm md:text-base px-3 md:px-4">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-sm md:text-base px-3 md:px-4">
                   Sign Up
                 </Button>
               </Link>
@@ -64,7 +64,7 @@ export default function Header() {
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
-                className="h-72 w-auto"
+                className="h-56 sm:h-64 md:h-72 w-auto"
               />
             </div>
           </Link>
@@ -111,8 +111,8 @@ export default function Header() {
                   Navigation Menu
                 </div>
                 <div className="pb-4 border-b border-emerald-200 bg-white rounded-lg p-3 shadow-sm">
-                  <p className="font-medium text-emerald-800">Welcome, {user?.firstName || 'User'}!</p>
-                  <p className="text-sm text-emerald-600">{user?.email}</p>
+                  <p className="font-medium text-emerald-800">Welcome, {(user as any)?.firstName || 'User'}!</p>
+                  <p className="text-sm text-emerald-600">{(user as any)?.email}</p>
                 </div>
                 {navigationItems.map((item) => {
                   const Icon = item.icon;

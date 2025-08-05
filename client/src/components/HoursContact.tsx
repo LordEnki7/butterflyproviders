@@ -63,10 +63,10 @@ export default function HoursContact() {
   return (
     <section id="contact" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Hours of Operation */}
-          <div className="bg-gradient-to-br from-emerald-100 to-emerald-50 p-8 rounded-2xl">
-            <h3 className="text-3xl font-bold text-gray-900 mb-6">Hours of Operation</h3>
+          <div className="bg-gradient-to-br from-emerald-100 to-emerald-50 p-6 md:p-8 rounded-2xl">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Hours of Operation</h3>
             <div className="space-y-4">
               {hoursData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0">
@@ -95,8 +95,8 @@ export default function HoursContact() {
 
           {/* Contact Information */}
           <div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-6">Get In Touch</h3>
-            <p className="text-xl text-gray-700 mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Get In Touch</h3>
+            <p className="text-lg md:text-xl text-gray-700 mb-8">
               Ready to learn more about our care services? Contact us today for a free consultation.
             </p>
 
@@ -141,20 +141,20 @@ export default function HoursContact() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
                       placeholder="First Name"
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       required
-                      className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                      className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all duration-200"
                     />
                     <Input
                       placeholder="Last Name"
                       value={formData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       required
-                      className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                      className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                   <Input
@@ -163,14 +163,14 @@ export default function HoursContact() {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
-                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all duration-200"
                   />
                   <Input
                     type="tel"
                     placeholder="Phone Number"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all duration-200"
                   />
                   <Textarea
                     placeholder="Tell us about your care needs..."
@@ -178,12 +178,12 @@ export default function HoursContact() {
                     value={formData.message}
                     onChange={(e) => handleInputChange('message', e.target.value)}
                     required
-                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                    className="focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all duration-200 resize-none"
                   />
                   <Button 
                     type="submit"
                     disabled={contactMutation.isPending}
-                    className="w-full bg-emerald-600 text-white py-3 font-semibold hover:bg-emerald-700 h-auto"
+                    className="w-full bg-emerald-600 text-white py-3 font-semibold hover:bg-emerald-700 h-auto transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
                   >
                     {contactMutation.isPending ? 'Submitting...' : 'Request Free Consultation'}
                   </Button>
