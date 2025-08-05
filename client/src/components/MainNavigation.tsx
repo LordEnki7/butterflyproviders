@@ -42,7 +42,7 @@ export default function MainNavigation() {
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
                 className="w-auto transition-all duration-300"
-                style={{ height: '240px' }}
+                style={{ height: '320px' }}
               />
             </div>
           </Link>
