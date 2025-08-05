@@ -1,4 +1,4 @@
-import { Phone, Mail, Clock, Shield, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, Shield } from 'lucide-react';
 import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 const services = [
@@ -57,7 +57,6 @@ export default function Footer() {
                   </a>
                 </li>
                 <li className="text-gray-400">
-                  <Clock className="inline mr-2" size={12} />
                   24/7 Care Available
                 </li>
               </ul>
@@ -69,16 +68,9 @@ export default function Footer() {
               <p className="text-gray-400 text-xs leading-relaxed mb-2">
                 Professional non-medical home care services in Phoenix, AZ.
               </p>
-              <div className="flex space-x-2">
-                <a href="#" className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
-                  <Facebook size={12} />
-                </a>
-                <a href="#" className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
-                  <Instagram size={12} />
-                </a>
-                <a href="#" className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
-                  <Linkedin size={12} />
-                </a>
+              <div className="flex items-center space-x-2">
+                <Shield className="text-emerald-500" size={14} />
+                <span className="text-xs text-gray-400">Licensed & Insured</span>
               </div>
             </div>
           </div>

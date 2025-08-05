@@ -74,6 +74,12 @@ Preferred communication style: Simple, everyday language.
 - Built Join Our Team page placeholder for career opportunities and applications
 - Enhanced navigation with desktop hover effects and mobile dropdown menu
 - Implemented consistent page layouts with back navigation and floating action menus
+- Added scroll lock on header with fixed positioning for consistent navigation (February 5, 2025)
+- Updated office hours to Monday-Friday 8am-5pm only, removed weekends
+- Removed emergency contact section and social media hyperlinks from contact/footer sections
+- Changed response time display to show company address: 2455 W Chandler Blvd, Suite 120, Chandler, AZ 85224
+- Enhanced page layouts with proper padding to accommodate fixed header positioning
+- Replaced social media links with "Licensed & Insured" badge in footer
 
 ## System Architecture
 

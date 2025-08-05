@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { Phone, Mail, Clock } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
 
 export default function HoursContact() {
   const { toast } = useToast();
@@ -25,7 +25,7 @@ export default function HoursContact() {
     onSuccess: () => {
       toast({
         title: "Thank you for your inquiry!",
-        description: "We'll contact you within 2 hours during business hours.",
+        description: "We'll contact you soon during business hours.",
       });
       setFormData({
         firstName: '',
@@ -54,9 +54,7 @@ export default function HoursContact() {
   };
 
   const hoursData = [
-    { day: "Monday - Friday", hours: "8:00 AM - 6:00 PM" },
-    { day: "Saturday", hours: "9:00 AM - 5:00 PM" },
-    { day: "Sunday", hours: "On-Call Emergency" },
+    { day: "Monday - Friday", hours: "8:00 AM - 5:00 PM" },
     { day: "24/7 Care Available", hours: "Upon Request", special: true }
   ];
 
@@ -77,20 +75,7 @@ export default function HoursContact() {
                 </div>
               ))}
             </div>
-            
-            <Card className="mt-8">
-              <CardContent className="p-6">
-                <h4 className="font-semibold text-gray-900 mb-3">Emergency Contact</h4>
-                <p className="text-gray-700 mb-4">For urgent care needs outside business hours</p>
-                <a 
-                  href="tel:602-830-0966" 
-                  className="inline-flex items-center text-emerald-600 font-semibold text-lg hover:text-emerald-700 transition-colors"
-                >
-                  <Phone className="mr-3" size={20} />
-                  602-830-0966
-                </a>
-              </CardContent>
-            </Card>
+
           </div>
 
           {/* Contact Information */}
@@ -125,11 +110,11 @@ export default function HoursContact() {
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                  <Clock className="text-white" size={20} />
+                  <MapPin className="text-white" size={20} />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Response Time</p>
-                  <p className="text-gray-700">Within 2 hours during business hours</p>
+                  <p className="font-semibold text-gray-900">Address</p>
+                  <p className="text-gray-700">2455 W Chandler Blvd, Suite 120<br />Chandler, AZ 85224</p>
                 </div>
               </div>
             </div>
