@@ -6,6 +6,7 @@ import { isUnauthorizedError } from '@/lib/authUtils';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import FloatingActionMenu from '@/components/FloatingActionMenu';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -272,6 +273,7 @@ export default function Home() {
       </main>
       <Footer />
       <ScrollToTop />
+      <FloatingActionMenu />
     </div>
   );
 }

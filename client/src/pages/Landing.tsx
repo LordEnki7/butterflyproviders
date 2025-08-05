@@ -8,6 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import FloatingActionMenu from '@/components/FloatingActionMenu';
 
 export default function Landing() {
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function Landing() {
       </main>
       <Footer />
       <ScrollToTop />
+      <FloatingActionMenu />
     </div>
   );
 }
