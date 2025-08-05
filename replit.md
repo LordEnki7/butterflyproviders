@@ -85,7 +85,7 @@ Preferred communication style: Simple, everyday language.
 - Removed Hours of Operation section from contact page to avoid duplication
 - Consolidated contact information in footer with company address and credentials
 - Reduced header height to 80px (from original 136px) for better space efficiency while maintaining visibility (February 5, 2025)
-- Increased logo size in header to properly fill the 80px header dimensions
+- Increased logo size in header to 240px height (3x larger) with overflow styling to extend beyond header bounds
 - Maintained footer at 45px with smaller logo for space efficiency
 - Changed footer contact section heading from "Contact" to "Get In Touch"
 - Updated all page padding to accommodate 80px fixed header size

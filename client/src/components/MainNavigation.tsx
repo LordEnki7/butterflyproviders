@@ -35,14 +35,14 @@ export default function MainNavigation() {
       isScrolled ? 'shadow-md backdrop-blur-sm' : 'shadow-sm'
     }`} style={{height: '80px'}}>
       <div className="container mx-auto px-4 py-0 relative">
-        <div className="flex justify-between items-center relative -my-2">
+        <div className="flex justify-between items-center relative -my-20">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
             <div className="transition-transform duration-300 group-hover:scale-105">
               <img 
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
-                className="w-auto h-20 transition-all duration-300"
-                style={{ height: '80px' }}
+                className="w-auto transition-all duration-300"
+                style={{ height: '240px' }}
               />
             </div>
           </Link>
