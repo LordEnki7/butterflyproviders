@@ -169,6 +169,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Consultation scheduling route
+  app.post("/api/consultation", async (req, res) => {
+    try {
+      const { name, email, phone, preferredDate, preferredTime, message, agreeToContact } = req.body;
+
+      if (!agreeToContact) {
+        return res.status(400).json({ message: "Agreement to contact is required" });
+      }
+
+      // Store consultation request in database
+      const consultation = await storage.createConsultation({
+        name,
+        email,
+        phone,
+        preferredDate: preferredDate || null,
+        preferredTime: preferredTime || null,
+        message: message || null,
+        agreeToContact,
+        status: 'pending'
+      });
+
+      res.json({ message: "Consultation scheduled successfully", consultation });
+    } catch (error: any) {
+      console.error("Error scheduling consultation:", error);
+      res.status(500).json({ message: "Failed to schedule consultation" });
+    }
+  });
+
   // Client signup endpoint
   app.post('/api/signup', async (req, res) => {
     try {

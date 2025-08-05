@@ -92,6 +92,10 @@ Preferred communication style: Simple, everyday language.
 - Fixed header layout to ensure navigation items are fully visible
 - Removed Contact Us section from main landing page, contact information now only appears in footer (February 5, 2025)
 - Removed "24/7 Care Available" from footer hours section, now shows only Monday-Friday 8am-5pm (February 5, 2025)
+- Added Schedule Consultation component with required text/email consent checkbox (February 5, 2025)
+- Created consultation database table and API endpoint for storing consultation requests
+- Implemented consultation form with comprehensive validation and user agreement requirements
+- Added consultation scheduling to main landing page between Client Portal and Testimonials sections
 
 ## System Architecture
 

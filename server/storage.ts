@@ -1,6 +1,7 @@
 import {
   users,
   contactInquiries,
+  consultations,
   clients,
   caregivers,
   caregiverAvailability,
@@ -20,6 +21,8 @@ import {
   type UpsertUser,
   type InsertContactInquiry,
   type ContactInquiry,
+  type Consultation,
+  type InsertConsultation,
   type Client,
   type InsertClient,
   type Caregiver,
@@ -66,6 +69,10 @@ export interface IStorage {
   // Contact operations
   createContactInquiry(inquiry: InsertContactInquiry): Promise<ContactInquiry>;
   getAllContactInquiries(): Promise<ContactInquiry[]>;
+  
+  // Consultation operations
+  createConsultation(consultation: InsertConsultation): Promise<Consultation>;
+  getAllConsultations(): Promise<Consultation[]>;
   
   // Client operations
   createClient(client: InsertClient): Promise<Client>;
@@ -225,6 +232,16 @@ export class DatabaseStorage implements IStorage {
 
   async getAllContactInquiries(): Promise<ContactInquiry[]> {
     return await db.select().from(contactInquiries).orderBy(desc(contactInquiries.createdAt));
+  }
+
+  // Consultation operations
+  async createConsultation(consultation: InsertConsultation): Promise<Consultation> {
+    const [createdConsultation] = await db.insert(consultations).values(consultation).returning();
+    return createdConsultation;
+  }
+
+  async getAllConsultations(): Promise<Consultation[]> {
+    return await db.select().from(consultations).orderBy(desc(consultations.createdAt));
   }
 
   // Client operations

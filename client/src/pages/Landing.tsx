@@ -3,7 +3,7 @@ import MainNavigation from '@/components/MainNavigation';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import ClientPortal from '@/components/ClientPortal';
-
+import ScheduleConsultation from '@/components/ScheduleConsultation';
 import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import Footer from '@/components/Footer';
@@ -32,6 +32,7 @@ export default function Landing() {
         <Hero />
         <Services />
         <ClientPortal />
+        <ScheduleConsultation />
         <Testimonials />
         <About />
       </main>

@@ -58,6 +58,28 @@ export const insertContactInquirySchema = createInsertSchema(contactInquiries).o
   createdAt: true,
 });
 
+// Consultations table
+export const consultations = pgTable("consultations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone").notNull(),
+  preferredDate: varchar("preferred_date"),
+  preferredTime: varchar("preferred_time"),
+  message: text("message"),
+  agreeToContact: boolean("agree_to_contact").notNull().default(false),
+  status: varchar("status").default("pending"), // pending, scheduled, completed, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Consultation = typeof consultations.$inferSelect;
+export type InsertConsultation = typeof consultations.$inferInsert;
+
+export const insertConsultationSchema = createInsertSchema(consultations).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Client signup schema
 export const clientSignupSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
