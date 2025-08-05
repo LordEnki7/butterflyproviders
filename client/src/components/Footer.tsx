@@ -5,7 +5,6 @@ const policies = [
   "Privacy Policy",
   "Terms & Conditions", 
   "Service Agreement",
-  "Cancellation Policy",
   "HIPAA Compliance",
   "Code of Ethics"
 ];

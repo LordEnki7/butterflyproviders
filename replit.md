@@ -81,7 +81,7 @@ Preferred communication style: Simple, everyday language.
 - Enhanced page layouts with proper padding to accommodate fixed header positioning
 - Replaced social media links with "Licensed & Insured" badge in footer
 - Reorganized footer content: moved Hours of Operation to footer, replaced Services with Policies section (February 5, 2025)
-- Added Policy and Terms & Conditions links in footer (Privacy Policy, Terms & Conditions, Service Agreement, Cancellation Policy, HIPAA Compliance, Code of Ethics)
+- Added Policy and Terms & Conditions links in footer (Privacy Policy, Terms & Conditions, Service Agreement, HIPAA Compliance, Code of Ethics)
 - Removed Hours of Operation section from contact page to avoid duplication
 - Consolidated contact information in footer with company address and credentials
 - Reduced header height to 80px (from original 136px) for better space efficiency while maintaining visibility (February 5, 2025)
