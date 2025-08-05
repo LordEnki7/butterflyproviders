@@ -96,6 +96,7 @@ Preferred communication style: Simple, everyday language.
 - Created consultation database table and API endpoint for storing consultation requests
 - Implemented consultation form with comprehensive validation and user agreement requirements
 - Added consultation scheduling to main landing page between Client Portal and Testimonials sections
+- Removed "24/7 Care Available" from hero section badge, replaced with "Licensed & Insured" and "Compassionate Care" (February 5, 2025)
 
 ## System Architecture
 

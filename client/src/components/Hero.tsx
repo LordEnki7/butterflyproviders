@@ -50,8 +50,8 @@ export default function Hero() {
                   <Heart className="text-white" size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">24/7 Care Available</p>
-                  <p className="text-sm text-gray-600">Licensed & Insured</p>
+                  <p className="font-semibold text-gray-900">Licensed & Insured</p>
+                  <p className="text-sm text-gray-600">Compassionate Care</p>
                 </div>
               </div>
             </div>
