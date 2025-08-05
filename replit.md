@@ -85,7 +85,8 @@ Preferred communication style: Simple, everyday language.
 - Removed Hours of Operation section from contact page to avoid duplication
 - Consolidated contact information in footer with company address and credentials
 - Reduced header and footer height to one-third original size (45px) for more space efficiency (February 5, 2025)
-- Scaled down logo sizes proportionally in both header and footer
+- Maintained original logo size in header while reducing header container height
+- Scaled down footer logo size proportionally
 - Changed footer contact section heading from "Contact" to "Get In Touch"
 - Updated all page padding to accommodate smaller fixed header size
 
