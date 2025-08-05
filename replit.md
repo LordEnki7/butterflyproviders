@@ -80,6 +80,10 @@ Preferred communication style: Simple, everyday language.
 - Changed response time display to show company address: 2455 W Chandler Blvd, Suite 120, Chandler, AZ 85224
 - Enhanced page layouts with proper padding to accommodate fixed header positioning
 - Replaced social media links with "Licensed & Insured" badge in footer
+- Reorganized footer content: moved Hours of Operation to footer, replaced Services with Policies section (February 5, 2025)
+- Added Policy and Terms & Conditions links in footer (Privacy Policy, Terms & Conditions, Service Agreement, Cancellation Policy, HIPAA Compliance, Code of Ethics)
+- Removed Hours of Operation section from contact page to avoid duplication
+- Consolidated contact information in footer with company address and credentials
 
 ## System Architecture
 

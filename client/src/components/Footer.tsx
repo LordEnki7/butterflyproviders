@@ -1,13 +1,13 @@
 import { Phone, Mail, Shield } from 'lucide-react';
 import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
-const services = [
-  "Personal Care",
-  "Companionship", 
-  "Meal Preparation",
-  "Transportation",
-  "Dementia Support",
-  "Respite Care"
+const policies = [
+  "Privacy Policy",
+  "Terms & Conditions", 
+  "Service Agreement",
+  "Cancellation Policy",
+  "HIPAA Compliance",
+  "Code of Ethics"
 ];
 
 export default function Footer() {
@@ -26,21 +26,40 @@ export default function Footer() {
 
           {/* Content Grid - Positioned to the right of logo */}
           <div className="flex-1 ml-4 md:ml-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-sm relative z-10">
-            {/* Services */}
+            {/* Hours of Operation */}
             <div>
-              <h4 className="text-sm font-semibold mb-2">Services</h4>
+              <h4 className="text-sm font-semibold mb-2">Hours</h4>
               <ul className="space-y-1 text-xs">
-                {services.slice(0, 4).map((service, index) => (
+                <li className="text-gray-400">
+                  Monday - Friday
+                </li>
+                <li className="text-gray-400">
+                  8:00 AM - 5:00 PM
+                </li>
+                <li className="text-emerald-400 font-semibold">
+                  24/7 Care Available
+                </li>
+                <li className="text-gray-400">
+                  Upon Request
+                </li>
+              </ul>
+            </div>
+
+            {/* Policies */}
+            <div>
+              <h4 className="text-sm font-semibold mb-2">Policies</h4>
+              <ul className="space-y-1 text-xs">
+                {policies.slice(0, 4).map((policy, index) => (
                   <li key={index}>
-                    <a href="#services" className="text-gray-400 hover:text-white transition-colors">
-                      {service}
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                      {policy}
                     </a>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Contact */}
+            {/* Contact & Company Info */}
             <div>
               <h4 className="text-sm font-semibold mb-2">Contact</h4>
               <ul className="space-y-1 text-xs">
@@ -56,21 +75,15 @@ export default function Footer() {
                     info@butterflyproviders.com
                   </a>
                 </li>
-                <li className="text-gray-400">
-                  24/7 Care Available
-                </li>
               </ul>
-            </div>
-
-            {/* Company Info */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">About</h4>
-              <p className="text-gray-400 text-xs leading-relaxed mb-2">
-                Professional non-medical home care services in Phoenix, AZ.
-              </p>
-              <div className="flex items-center space-x-2">
-                <Shield className="text-emerald-500" size={14} />
-                <span className="text-xs text-gray-400">Licensed & Insured</span>
+              <div className="mt-3">
+                <p className="text-gray-400 text-xs leading-relaxed mb-2">
+                  2455 W Chandler Blvd, Suite 120<br />Chandler, AZ 85224
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Shield className="text-emerald-500" size={14} />
+                  <span className="text-xs text-gray-400">Licensed & Insured</span>
+                </div>
               </div>
             </div>
           </div>

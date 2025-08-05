@@ -53,31 +53,10 @@ export default function HoursContact() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const hoursData = [
-    { day: "Monday - Friday", hours: "8:00 AM - 5:00 PM" },
-    { day: "24/7 Care Available", hours: "Upon Request", special: true }
-  ];
-
   return (
     <section id="contact" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Hours of Operation */}
-          <div className="bg-gradient-to-br from-emerald-100 to-emerald-50 p-6 md:p-8 rounded-2xl">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Hours of Operation</h3>
-            <div className="space-y-4">
-              {hoursData.map((item, index) => (
-                <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0">
-                  <span className="font-semibold text-gray-900">{item.day}</span>
-                  <span className={item.special ? "text-emerald-600 font-semibold" : "text-gray-700"}>
-                    {item.hours}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-          </div>
-
+        <div className="max-w-4xl mx-auto">
           {/* Contact Information */}
           <div>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Get In Touch</h3>
