@@ -9,7 +9,7 @@ const services = [
     icon: HandHeart,
     color: "purple",
     bgGradient: "from-purple-100 to-purple-50",
-    link: "/services/personal-care"
+    link: "/services"
   },
   {
     title: "Companionship",
@@ -17,7 +17,7 @@ const services = [
     icon: Users,
     color: "orange",
     bgGradient: "from-orange-100 to-orange-50",
-    link: "/services/companionship"
+    link: "/services"
   },
   {
     title: "Meal Prep & Light Cleaning",
@@ -25,7 +25,7 @@ const services = [
     icon: Utensils,
     color: "yellow",
     bgGradient: "from-yellow-100 to-yellow-50",
-    link: "/services/meal-prep"
+    link: "/services"
   },
   {
     title: "Transportation & Errands",
@@ -33,7 +33,7 @@ const services = [
     icon: Car,
     color: "pink",
     bgGradient: "from-pink-100 to-pink-50",
-    link: "/services/transportation"
+    link: "/services"
   },
   {
     title: "Alzheimer's & Dementia Support",
@@ -41,15 +41,15 @@ const services = [
     icon: Brain,
     color: "emerald",
     bgGradient: "from-emerald-100 to-emerald-50",
-    link: "/services/dementia-support"
+    link: "/services"
   },
   {
-    title: "Respite Care for Families",
+    title: "Respite Care",
     description: "Temporary relief for family caregivers, providing professional care so you can rest, work, or attend to other needs.",
     icon: Home,
     color: "gray",
     bgGradient: "from-gray-100 to-gray-50",
-    link: "/services/respite-care"
+    link: "/services"
   }
 ];
 
@@ -94,7 +94,7 @@ export default function Services() {
                     variant="link" 
                     className={`${textColor} font-semibold hover:underline p-0 h-auto`}
                   >
-                    Learn More →
+                    View All Services →
                   </Button>
                 </Link>
               </div>
