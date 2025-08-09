@@ -561,7 +561,7 @@ export default function Scheduling() {
                                 <Checkbox
                                   id="email"
                                   checked={emailReminder}
-                                  onCheckedChange={setEmailReminder}
+                                  onCheckedChange={(checked) => setEmailReminder(checked === true)}
                                 />
                                 <Label htmlFor="email" className="flex items-center gap-2">
                                   📧 Email notification
@@ -571,7 +571,7 @@ export default function Scheduling() {
                                 <Checkbox
                                   id="sms"
                                   checked={smsReminder}
-                                  onCheckedChange={setSmsReminder}
+                                  onCheckedChange={(checked) => setSmsReminder(checked === true)}
                                 />
                                 <Label htmlFor="sms" className="flex items-center gap-2">
                                   <Smartphone className="w-4 h-4" />
