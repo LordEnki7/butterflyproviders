@@ -42,6 +42,7 @@ function Router() {
       <Route path="/services" component={Services} />
       <Route path="/join-our-team" component={JoinOurTeam} />
       <Route path="/caregivers" component={CaregiverManagement} />
+      <Route path="/scheduling" component={Scheduling} />
       <Route path="/scheduling-demo" component={SchedulingDemo} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />
       <Route path="/services/personal-care" component={PersonalCare} />
@@ -55,7 +56,6 @@ function Router() {
       {isAuthenticated ? (
         <>
           <Route path="/" component={Home} />
-          <Route path="/scheduling" component={Scheduling} />
           <Route path="/billing" component={Billing} />
         </>
       ) : (

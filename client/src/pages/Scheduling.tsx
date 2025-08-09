@@ -174,12 +174,7 @@ export default function Scheduling() {
               Back to Home
             </a>
           </Button>
-          <Button variant="outline" asChild>
-            <a href="/scheduling-demo" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              View Demo
-            </a>
-          </Button>
+
           <Button variant="outline" asChild>
             <a href="/cancellation-policies" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
@@ -192,7 +187,7 @@ export default function Scheduling() {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gray-900">Schedule Care Services</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Book appointments with our qualified caregivers instantly. Select your preferred date, time, and caregiver.
+            Book appointments with our qualified caregivers. Select your preferred date, time, and caregiver to get started with professional home care services.
           </p>
         </div>
 

@@ -33,7 +33,7 @@ export default function Hero() {
             </div>
             <div className="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start mt-6">
               <Button variant="link" asChild className="text-emerald-600 hover:text-emerald-700 font-medium text-sm md:text-base transition-colors">
-                <a href="/scheduling-demo">📅 View Scheduling Demo</a>
+                <a href="/scheduling">📅 Book Appointment</a>
               </Button>
             </div>
           </div>
