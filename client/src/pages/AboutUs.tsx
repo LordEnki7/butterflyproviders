@@ -5,7 +5,7 @@ import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import FloatingActionMenu from '@/components/FloatingActionMenu';
-import { ArrowLeft, Heart, Shield, Users, Clock } from 'lucide-react';
+import { ArrowLeft, Heart, Shield, Users, Clock, HandHeart } from 'lucide-react';
 import { Link } from 'wouter';
 
 export default function AboutUs() {
@@ -40,38 +40,18 @@ export default function AboutUs() {
           </div>
         </section>
 
-        {/* Our Story Section */}
+        {/* About Us Content */}
         <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-                <div className="space-y-4 text-gray-700">
-                  <p className="text-lg leading-relaxed">
-                    Founded with a deep commitment to enhancing the quality of life for seniors and individuals with special needs, Butterfly Providers emerged from a simple belief: everyone deserves to age gracefully and live independently in their own home.
-                  </p>
-                  <p>
-                    Our journey began when we recognized the growing need for reliable, compassionate non-medical home care services. We saw families struggling to balance work, personal commitments, and caring for their loved ones, and we knew we could make a difference.
-                  </p>
-                  <p>
-                    Today, we're proud to serve families throughout the community, providing personalized care plans that respect individual preferences, cultural values, and family dynamics.
-                  </p>
-                </div>
-              </div>
-              <div className="relative">
-                <Card className="bg-gradient-to-br from-emerald-100 to-purple-100 border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Heart className="text-white" size={32} />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Mission</h3>
-                      <p className="text-gray-700">
-                        To provide exceptional, personalized home care services that promote independence, dignity, and quality of life for every client we serve.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-gradient-to-br from-emerald-50 to-purple-50 p-8 md:p-12 rounded-2xl">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">About Us</h2>
+              <div className="text-gray-700 leading-relaxed space-y-6 text-lg">
+                <p>
+                  Butterfly Providers is dedicated to delivering compassionate, reliable, and personalized care to those we serve. We understand that each individual's needs are unique, and we take pride in offering support that promotes dignity, independence, and well-being.
+                </p>
+                <p>
+                  Just like a butterfly's transformation, we believe in helping people grow, heal, and embrace new possibilities—guiding each journey with integrity, respect, and understanding.
+                </p>
               </div>
             </div>
           </div>
