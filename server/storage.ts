@@ -21,6 +21,7 @@ import {
   type UpsertUser,
   type InsertContactInquiry,
   type ContactInquiry,
+  consultations,
   type Consultation,
   type InsertConsultation,
   type Client,

@@ -9,6 +9,7 @@ import About from '@/components/About';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import FloatingActionMenu from '@/components/FloatingActionMenu';
+import ConsultationBookingWidget from '@/components/ConsultationBookingWidget';
 
 export default function Landing() {
   useEffect(() => {
@@ -39,6 +40,8 @@ export default function Landing() {
       <Footer />
       <ScrollToTop />
       <FloatingActionMenu />
+      {/* Floating Consultation Widget */}
+      <ConsultationBookingWidget variant="floating" />
     </div>
   );
 }

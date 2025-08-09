@@ -5,6 +5,7 @@ import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import FloatingActionMenu from '@/components/FloatingActionMenu';
+import ConsultationBookingWidget from '@/components/ConsultationBookingWidget';
 import { ArrowLeft, Heart, Shield, Users, Clock, HandHeart } from 'lucide-react';
 import { Link } from 'wouter';
 

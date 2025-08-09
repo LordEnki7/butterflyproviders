@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { isAuthenticated, isAdminAuth, login, register } from "./auth";
+import { db } from "./db";
+import { consultations } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { 
@@ -1452,6 +1454,48 @@ Thank you for choosing Butterfly Providers for your care needs.
     } catch (error) {
       console.error("Error deleting caregiver schedule:", error);
       res.status(500).json({ message: "Failed to delete caregiver schedule" });
+    }
+  });
+
+  // ===== CONSULTATION BOOKING ENDPOINT =====
+  
+  // Public consultation booking endpoint
+  app.post('/api/consultations', async (req, res) => {
+    try {
+      const { name, email, phone, preferredDate, preferredTime, message, agreeToContact } = req.body;
+      
+      if (!name || !email || !phone || !agreeToContact) {
+        return res.status(400).json({ message: 'Name, email, phone, and consent are required' });
+      }
+
+      // Create consultation entry directly
+      const [consultation] = await db
+        .insert(consultations)
+        .values({
+          name,
+          email,
+          phone,
+          preferredDate,
+          preferredTime,
+          message,
+          agreeToContact,
+          status: 'pending'
+        })
+        .returning();
+
+      res.json({
+        message: 'Consultation request submitted successfully',
+        consultation: {
+          id: consultation.id,
+          name: consultation.name,
+          email: consultation.email,
+          phone: consultation.phone,
+          status: consultation.status
+        }
+      });
+    } catch (error) {
+      console.error('Error creating consultation:', error);
+      res.status(500).json({ message: 'Failed to submit consultation request' });
     }
   });
 
