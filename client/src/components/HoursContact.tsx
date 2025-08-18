@@ -93,7 +93,7 @@ export default function HoursContact() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Address</p>
-                  <p className="text-gray-700">2455 W Chandler Blvd, Suite 120<br />Chandler, AZ 85224</p>
+                  <p className="text-gray-700">10720 West Indian School Rd.<br />Phoenix, AZ 85037</p>
                 </div>
               </div>
             </div>

@@ -71,7 +71,7 @@ export default function Footer() {
               </ul>
               <div className="mt-3">
                 <p className="text-gray-400 text-xs leading-relaxed mb-2">
-                  2455 W Chandler Blvd, Suite 120<br />Chandler, AZ 85224
+                  10720 West Indian School Rd.<br />Phoenix, AZ 85037
                 </p>
                 <div className="flex items-center space-x-2">
                   <Shield className="text-emerald-500" size={14} />

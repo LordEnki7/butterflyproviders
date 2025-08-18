@@ -1355,6 +1355,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pdfContent = `
 BUTTERFLY PROVIDERS
 Non-Medical Home Care Services
+10720 West Indian School Rd.
+Phoenix, AZ 85037
 Phone: 602-830-0966
 
 INVOICE
