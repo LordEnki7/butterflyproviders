@@ -29,16 +29,18 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await apiRequest('POST', '/api/auth/register', data);
+      const response = await apiRequest('POST', '/api/register', data);
       return response.json();
     },
     onSuccess: (data) => {
       toast({
         title: "Registration Successful",
-        description: `Welcome to Butterfly Providers, ${data.user.firstName}!`,
+        description: `Welcome to Butterfly Providers, ${data.user.firstName}! Check your email for next steps.`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      setLocation('/');
+      setTimeout(() => {
+        setLocation('/');
+      }, 2000); // Give user time to see the success message
     },
     onError: (error: any) => {
       toast({

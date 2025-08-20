@@ -99,9 +99,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (req.session as any).userId = user.id;
       (req.session as any).userRole = user.role;
       
+      // Try to send welcome email if SendGrid is configured
+      if (process.env.SENDGRID_API_KEY) {
+        try {
+          // Import SendGrid only if key exists
+          const sgMail = (await import('@sendgrid/mail')).default;
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+          
+          const msg = {
+            to: user.email,
+            from: 'support@butterflyproviders.com', // Use verified sender
+            subject: 'Welcome to Butterfly Providers',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #059669;">Welcome to Butterfly Providers, ${user.firstName}!</h2>
+                <p>Thank you for creating your secure client portal account. You now have access to:</p>
+                <ul>
+                  <li>Schedule appointments with our care team</li>
+                  <li>View your care updates and notes</li>
+                  <li>Manage your billing information</li>
+                  <li>Communicate with your caregivers</li>
+                </ul>
+                <p>Next steps:</p>
+                <ol>
+                  <li>Log into your portal at <a href="https://butterflyproviders.com">butterflyproviders.com</a></li>
+                  <li>Complete your care preferences</li>
+                  <li>Schedule your first consultation</li>
+                </ol>
+                <p>If you have any questions, please call us at <strong>602-830-0966</strong></p>
+                <p>Monday-Friday: 8am-5pm</p>
+                <hr style="margin: 20px 0;">
+                <p style="color: #666; font-size: 12px;">
+                  Butterfly Providers<br>
+                  10720 West Indian School Rd.<br>
+                  Phoenix, AZ 85037
+                </p>
+              </div>
+            `
+          };
+          
+          await sgMail.send(msg);
+          console.log('Welcome email sent to:', user.email);
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't fail registration if email fails
+        }
+      }
+      
       res.status(201).json({
         success: true,
-        message: "Registration successful",
+        message: "Registration successful! Welcome to Butterfly Providers.",
         user: {
           id: user.id,
           email: user.email,
