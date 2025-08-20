@@ -80,6 +80,30 @@ export const insertConsultationSchema = createInsertSchema(consultations).omit({
   createdAt: true,
 });
 
+// Job applications
+export const jobApplications = pgTable("job_applications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone").notNull(),
+  workExperience: text("work_experience").notNull(), // JSON string containing array of experience objects
+  backgroundCheckConsent: boolean("background_check_consent").notNull(),
+  fingerprintConsent: boolean("fingerprint_consent").notNull(),
+  additionalNotes: text("additional_notes"),
+  status: varchar("status").default("pending"), // 'pending', 'reviewed', 'interview', 'hired', 'rejected'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertJobApplicationSchema = createInsertSchema(jobApplications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type InsertJobApplication = z.infer<typeof insertJobApplicationSchema>;
+
 // Client signup schema
 export const clientSignupSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),

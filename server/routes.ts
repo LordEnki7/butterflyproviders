@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { isAuthenticated, isAdminAuth, login, register } from "./auth";
 import { db } from "./db";
-import { consultations } from "@shared/schema";
+import { consultations, jobApplications } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { 
@@ -1498,6 +1498,48 @@ Thank you for choosing Butterfly Providers for your care needs.
     } catch (error) {
       console.error('Error creating consultation:', error);
       res.status(500).json({ message: 'Failed to submit consultation request' });
+    }
+  });
+
+  // ===== JOB APPLICATION ENDPOINT =====
+  
+  // Public job application endpoint
+  app.post('/api/job-applications', async (req, res) => {
+    try {
+      const { name, email, phone, workExperience, backgroundCheckConsent, fingerprintConsent, additionalNotes } = req.body;
+      
+      if (!name || !email || !phone || !workExperience || !backgroundCheckConsent || !fingerprintConsent) {
+        return res.status(400).json({ message: 'Name, email, phone, work experience, and consents are required' });
+      }
+
+      // Create job application entry directly
+      const [application] = await db
+        .insert(jobApplications)
+        .values({
+          name,
+          email,
+          phone,
+          workExperience,
+          backgroundCheckConsent,
+          fingerprintConsent,
+          additionalNotes,
+          status: 'pending'
+        })
+        .returning();
+
+      res.json({
+        message: 'Job application submitted successfully',
+        application: {
+          id: application.id,
+          name: application.name,
+          email: application.email,
+          phone: application.phone,
+          status: application.status
+        }
+      });
+    } catch (error) {
+      console.error('Error creating job application:', error);
+      res.status(500).json({ message: 'Failed to submit job application' });
     }
   });
 
