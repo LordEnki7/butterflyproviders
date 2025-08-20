@@ -226,7 +226,7 @@ export default function Services() {
               <div className="text-center lg:text-left">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
                 <p className="text-lg text-gray-700 mb-8">
-                  Contact us today for a free consultation to discuss your specific care needs and develop a personalized care plan.
+                  Contact us today for a consultation to discuss your specific care needs and develop a personalized care plan.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <ConsultationBookingWidget size="lg" />

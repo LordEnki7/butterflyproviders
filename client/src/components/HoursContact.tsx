@@ -61,7 +61,7 @@ export default function HoursContact() {
           <div>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Contact Us</h3>
             <p className="text-lg md:text-xl text-gray-700 mb-8">
-              Ready to learn more about our care services? Contact us today for a free consultation.
+              Ready to learn more about our care services? Contact us today for a consultation.
             </p>
 
             <div className="space-y-6 mb-8">
@@ -149,7 +149,7 @@ export default function HoursContact() {
                     disabled={contactMutation.isPending}
                     className="w-full bg-emerald-600 text-white py-3 font-semibold hover:bg-emerald-700 h-auto transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
                   >
-                    {contactMutation.isPending ? 'Submitting...' : 'Request Free Consultation'}
+                    {contactMutation.isPending ? 'Submitting...' : 'Request Consultation'}
                   </Button>
                 </form>
               </CardContent>

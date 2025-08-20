@@ -159,14 +159,14 @@ export default function AboutUs() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl font-bold text-white mb-4">Ready to Get Started?</h2>
             <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
-              Contact us today for a free consultation and let us create a personalized care plan for you or your loved one.
+              Contact us today for a consultation and let us create a personalized care plan for you or your loved one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 className="bg-white text-emerald-600 hover:bg-gray-100 px-8 py-3 font-semibold transition-all duration-200 hover:scale-105"
               >
-                Schedule Free Consultation
+                Schedule Consultation
               </Button>
               <Button 
                 variant="outline"

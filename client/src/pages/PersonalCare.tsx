@@ -116,7 +116,7 @@ export default function PersonalCare() {
         {/* Contact CTA */}
         <div className="bg-gradient-to-r from-emerald-600 to-purple-600 rounded-lg shadow-lg p-8 text-center text-white">
           <h3 className="text-2xl font-bold mb-4">Ready to Learn More About Personal Care?</h3>
-          <p className="mb-6 text-emerald-50">Contact us today for a free consultation and personalized care plan.</p>
+          <p className="mb-6 text-emerald-50">Contact us today for a consultation and personalized care plan.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/scheduling">
               <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-100">

@@ -113,7 +113,7 @@ export default function ConsultationBookingWidget({
             <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto">
               <Calendar className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Free Consultation</h3>
+            <h3 className="text-xl font-bold text-gray-900">Consultation</h3>
             <p className="text-gray-600">
               Schedule a no-obligation consultation to discuss your care needs
             </p>
@@ -132,7 +132,7 @@ export default function ConsultationBookingWidget({
         className={`bg-emerald-600 hover:bg-emerald-700 text-white ${baseClasses} ${sizeClasses[size]} ${className}`}
       >
         <Calendar className="w-4 h-4 mr-2" />
-        Free Consultation
+        Consultation
       </Button>
     );
   };
@@ -163,7 +163,7 @@ export default function ConsultationBookingWidget({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-emerald-600" />
-                Schedule Free Consultation
+                Schedule Consultation
               </DialogTitle>
             </DialogHeader>
 
