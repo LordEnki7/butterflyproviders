@@ -124,7 +124,13 @@ export default function Home() {
                 Here's an overview of your care services and recent updates.
               </p>
             </div>
-
+            <div className="flex items-center gap-4">
+              <Link href="/scheduling">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 font-semibold transition-all duration-200 hover:scale-105">
+                  📅 Book Appointment
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 

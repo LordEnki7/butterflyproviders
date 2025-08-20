@@ -73,33 +73,40 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => {
             const Icon = service.icon;
             const iconBgColor = colorMap[service.color as keyof typeof colorMap].split(' ')[0];
-            const textColor = colorMap[service.color as keyof typeof colorMap].split(' ')[1];
             
             return (
               <div 
                 key={index}
-                className={`bg-gradient-to-br ${service.bgGradient} p-6 md:p-8 rounded-2xl hover:shadow-lg transition-all duration-300 hover:scale-105`}
+                className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 hover:scale-105"
               >
-                <div className={`w-16 h-16 ${iconBgColor} rounded-xl flex items-center justify-center mb-6`}>
-                  <Icon className="text-white" size={32} />
+                <div className={`w-12 h-12 ${iconBgColor} rounded-lg flex items-center justify-center mr-4 flex-shrink-0`}>
+                  <Icon className="text-white" size={24} />
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">{service.title}</h3>
-                <p className="text-sm md:text-base text-gray-700 mb-6">{service.description}</p>
-                <Link href={service.link}>
-                  <Button 
-                    variant="link" 
-                    className={`${textColor} font-semibold hover:underline p-0 h-auto`}
-                  >
-                    View All Services →
-                  </Button>
-                </Link>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{service.title}</h3>
+                  <p className="text-sm text-gray-600">Professional care services</p>
+                </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center mt-12">
+          <p className="text-gray-600 mb-6">
+            Want to learn more about our comprehensive care services?
+          </p>
+          <Link href="/services">
+            <Button 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 font-semibold transition-all duration-200 hover:scale-105"
+            >
+              View All Services
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

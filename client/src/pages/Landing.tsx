@@ -40,8 +40,6 @@ export default function Landing() {
       <Footer />
       <ScrollToTop />
       <FloatingActionMenu />
-      {/* Floating Consultation Widget */}
-      <ConsultationBookingWidget variant="floating" />
     </div>
   );
 }
