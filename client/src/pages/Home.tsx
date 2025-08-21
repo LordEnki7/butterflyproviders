@@ -38,17 +38,13 @@ export default function Home() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
+      console.log('Home: User not authenticated, redirecting to login');
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading]);
 
   const { data: dashboardData, isLoading: isDashboardLoading } = useQuery<DashboardData>({
     queryKey: ['/api/client/dashboard'],
@@ -123,6 +119,10 @@ export default function Home() {
               <p className="text-gray-600">
                 Here's an overview of your care services and recent updates.
               </p>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-green-700 font-medium">Logged in as {user?.email}</span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/scheduling">

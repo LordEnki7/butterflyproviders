@@ -146,6 +146,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      console.log('Registration successful - Session set:', {
+        userId: user.id,
+        sessionId: req.sessionID,
+        userRole: user.role
+      });
+      
       res.status(201).json({
         success: true,
         message: "Registration successful! Welcome to Butterfly Providers.",
@@ -183,6 +189,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = (req.session as any).userId;
+      console.log('Getting user - Session check:', {
+        sessionId: req.sessionID,
+        userId,
+        hasSession: !!req.session
+      });
+      
       const user = await storage.getUser(userId);
       
       if (!user) {

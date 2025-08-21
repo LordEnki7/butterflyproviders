@@ -35,12 +35,16 @@ export default function Register() {
     onSuccess: (data) => {
       toast({
         title: "Registration Successful",
-        description: `Welcome to Butterfly Providers, ${data.user.firstName}! Check your email for next steps.`,
+        description: `Welcome to Butterfly Providers, ${data.user.firstName}! Redirecting to your portal...`,
       });
+      // Immediately invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+      
+      // Short delay to allow toast to show, then redirect
       setTimeout(() => {
         setLocation('/');
-      }, 2000); // Give user time to see the success message
+      }, 1500);
     },
     onError: (error: any) => {
       toast({
