@@ -52,13 +52,13 @@ export default function Home() {
     retry: (failureCount, error) => {
       if (isUnauthorizedError(error as Error)) {
         toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
+          title: "Session expired",
+          description: "Please log in again to continue.",
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
+          window.location.href = "/login";
+        }, 1000);
         return false;
       }
       return failureCount < 3;
@@ -137,7 +137,7 @@ export default function Home() {
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Stats */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -159,6 +159,36 @@ export default function Home() {
                   <a href="tel:602-830-0966" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
                     602-830-0966
                   </a>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Care Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-emerald-600" />
+                  Care Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Total Appointments</span>
+                  <span className="text-sm font-medium">{dashboardData?.stats?.totalAppointments || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">This Month</span>
+                  <span className="text-sm font-medium">{dashboardData?.stats?.completedThisMonth || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Primary Caregiver</span>
+                  <span className="text-sm font-medium">{dashboardData?.stats?.primaryCaregiver || 'Assigned Soon'}</span>
+                </div>
+                <div className="pt-3 border-t">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-green-700 font-medium">Next appointment scheduled</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

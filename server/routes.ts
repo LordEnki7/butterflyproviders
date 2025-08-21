@@ -214,6 +214,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client dashboard data endpoint
+  app.get('/api/client/dashboard', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Mock personalized dashboard data - in a real app this would come from the database
+      const dashboardData = {
+        user,
+        careUpdates: [
+          {
+            id: "1",
+            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+            type: "Personal Care Session",
+            caregiver: "Sarah Johnson, CNA",
+            notes: "Completed morning routine including assistance with bathing and medication reminder. Client was in good spirits and reported feeling well.",
+            status: "completed"
+          },
+          {
+            id: "2", 
+            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+            type: "Meal Preparation",
+            caregiver: "Maria Garcia, HHA",
+            notes: "Prepared healthy breakfast and lunch. Discussed nutrition goals with client. Grocery shopping completed for the week.",
+            status: "completed"
+          },
+          {
+            id: "3",
+            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
+            type: "Companionship Visit",
+            caregiver: "Robert Chen, Companion",
+            notes: "Enjoyed conversation about client's gardening interests. Took a short walk around the neighborhood. Client expressed enjoyment of social interaction.",
+            status: "completed"
+          }
+        ],
+        upcomingAppointments: [
+          {
+            id: "1",
+            date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+            type: "Personal Care & Light Housekeeping",
+            caregiver: "Sarah Johnson, CNA"
+          },
+          {
+            id: "2",
+            date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+            type: "Transportation to Medical Appointment",
+            caregiver: "Michael Davis, Aide"
+          },
+          {
+            id: "3",
+            date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
+            type: "Meal Prep & Grocery Shopping",
+            caregiver: "Maria Garcia, HHA"
+          }
+        ],
+        stats: {
+          totalAppointments: 24,
+          completedThisMonth: 8,
+          nextAppointment: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+          primaryCaregiver: "Sarah Johnson, CNA"
+        }
+      };
+      
+      res.json(dashboardData);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard data" });
+    }
+  });
+
   // Contact form submission
   app.post('/api/contact', async (req, res) => {
     try {
