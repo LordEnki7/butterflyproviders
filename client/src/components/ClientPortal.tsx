@@ -2,6 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Lock, Calendar, MessageSquare, CreditCard, FileText } from 'lucide-react';
+import { Link } from 'wouter';
 
 export default function ClientPortal() {
   const { isAuthenticated } = useAuth();
@@ -53,13 +54,14 @@ export default function ClientPortal() {
                   <p className="text-gray-600 mb-4">
                     Access your secure client portal to view care updates, schedules, and communicate with your care team.
                   </p>
-                  <Button 
-                    onClick={() => window.location.href = '/api/login'}
-                    className="w-full bg-emerald-600 text-white py-3 font-semibold hover:bg-emerald-700 h-auto"
-                  >
-                    <Lock className="mr-2" size={20} />
-                    Secure Login
-                  </Button>
+                  <Link href="/login">
+                    <Button 
+                      className="w-full bg-emerald-600 text-white py-3 font-semibold hover:bg-emerald-700 h-auto"
+                    >
+                      <Lock className="mr-2" size={20} />
+                      Secure Client Portal
+                    </Button>
+                  </Link>
                   <p className="text-sm text-gray-600 text-center">
                     Need help? <a href="#contact" className="text-emerald-600 hover:underline">Contact Support</a>
                   </p>
