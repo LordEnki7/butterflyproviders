@@ -4,49 +4,49 @@ import { Link } from 'wouter';
 
 const services = [
   {
-    title: "Personal Care",
-    description: "Assistance with daily activities including bathing, dressing, grooming, and mobility support to maintain dignity and independence.",
+    title: "Personal Care Assistance",
+    description: "Comprehensive hands-on care including bathing, dressing, grooming, toileting, feeding assistance, and mobility support.",
     icon: HandHeart,
     color: "purple",
     bgGradient: "from-purple-100 to-purple-50",
     link: "/services"
   },
   {
-    title: "Companionship",
-    description: "Meaningful social interaction, conversation, and emotional support to combat loneliness and maintain mental well-being.",
+    title: "Homemaking & Domestic Support", 
+    description: "Complete home maintenance including housekeeping, laundry, meal preparation, grocery shopping, and basic pet care.",
+    icon: Home,
+    color: "blue",
+    bgGradient: "from-blue-100 to-blue-50",
+    link: "/services"
+  },
+  {
+    title: "Companionship & Emotional Support",
+    description: "Social interaction, wellness monitoring, recreational activities, and emotional engagement to enhance quality of life.",
     icon: Users,
     color: "orange",
     bgGradient: "from-orange-100 to-orange-50",
     link: "/services"
   },
   {
-    title: "Meal Prep & Light Cleaning",
-    description: "Nutritious meal preparation and light housekeeping to maintain a clean, comfortable living environment.",
-    icon: Utensils,
-    color: "yellow",
-    bgGradient: "from-yellow-100 to-yellow-50",
-    link: "/services"
-  },
-  {
-    title: "Transportation & Errands",
-    description: "Safe transportation to appointments, shopping assistance, and help with daily errands to maintain independence.",
+    title: "Errands & Transportation Assistance",
+    description: "Safe escort services to appointments, grocery trips, errands, and social outings for independence outside the home.",
     icon: Car,
     color: "pink",
     bgGradient: "from-pink-100 to-pink-50",
     link: "/services"
   },
   {
-    title: "Alzheimer's & Dementia Support",
-    description: "Specialized care for individuals with memory challenges, providing routine, comfort, and cognitive stimulation.",
+    title: "Specialized Memory Care",
+    description: "Expert care and support for individuals with Alzheimer's, dementia, and other memory-related conditions.",
     icon: Brain,
     color: "emerald",
     bgGradient: "from-emerald-100 to-emerald-50",
     link: "/services"
   },
   {
-    title: "Respite Care",
-    description: "Temporary relief for family caregivers, providing professional care so you can rest, work, or attend to other needs.",
-    icon: Home,
+    title: "Additional Support Services",
+    description: "Medication reminders, respite care, safety monitoring, light exercise support, and technology assistance.",
+    icon: Utensils,
     color: "gray",
     bgGradient: "from-gray-100 to-gray-50",
     link: "/services"
@@ -55,8 +55,8 @@ const services = [
 
 const colorMap = {
   purple: "bg-purple-500 text-purple-500",
+  blue: "bg-blue-500 text-blue-500",
   orange: "bg-orange-500 text-orange-500",
-  yellow: "bg-yellow-500 text-yellow-500",
   pink: "bg-pink-500 text-pink-500",
   emerald: "bg-emerald-600 text-emerald-600",
   gray: "bg-gray-700 text-gray-700"
@@ -76,7 +76,7 @@ export default function Services() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => {
             const Icon = service.icon;
-            const iconBgColor = colorMap[service.color as keyof typeof colorMap].split(' ')[0];
+            const iconBgColor = colorMap[service.color as keyof typeof colorMap]?.split(' ')[0] || 'bg-gray-500';
             
             return (
               <div 
@@ -100,11 +100,11 @@ export default function Services() {
           <p className="text-gray-600 mb-6">
             Want to learn more about our comprehensive care services?
           </p>
-          <Link href="/services">
+          <Link href="/services/detailed">
             <Button 
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 font-semibold transition-all duration-200 hover:scale-105"
             >
-              View All Services
+              View Detailed Services
             </Button>
           </Link>
         </div>
