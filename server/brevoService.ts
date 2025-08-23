@@ -1,0 +1,273 @@
+import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from '@getbrevo/brevo';
+
+if (!process.env.BREVO_API_KEY) {
+  throw new Error("BREVO_API_KEY environment variable must be set");
+}
+
+const brevoApi = new TransactionalEmailsApi();
+brevoApi.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+interface EmailParams {
+  to: string;
+  toName?: string;
+  from: string;
+  fromName?: string;
+  subject: string;
+  htmlContent?: string;
+  textContent?: string;
+  templateId?: number;
+  params?: Record<string, any>;
+}
+
+export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
+  try {
+    const emailPayload: any = {
+      to: [{ 
+        email: emailParams.to,
+        name: emailParams.toName || emailParams.to.split('@')[0]
+      }],
+      sender: { 
+        email: emailParams.from,
+        name: emailParams.fromName || 'Butterfly Providers'
+      }
+    };
+
+    // Use template if provided, otherwise use content
+    if (emailParams.templateId) {
+      emailPayload.templateId = emailParams.templateId;
+      if (emailParams.params) {
+        emailPayload.params = emailParams.params;
+      }
+      // Subject can still be overridden when using templates
+      if (emailParams.subject) {
+        emailPayload.subject = emailParams.subject;
+      }
+    } else {
+      emailPayload.subject = emailParams.subject;
+      if (emailParams.htmlContent) {
+        emailPayload.htmlContent = emailParams.htmlContent;
+      }
+      if (emailParams.textContent) {
+        emailPayload.textContent = emailParams.textContent;
+      }
+    }
+
+    const result = await brevoApi.sendTransacEmail(emailPayload);
+    
+    console.log('✅ Brevo email sent successfully:', {
+      messageId: result.body.messageId,
+      to: emailParams.to,
+      subject: emailParams.subject || 'Template email'
+    });
+    
+    return true;
+  } catch (error: any) {
+    console.error('❌ Brevo email send failed:', {
+      error: error.message,
+      to: emailParams.to,
+      subject: emailParams.subject,
+      statusCode: error.response?.status,
+      responseBody: error.response?.body
+    });
+    return false;
+  }
+}
+
+// Pre-configured email templates for common use cases
+export const EmailTemplates = {
+  // Welcome email for new registrations
+  welcome: async (to: string, firstName: string) => {
+    return sendEmail({
+      to,
+      toName: firstName,
+      from: 'welcome@butterflyproviders.com',
+      fromName: 'Butterfly Providers Team',
+      subject: `Welcome to Butterfly Providers, ${firstName}!`,
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #059669; margin-bottom: 10px;">Welcome to Butterfly Providers!</h1>
+            <p style="color: #6B7280; font-size: 16px;">Quality Non-Medical Home Care Services</p>
+          </div>
+          
+          <div style="background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #065F46; margin-top: 0;">Hello ${firstName},</h2>
+            <p style="color: #374151; line-height: 1.6;">
+              Thank you for joining Butterfly Providers! We're excited to help you access our comprehensive 
+              non-medical home care services.
+            </p>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: #059669;">What's Next?</h3>
+            <ul style="color: #374151; line-height: 1.8;">
+              <li>📋 Complete your care assessment</li>
+              <li>👥 Meet your dedicated care team</li>
+              <li>📅 Schedule your first service appointment</li>
+              <li>💬 Access our 24/7 support portal</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://butterflyproviders.com" 
+               style="background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              Access Your Portal
+            </a>
+          </div>
+          
+          <div style="border-top: 1px solid #E5E7EB; padding-top: 20px; text-align: center;">
+            <p style="color: #6B7280; font-size: 14px;">
+              Questions? Contact us at <a href="tel:602-830-0966" style="color: #059669;">602-830-0966</a><br>
+              <strong>Business Hours:</strong> Monday-Friday 8:00 AM - 5:00 PM
+            </p>
+            <p style="color: #9CA3AF; font-size: 12px; margin-top: 15px;">
+              Butterfly Providers | 10720 West Indian School Rd. Phoenix, AZ 85037
+            </p>
+          </div>
+        </div>
+      `,
+      textContent: `
+Welcome to Butterfly Providers, ${firstName}!
+
+Thank you for joining our family! We're excited to help you access our comprehensive non-medical home care services.
+
+What's Next?
+- Complete your care assessment  
+- Meet your dedicated care team
+- Schedule your first service appointment
+- Access our 24/7 support portal
+
+Visit https://butterflyproviders.com to access your portal.
+
+Questions? Contact us at 602-830-0966
+Business Hours: Monday-Friday 8:00 AM - 5:00 PM
+
+Butterfly Providers
+10720 West Indian School Rd. Phoenix, AZ 85037
+      `
+    });
+  },
+
+  // Appointment confirmation
+  appointmentConfirmation: async (to: string, appointmentDetails: {
+    clientName: string;
+    date: string;
+    time: string;
+    service: string;
+    caregiver: string;
+  }) => {
+    return sendEmail({
+      to,
+      toName: appointmentDetails.clientName,
+      from: 'appointments@butterflyproviders.com',
+      fromName: 'Butterfly Providers Scheduling',
+      subject: 'Appointment Confirmed - Butterfly Providers',
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #059669; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+            <h1 style="margin: 0;">✅ Appointment Confirmed</h1>
+          </div>
+          
+          <div style="background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #065F46; margin-top: 0;">Hello ${appointmentDetails.clientName},</h2>
+            <p style="color: #374151;">Your care appointment has been confirmed! Here are the details:</p>
+            
+            <div style="background: white; padding: 15px; border-radius: 6px; margin-top: 15px;">
+              <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${appointmentDetails.date}</p>
+              <p style="margin: 5px 0;"><strong>⏰ Time:</strong> ${appointmentDetails.time}</p>
+              <p style="margin: 5px 0;"><strong>🏥 Service:</strong> ${appointmentDetails.service}</p>
+              <p style="margin: 5px 0;"><strong>👩‍⚕️ Caregiver:</strong> ${appointmentDetails.caregiver}</p>
+            </div>
+          </div>
+          
+          <div style="border: 1px solid #FCD34D; background: #FFFBEB; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <p style="color: #92400E; margin: 0;"><strong>📞 Need to reschedule?</strong> Please call us at 602-830-0966 at least 24 hours in advance.</p>
+          </div>
+          
+          <div style="text-align: center;">
+            <p style="color: #6B7280;">Questions? We're here to help!</p>
+            <a href="tel:602-830-0966" style="color: #059669; font-weight: bold; text-decoration: none;">602-830-0966</a>
+          </div>
+        </div>
+      `,
+      textContent: `
+Appointment Confirmed - Butterfly Providers
+
+Hello ${appointmentDetails.clientName},
+
+Your care appointment has been confirmed! Here are the details:
+
+📅 Date: ${appointmentDetails.date}
+⏰ Time: ${appointmentDetails.time}  
+🏥 Service: ${appointmentDetails.service}
+👩‍⚕️ Caregiver: ${appointmentDetails.caregiver}
+
+Need to reschedule? Please call us at 602-830-0966 at least 24 hours in advance.
+
+Questions? Contact us at 602-830-0966
+
+Butterfly Providers
+10720 West Indian School Rd. Phoenix, AZ 85037
+      `
+    });
+  },
+
+  // Contact form notification to admin
+  contactNotification: async (adminEmail: string, contactData: {
+    name: string;
+    email: string;
+    phone?: string;
+    message: string;
+    submittedAt: string;
+  }) => {
+    return sendEmail({
+      to: adminEmail,
+      from: 'noreply@butterflyproviders.com',
+      fromName: 'Butterfly Providers Website',
+      subject: `New Contact Form Submission from ${contactData.name}`,
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #1E40AF; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+            <h1 style="margin: 0;">📧 New Contact Form Submission</h1>
+          </div>
+          
+          <div style="background: #F8FAFC; padding: 20px; border-radius: 8px;">
+            <h2 style="color: #1E293B; margin-top: 0;">Contact Details</h2>
+            <p><strong>Name:</strong> ${contactData.name}</p>
+            <p><strong>Email:</strong> <a href="mailto:${contactData.email}" style="color: #059669;">${contactData.email}</a></p>
+            ${contactData.phone ? `<p><strong>Phone:</strong> <a href="tel:${contactData.phone}" style="color: #059669;">${contactData.phone}</a></p>` : ''}
+            <p><strong>Submitted:</strong> ${contactData.submittedAt}</p>
+            
+            <div style="margin-top: 20px; padding: 15px; background: white; border-left: 4px solid #059669; border-radius: 4px;">
+              <p style="margin: 0;"><strong>Message:</strong></p>
+              <p style="margin: 10px 0 0 0; line-height: 1.6;">${contactData.message}</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="mailto:${contactData.email}" 
+               style="background: #059669; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-right: 10px;">
+              Reply via Email
+            </a>
+            ${contactData.phone ? `<a href="tel:${contactData.phone}" style="background: #1E40AF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Call Client</a>` : ''}
+          </div>
+        </div>
+      `,
+      textContent: `
+New Contact Form Submission
+
+Name: ${contactData.name}
+Email: ${contactData.email}
+${contactData.phone ? `Phone: ${contactData.phone}` : ''}
+Submitted: ${contactData.submittedAt}
+
+Message:
+${contactData.message}
+
+Reply to: ${contactData.email}
+      `
+    });
+  }
+};
+
+export default brevoApi;
