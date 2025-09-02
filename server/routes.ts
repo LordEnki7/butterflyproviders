@@ -110,7 +110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (process.env.BREVO_API_KEY) {
         try {
           const { EmailTemplates } = await import('./brevoService');
-          await EmailTemplates.welcome(user.email, user.firstName);
+          await EmailTemplates.welcome(user.email, user.firstName || 'User');
           console.log('✅ Welcome email sent to:', user.email);
         } catch (emailError) {
           console.error('❌ Failed to send welcome email:', emailError);
@@ -278,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await EmailTemplates.contactNotification(
             'admin@butterflyproviders.com', // Admin email - change this to your admin email
             {
-              name: validatedData.name,
+              name: `${validatedData.firstName} ${validatedData.lastName}`,
               email: validatedData.email,
               phone: validatedData.phone || '',
               message: validatedData.message,
@@ -970,9 +970,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const invoice = await storage.createInvoice({
         invoiceNumber,
         clientId,
-        subtotal,
-        tax: 0,
-        total: subtotal,
+        subtotal: subtotal.toString(),
+        tax: "0",
+        total: subtotal.toString(),
         dueDate: new Date(dueDate),
         notes,
       });
@@ -982,6 +982,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createInvoiceItem({
           ...item,
           invoiceId: invoice.id,
+          quantity: item.quantity.toString(),
+          rate: item.rate.toString(),
+          amount: item.amount.toString(),
         });
       }
       
@@ -1086,7 +1089,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "scheduled",
         priority: "normal",
         clientNotes,
-        estimatedCost: 0, // Will be calculated based on service
+        estimatedCost: "0", // Will be calculated based on service
       });
       
       res.status(201).json(appointment);
@@ -1192,7 +1195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "scheduled",
         priority: "normal",
         clientNotes,
-        estimatedCost: 0,
+        estimatedCost: "0",
       };
 
       const result = await storage.bookAppointmentWithReminders(appointmentData, reminders);
@@ -1515,11 +1518,11 @@ Phone: 602-830-0966
 INVOICE
 
 Invoice Number: ${invoice.invoiceNumber}
-Issue Date: ${new Date(invoice.issueDate).toLocaleDateString()}
-Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}
+Issue Date: ${invoice.issueDate ? new Date(invoice.issueDate).toLocaleDateString() : 'N/A'}
+Due Date: ${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'N/A'}
 
 Amount Due: $${Number(invoice.total).toFixed(2)}
-Status: ${invoice.status.toUpperCase()}
+Status: ${(invoice.status || 'PENDING').toUpperCase()}
 
 Description: ${invoice.notes || 'Care services provided'}
 
