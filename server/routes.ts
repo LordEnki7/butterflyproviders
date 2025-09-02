@@ -28,28 +28,17 @@ import { z } from "zod";
 // Setup session middleware
 function setupSession(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
-  
-  const isProduction = process.env.NODE_ENV === 'production';
   
   app.use(session({
-    secret: process.env.SESSION_SECRET!,
-    store: sessionStore,
-    resave: true, // Force session save on each request
+    secret: process.env.SESSION_SECRET || 'butterfly-secret-key-development',
+    resave: false,
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
       httpOnly: true,
-      secure: false, // Always false in development
+      secure: false,
       maxAge: sessionTtl,
-      sameSite: 'lax',
-      domain: undefined, // Let browser set domain automatically
+      sameSite: 'lax'
     },
   }));
 }

@@ -29,19 +29,17 @@ export default function Login() {
       const response = await apiRequest('POST', '/api/login', data);
       return response.json();
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       toast({
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Clear the entire query cache to force fresh authentication check
-      queryClient.clear();
+      // Invalidate auth query to trigger refetch
+      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
       
-      // Use location.replace to force a complete page reload with new session
-      setTimeout(() => {
-        window.location.replace('/');
-      }, 500);
+      // Navigate to home - auth state will update
+      setLocation('/');
     },
     onError: (error: any) => {
       toast({
