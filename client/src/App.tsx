@@ -26,6 +26,7 @@ import AboutUs from "@/pages/AboutUs";
 import Services from "@/pages/Services";
 import DetailedServices from "@/pages/DetailedServices";
 import JoinOurTeam from "@/pages/JoinOurTeam";
+import ClientPortalDemo from "@/pages/ClientPortalDemo";
 
 // No longer need domain redirect with email/password authentication
 
@@ -65,6 +66,7 @@ function Router() {
       <Route path="/services/transportation" component={Transportation} />
       <Route path="/services/dementia-support" component={DementiaSupport} />
       <Route path="/services/respite-care" component={RespiteCare} />
+      <Route path="/client-portal-demo" component={ClientPortalDemo} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (
