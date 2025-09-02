@@ -36,7 +36,7 @@ export default function Login() {
       });
       
       // Clear auth cache and invalidate queries
-      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       
       // Navigate using router instead of full page reload
       setLocation('/');
