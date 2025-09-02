@@ -99,49 +99,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (req.session as any).userId = user.id;
       (req.session as any).userRole = user.role;
       
-      // Try to send welcome email if SendGrid is configured
-      if (process.env.SENDGRID_API_KEY) {
+      // Send welcome email with Brevo
+      if (process.env.BREVO_API_KEY) {
         try {
-          // Import SendGrid only if key exists
-          const sgMail = (await import('@sendgrid/mail')).default;
-          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-          
-          const msg = {
-            to: user.email,
-            from: 'support@butterflyproviders.com', // Use verified sender
-            subject: 'Welcome to Butterfly Providers',
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #059669;">Welcome to Butterfly Providers, ${user.firstName}!</h2>
-                <p>Thank you for creating your secure client portal account. You now have access to:</p>
-                <ul>
-                  <li>Schedule appointments with our care team</li>
-                  <li>View your care updates and notes</li>
-                  <li>Manage your billing information</li>
-                  <li>Communicate with your caregivers</li>
-                </ul>
-                <p>Next steps:</p>
-                <ol>
-                  <li>Log into your portal at <a href="https://butterflyproviders.com">butterflyproviders.com</a></li>
-                  <li>Complete your care preferences</li>
-                  <li>Schedule your first consultation</li>
-                </ol>
-                <p>If you have any questions, please call us at <strong>602-830-0966</strong></p>
-                <p>Monday-Friday: 8am-5pm</p>
-                <hr style="margin: 20px 0;">
-                <p style="color: #666; font-size: 12px;">
-                  Butterfly Providers<br>
-                  10720 West Indian School Rd.<br>
-                  Phoenix, AZ 85037
-                </p>
-              </div>
-            `
-          };
-          
-          await sgMail.send(msg);
-          console.log('Welcome email sent to:', user.email);
+          const { EmailTemplates } = await import('./brevoService');
+          await EmailTemplates.welcome(user.email, user.firstName);
+          console.log('✅ Welcome email sent to:', user.email);
         } catch (emailError) {
-          console.error('Failed to send welcome email:', emailError);
+          console.error('❌ Failed to send welcome email:', emailError);
           // Don't fail registration if email fails
         }
       }
@@ -293,6 +258,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertContactInquirySchema.parse(req.body);
       const inquiry = await storage.createContactInquiry(validatedData);
+      
+      // Send notification email to admin using Brevo
+      if (process.env.BREVO_API_KEY) {
+        try {
+          const { EmailTemplates } = await import('./brevoService');
+          await EmailTemplates.contactNotification(
+            'admin@butterflyproviders.com', // Admin email - change this to your admin email
+            {
+              name: validatedData.name,
+              email: validatedData.email,
+              phone: validatedData.phone || '',
+              message: validatedData.message,
+              submittedAt: new Date().toLocaleString()
+            }
+          );
+          console.log('✅ Contact notification sent to admin');
+        } catch (emailError) {
+          console.error('❌ Failed to send contact notification:', emailError);
+          // Don't fail form submission if email fails
+        }
+      }
+      
       res.status(201).json({ message: "Contact inquiry submitted successfully", id: inquiry.id });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -324,6 +311,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         agreeToContact,
         status: 'pending'
       });
+
+      // Send consultation notification to admin using Brevo
+      if (process.env.BREVO_API_KEY) {
+        try {
+          const { EmailTemplates } = await import('./brevoService');
+          await EmailTemplates.contactNotification(
+            'admin@butterflyproviders.com', // Admin email
+            {
+              name,
+              email,
+              phone: phone || '',
+              message: `CONSULTATION REQUEST\n\nPreferred Date: ${preferredDate || 'Not specified'}\nPreferred Time: ${preferredTime || 'Not specified'}\n\nMessage: ${message || 'No additional message'}`,
+              submittedAt: new Date().toLocaleString()
+            }
+          );
+          console.log('✅ Consultation notification sent to admin');
+        } catch (emailError) {
+          console.error('❌ Failed to send consultation notification:', emailError);
+          // Don't fail consultation if email fails
+        }
+      }
 
       res.json({ message: "Consultation scheduled successfully", consultation });
     } catch (error: any) {
