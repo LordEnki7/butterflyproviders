@@ -7,6 +7,9 @@ if (!process.env.BREVO_API_KEY) {
 const brevoApi = new TransactionalEmailsApi();
 brevoApi.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
+// Test the API key by logging it (remove in production)
+console.log('Brevo API Key configured:', process.env.BREVO_API_KEY ? 'Yes (length: ' + process.env.BREVO_API_KEY.length + ')' : 'No');
+
 interface EmailParams {
   to: string;
   toName?: string;
@@ -21,6 +24,8 @@ interface EmailParams {
 
 export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
   try {
+    console.log('🔑 Using API Key:', process.env.BREVO_API_KEY ? 'Set (length: ' + process.env.BREVO_API_KEY.length + ')' : 'Not set');
+    
     const emailPayload: any = {
       to: [{ 
         email: emailParams.to,
@@ -80,7 +85,7 @@ export const EmailTemplates = {
     return sendEmail({
       to,
       toName: firstName,
-      from: 'welcome@butterflyproviders.com',
+      from: 'no-reply@butterflyproviders.com',
       fromName: 'Butterfly Providers Team',
       subject: `Welcome to Butterfly Providers, ${firstName}!`,
       htmlContent: `
@@ -159,7 +164,7 @@ Butterfly Providers
     return sendEmail({
       to,
       toName: appointmentDetails.clientName,
-      from: 'appointments@butterflyproviders.com',
+      from: 'no-reply@butterflyproviders.com',
       fromName: 'Butterfly Providers Scheduling',
       subject: 'Appointment Confirmed - Butterfly Providers',
       htmlContent: `
@@ -222,7 +227,7 @@ Butterfly Providers
   }) => {
     return sendEmail({
       to: adminEmail,
-      from: 'noreply@butterflyproviders.com',
+      from: 'no-reply@butterflyproviders.com',
       fromName: 'Butterfly Providers Website',
       subject: `New Contact Form Submission from ${contactData.name}`,
       htmlContent: `

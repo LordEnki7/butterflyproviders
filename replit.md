@@ -6,6 +6,10 @@ This project is a full-stack web application for Butterfly Providers, a non-medi
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+- **Email Integration (Sept 2, 2025)**: Completely replaced SendGrid with Brevo email integration including welcome emails, contact notifications, and consultation alerts. Brevo SDK installed and configured with professional email templates.
+- **API Key Status**: Brevo API key provided but currently returning 401 authentication errors. Need to verify key validity or regenerate from Brevo dashboard.
+
 ## System Architecture
 
 ### Frontend Architecture
