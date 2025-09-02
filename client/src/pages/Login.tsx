@@ -35,13 +35,13 @@ export default function Login() {
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Clear and refetch authentication state
-      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
+      // Clear the entire query cache to force fresh authentication check
+      queryClient.clear();
       
-      // Wait a moment for session to be fully established, then hard refresh
+      // Use location.replace to force a complete page reload with new session
       setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+        window.location.replace('/');
+      }, 500);
     },
     onError: (error: any) => {
       toast({

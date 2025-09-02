@@ -46,9 +46,10 @@ function setupSession(app: Express) {
     name: 'connect.sid',
     cookie: {
       httpOnly: true,
-      secure: isProduction,
+      secure: false, // Always false in development
       maxAge: sessionTtl,
-      sameSite: isProduction ? 'none' : 'lax',
+      sameSite: 'lax',
+      domain: undefined, // Let browser set domain automatically
     },
   }));
 }
