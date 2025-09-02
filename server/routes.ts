@@ -29,9 +29,18 @@ import { z } from "zod";
 function setupSession(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   
-  // Use memory store for simplicity in development
+  // Use PostgreSQL session store for persistence
+  const PgSession = connectPg(session);
+  const sessionStore = new PgSession({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: false,
+    ttl: sessionTtl,
+    tableName: "sessions",
+  });
+  
   app.use(session({
     secret: process.env.SESSION_SECRET || 'butterfly-secret-key-development',
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     name: 'sessionId',
