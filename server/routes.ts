@@ -34,13 +34,14 @@ function setupSession(app: Express) {
     secret: process.env.SESSION_SECRET || 'butterfly-secret-key-development',
     resave: false,
     saveUninitialized: false,
-    name: 'connect.sid',
+    name: 'sessionId',
     cookie: {
       httpOnly: false, // Allow JavaScript access for debugging
       secure: false,
       maxAge: sessionTtl,
-      sameSite: 'lax',
-      path: '/'
+      sameSite: 'none', // Allow cross-origin for Replit
+      path: '/',
+      domain: undefined // Let Express set the domain automatically
     },
   }));
 }
@@ -151,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Logout error:", err);
         return res.status(500).json({ message: "Logout failed" });
       }
-      res.clearCookie('connect.sid');
+      res.clearCookie('sessionId');
       res.json({ success: true, message: "Logout successful" });
     });
   });
