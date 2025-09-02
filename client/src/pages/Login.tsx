@@ -35,8 +35,11 @@ export default function Login() {
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Force a complete page reload to ensure session cookie is properly handled
-      window.location.href = '/';
+      // Clear auth cache and invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
+      
+      // Navigate using router instead of full page reload
+      setLocation('/');
     },
     onError: (error: any) => {
       toast({

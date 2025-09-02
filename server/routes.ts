@@ -29,16 +29,18 @@ import { z } from "zod";
 function setupSession(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   
+  // Use memory store for simplicity in development
   app.use(session({
     secret: process.env.SESSION_SECRET || 'butterfly-secret-key-development',
     resave: false,
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
-      httpOnly: true,
+      httpOnly: false, // Allow JavaScript access for debugging
       secure: false,
       maxAge: sessionTtl,
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/'
     },
   }));
 }
