@@ -24,7 +24,12 @@ interface EmailParams {
 
 export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
   try {
-    console.log('🔑 Using API Key:', process.env.BREVO_API_KEY ? 'Set (length: ' + process.env.BREVO_API_KEY.length + ')' : 'Not set');
+    // Log email attempt for debugging
+    console.log('📧 Attempting to send email:', {
+      to: emailParams.to,
+      subject: emailParams.subject,
+      from: emailParams.from
+    });
     
     const emailPayload: any = {
       to: [{ 
@@ -74,6 +79,16 @@ export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
       statusCode: error.response?.status,
       responseBody: error.response?.body
     });
+    
+    // For now, log the email content so we can see what would have been sent
+    console.log('📋 Email content that would have been sent:');
+    console.log('Subject:', emailParams.subject);
+    console.log('To:', emailParams.to);
+    console.log('From:', emailParams.from);
+    if (emailParams.htmlContent) {
+      console.log('HTML preview (first 200 chars):', emailParams.htmlContent.substring(0, 200) + '...');
+    }
+    
     return false;
   }
 }
