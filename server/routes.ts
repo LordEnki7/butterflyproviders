@@ -41,7 +41,7 @@ function setupSession(app: Express) {
   app.use(session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
-    resave: false,
+    resave: true, // Force session save on each request
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
@@ -68,20 +68,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = loginSchema.parse(req.body);
       const user = await login(validatedData.email, validatedData.password);
       
-      // Set user session
+      // Set user session and save it explicitly
       (req.session as any).userId = user.id;
       (req.session as any).userRole = user.role;
       
-      res.json({
-        success: true,
-        message: "Login successful",
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
+      // Force session save before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: 'Session error' });
         }
+        
+        console.log('Login successful - Session saved:', {
+          userId: user.id,
+          sessionId: req.sessionID,
+          userRole: user.role
+        });
+        
+        res.json({
+          success: true,
+          message: "Login successful",
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+          }
+        });
       });
     } catch (error) {
       console.error("Login error:", error);

@@ -35,6 +35,15 @@ function Router() {
   // Add debugging
   console.log('Router - Auth state:', { isAuthenticated, isLoading });
 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       {/* Authentication routes available to all */}

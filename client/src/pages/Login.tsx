@@ -34,13 +34,14 @@ export default function Login() {
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName}!`,
       });
+      
+      // Clear and refetch authentication state
       queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
-      // Force refetch auth state before navigation
-      await queryClient.refetchQueries({ queryKey: ["/api", "auth", "user"] });
-      // Add a small delay to ensure session is properly set
+      
+      // Wait a moment for session to be fully established, then hard refresh
       setTimeout(() => {
         window.location.href = '/';
-      }, 300);
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
