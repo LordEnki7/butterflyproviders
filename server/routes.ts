@@ -39,7 +39,7 @@ function setupSession(app: Express) {
       httpOnly: false, // Allow JavaScript access for debugging
       secure: false,
       maxAge: sessionTtl,
-      sameSite: 'none', // Allow cross-origin for Replit
+      sameSite: 'lax', // Change from 'none' to 'lax' for same-origin requests
       path: '/',
       domain: undefined // Let Express set the domain automatically
     },
