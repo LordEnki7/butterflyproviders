@@ -31,15 +31,12 @@ export default function Login() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Login Successful",
+        title: "Login Successful", 
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Invalidate auth query to trigger refetch
-      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
-      
-      // Navigate to home - auth state will update
-      setLocation('/');
+      // Force a complete page reload to ensure session cookie is properly handled
+      window.location.href = '/';
     },
     onError: (error: any) => {
       toast({
