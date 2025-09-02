@@ -29,16 +29,18 @@ export default function Login() {
       const response = await apiRequest('POST', '/api/login', data);
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast({
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName}!`,
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      queryClient.invalidateQueries({ queryKey: ["/api", "auth", "user"] });
+      // Force refetch auth state before navigation
+      await queryClient.refetchQueries({ queryKey: ["/api", "auth", "user"] });
       // Add a small delay to ensure session is properly set
       setTimeout(() => {
         window.location.href = '/';
-      }, 500);
+      }, 300);
     },
     onError: (error: any) => {
       toast({
