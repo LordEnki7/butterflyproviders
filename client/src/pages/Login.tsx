@@ -35,11 +35,18 @@ export default function Login() {
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Clear auth cache and invalidate queries
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Debug: Log cookies after login
+      console.log('Cookies after login:', document.cookie);
       
-      // Navigate using router instead of full page reload
-      setLocation('/');
+      // Add delay before invalidating queries to ensure cookies are set
+      setTimeout(() => {
+        console.log('About to invalidate queries. Cookies now:', document.cookie);
+        // Clear auth cache and invalidate queries
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        
+        // Navigate using router instead of full page reload
+        setLocation('/');
+      }, 200); // 200ms delay
     },
     onError: (error: any) => {
       toast({
