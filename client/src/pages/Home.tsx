@@ -29,6 +29,12 @@ interface DashboardData {
     type: string;
     caregiver: string;
   }>;
+  stats: {
+    totalAppointments: number;
+    completedThisMonth: number;
+    nextAppointment: string;
+    primaryCaregiver: string;
+  };
 }
 
 export default function Home() {
@@ -121,7 +127,7 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-green-700 font-medium">Logged in as {user?.email}</span>
+                <span className="text-sm text-green-700 font-medium">Logged in as {(user as any)?.email}</span>
               </div>
             </div>
             <div className="flex items-center gap-4">

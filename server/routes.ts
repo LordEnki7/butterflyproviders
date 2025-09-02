@@ -151,14 +151,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
-      const userId = (req.session as any).userId;
+      const userId = (req.session as any)?.userId;
       console.log('Getting user - Session check:', {
         sessionId: req.sessionID,
         userId,
-        hasSession: !!req.session
+        hasSession: !!req.session,
+        sessionData: req.session
       });
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       const user = await storage.getUser(userId);
       
