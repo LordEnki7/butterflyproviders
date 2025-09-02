@@ -31,6 +31,9 @@ import JoinOurTeam from "@/pages/JoinOurTeam";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  
+  // Add debugging
+  console.log('Router - Auth state:', { isAuthenticated, isLoading });
 
   return (
     <Switch>

@@ -35,7 +35,10 @@ export default function Login() {
         description: `Welcome back, ${data.user.firstName}!`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      setLocation('/');
+      // Add a small delay to ensure session is properly set
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     },
     onError: (error: any) => {
       toast({
