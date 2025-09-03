@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Phone, Mail, Shield } from 'lucide-react';
 import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
@@ -10,8 +11,27 @@ const policies = [
 ];
 
 export default function Footer() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Handle scroll effect for footer
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Trigger when user has scrolled more than 50px and is near bottom
+      setIsScrolled(scrollPosition > 50 && (scrollPosition + windowHeight >= documentHeight - 300));
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <footer className="bg-gray-900 text-white relative overflow-hidden" style={{height: '180px'}}>
+    <footer className={`bg-gray-900 text-white relative overflow-hidden transition-all duration-300 ${
+      isScrolled ? 'shadow-2xl backdrop-blur-md bg-gray-900/98' : 'shadow-lg'
+    }`} style={{height: isScrolled ? '200px' : '180px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-full">
         <div className="flex items-center justify-between h-full relative">
           {/* Logo Section */}
@@ -19,7 +39,9 @@ export default function Footer() {
             <img 
               src={butterflyLogo} 
               alt="Butterfly Providers Logo" 
-              className="h-32 sm:h-36 md:h-40 w-auto"
+              className={`w-auto transition-all duration-300 ${
+                isScrolled ? 'h-36 sm:h-40 md:h-44' : 'h-32 sm:h-36 md:h-40'
+              }`}
             />
           </div>
 

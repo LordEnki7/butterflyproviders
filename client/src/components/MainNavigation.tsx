@@ -31,9 +31,9 @@ export default function MainNavigation() {
   ];
 
   return (
-    <header className={`bg-white shadow-sm border-b relative overflow-hidden transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
-      isScrolled ? 'shadow-md backdrop-blur-sm' : 'shadow-sm'
-    }`} style={{height: '74px'}}>
+    <header className={`bg-white/95 border-b relative overflow-hidden transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
+      isScrolled ? 'shadow-lg backdrop-blur-md bg-white/98' : 'shadow-sm backdrop-blur-sm'
+    }`} style={{height: isScrolled ? '64px' : '74px'}}>
       <div className="container mx-auto px-4 py-0 relative">
         <div className="flex items-center relative -my-20">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
@@ -42,7 +42,7 @@ export default function MainNavigation() {
                 src={butterflyLogo} 
                 alt="Butterfly Providers Logo" 
                 className="w-auto transition-all duration-300"
-                style={{ height: '240px' }}
+                style={{ height: isScrolled ? '180px' : '240px' }}
               />
             </div>
           </Link>
