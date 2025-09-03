@@ -50,7 +50,7 @@ function setupSession(app: Express) {
       maxAge: sessionTtl,
       sameSite: false, // Disable sameSite completely for development
       path: '/',
-      domain: undefined // Let Express set the domain automatically
+      domain: process.env.REPLIT_DEV_DOMAIN || undefined // Use Replit domain
     },
   }));
 }
