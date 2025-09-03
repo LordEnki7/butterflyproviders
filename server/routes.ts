@@ -9,6 +9,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { 
   insertContactInquirySchema,
+  insertConsultationRequestSchema,
   clientSignupSchema,
   loginSchema,
   registerSchema,
@@ -28,9 +29,77 @@ import { z } from "zod";
 
 // JWT configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'butterfly-jwt-secret-development';
-const JWT_EXPIRES_IN = '7d';
+const JWT_EXPIRES_IN = '24h'; // Shorter expiration for better security
 
-// JWT middleware for protected routes
+// Security tracking
+const loginAttempts = new Map<string, { attempts: number; lastAttempt: Date; lockedUntil?: Date }>();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_WINDOW = 5 * 60 * 1000; // 5 minutes
+const RATE_LIMIT_MAX_ATTEMPTS = 3;
+
+// Security helper functions
+function getClientIP(req: any): string {
+  return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
+}
+
+function isAccountLocked(email: string): boolean {
+  const attempts = loginAttempts.get(email);
+  if (!attempts) return false;
+  
+  if (attempts.lockedUntil && attempts.lockedUntil > new Date()) {
+    return true;
+  }
+  
+  // Clear expired lockout
+  if (attempts.lockedUntil && attempts.lockedUntil <= new Date()) {
+    loginAttempts.delete(email);
+    return false;
+  }
+  
+  return false;
+}
+
+function recordLoginAttempt(email: string, success: boolean) {
+  const now = new Date();
+  const attempts = loginAttempts.get(email) || { attempts: 0, lastAttempt: now };
+  
+  if (success) {
+    // Clear attempts on successful login
+    loginAttempts.delete(email);
+    return;
+  }
+  
+  // Check if we're within the rate limit window
+  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
+  if (timeSinceLastAttempt > RATE_LIMIT_WINDOW) {
+    // Reset attempts if outside rate limit window
+    attempts.attempts = 1;
+  } else {
+    attempts.attempts += 1;
+  }
+  
+  attempts.lastAttempt = now;
+  
+  // Lock account if too many attempts
+  if (attempts.attempts >= MAX_LOGIN_ATTEMPTS) {
+    attempts.lockedUntil = new Date(now.getTime() + LOCKOUT_DURATION);
+  }
+  
+  loginAttempts.set(email, attempts);
+}
+
+function isRateLimited(email: string): boolean {
+  const attempts = loginAttempts.get(email);
+  if (!attempts) return false;
+  
+  const now = new Date();
+  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
+  
+  return timeSinceLastAttempt < RATE_LIMIT_WINDOW && attempts.attempts >= RATE_LIMIT_MAX_ATTEMPTS;
+}
+
+// Enhanced JWT middleware for protected routes
 function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
@@ -41,9 +110,18 @@ function authenticateToken(req: any, res: any, next: any) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    // Additional security check: ensure token hasn't been tampered with
+    if (!decoded.userId || !decoded.email || !decoded.role) {
+      return res.status(403).json({ message: 'Invalid token structure' });
+    }
+    
     req.user = decoded;
     next();
   } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return res.status(403).json({ message: 'Token expired, please login again' });
+    }
     return res.status(403).json({ message: 'Invalid or expired token' });
   }
 }
@@ -56,41 +134,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== AUTHENTICATION ROUTES =====
   
-  // Login endpoint - JWT version
+  // Enhanced secure login endpoint
   app.post('/api/login', async (req, res) => {
     try {
       const validatedData = loginSchema.parse(req.body);
-      const user = await login(validatedData.email, validatedData.password);
+      const email = validatedData.email.toLowerCase().trim();
+      const clientIP = getClientIP(req);
       
-      // Generate JWT token
-      const token = jwt.sign(
-        { 
-          userId: user.id, 
-          email: user.email, 
-          role: user.role 
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-      );
+      // Check if account is locked
+      if (isAccountLocked(email)) {
+        const attempts = loginAttempts.get(email);
+        const unlockTime = attempts?.lockedUntil;
+        const minutesLeft = unlockTime ? Math.ceil((unlockTime.getTime() - Date.now()) / 60000) : 0;
+        
+        return res.status(429).json({ 
+          message: `Account temporarily locked. Try again in ${minutesLeft} minutes.`,
+          lockedUntil: unlockTime 
+        });
+      }
       
-      console.log('Login successful - JWT token generated:', {
-        userId: user.id,
-        email: user.email,
-        role: user.role
-      });
+      // Check rate limiting
+      if (isRateLimited(email)) {
+        return res.status(429).json({ 
+          message: "Too many login attempts. Please wait a few minutes before trying again." 
+        });
+      }
       
-      res.json({
-        success: true,
-        message: "Login successful",
-        token,
-        user: {
-          id: user.id,
+      try {
+        const user = await login(email, validatedData.password);
+        
+        // Record successful login
+        recordLoginAttempt(email, true);
+        
+        // Generate secure JWT token with additional claims
+        const token = jwt.sign(
+          { 
+            userId: user.id, 
+            email: user.email, 
+            role: user.role,
+            loginTime: Date.now(),
+            clientIP: clientIP
+          },
+          JWT_SECRET,
+          { 
+            expiresIn: JWT_EXPIRES_IN,
+            issuer: 'butterfly-providers',
+            subject: user.id
+          }
+        );
+        
+        console.log('Login successful - JWT token generated:', {
+          userId: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
+          role: user.role
+        });
+        
+        res.json({
+          success: true,
+          message: "Login successful",
+          token,
+          expiresIn: JWT_EXPIRES_IN,
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+          }
+        });
+      } catch (loginError) {
+        // Record failed login attempt
+        recordLoginAttempt(email, false);
+        
+        const attempts = loginAttempts.get(email);
+        const remainingAttempts = MAX_LOGIN_ATTEMPTS - (attempts?.attempts || 0);
+        
+        let errorMessage = "Invalid email or password";
+        if (remainingAttempts <= 2 && remainingAttempts > 0) {
+          errorMessage += `. ${remainingAttempts} attempts remaining before account lockout.`;
         }
-      });
+        
+        throw new Error(errorMessage);
+      }
     } catch (error) {
       console.error("Login error:", error);
       res.status(401).json({ message: error instanceof Error ? error.message : "Login failed" });
@@ -1526,6 +1651,32 @@ Thank you for choosing Butterfly Providers for your care needs.
     } catch (error) {
       console.error("Error downloading invoice:", error);
       res.status(500).json({ message: "Failed to download invoice" });
+    }
+  });
+
+  // ===== CONSULTATION REQUESTS API ROUTES =====
+  
+  // Submit consultation request
+  app.post('/api/consultation-requests', async (req, res) => {
+    try {
+      const validatedData = insertConsultationRequestSchema.parse(req.body);
+      const consultation = await storage.createConsultationRequest(validatedData);
+      
+      // Send notification email to admin team (you can implement this later)
+      console.log('New consultation request:', consultation);
+      
+      res.status(201).json({
+        success: true,
+        message: "Consultation request submitted successfully",
+        consultation
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating consultation request:", error);
+        res.status(500).json({ message: "Failed to submit consultation request" });
+      }
     }
   });
 

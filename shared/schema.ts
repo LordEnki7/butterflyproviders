@@ -58,7 +58,23 @@ export const insertContactInquirySchema = createInsertSchema(contactInquiries).o
   createdAt: true,
 });
 
-// Consultations table
+// Consultation requests table (for scheduling form)
+export const consultationRequests = pgTable("consultation_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  email: varchar("email"),
+  phone: varchar("phone").notNull(),
+  preferredDate: varchar("preferred_date"),
+  preferredTime: varchar("preferred_time"),
+  serviceType: varchar("service_type"),
+  urgency: varchar("urgency").default("within-week"),
+  additionalInfo: text("additional_info"),
+  requestType: varchar("request_type").default("consultation"),
+  status: varchar("status").default("pending"), // pending, contacted, scheduled, completed, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Consultations table (legacy)
 export const consultations = pgTable("consultations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
@@ -70,6 +86,14 @@ export const consultations = pgTable("consultations", {
   agreeToContact: boolean("agree_to_contact").notNull().default(false),
   status: varchar("status").default("pending"), // pending, scheduled, completed, cancelled
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type ConsultationRequest = typeof consultationRequests.$inferSelect;
+export type InsertConsultationRequest = typeof consultationRequests.$inferInsert;
+
+export const insertConsultationRequestSchema = createInsertSchema(consultationRequests).omit({
+  id: true,
+  createdAt: true,
 });
 
 export type Consultation = typeof consultations.$inferSelect;
@@ -422,18 +446,27 @@ export const insertGeneratedAppointmentSchema = createInsertSchema(generatedAppo
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
+// Strong password validation schema
+const strongPasswordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password must be less than 128 characters')
+  .refine(
+    (password) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password),
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
+  );
+
 // Login schemas for email/password authentication
 export const loginSchema = z.object({
-  email: z.string().email('Valid email is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Valid email is required').toLowerCase().trim(),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export const registerSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Valid email is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Password confirmation is required'),
+  firstName: z.string().min(1, 'First name is required').trim(),
+  lastName: z.string().min(1, 'Last name is required').trim(),
+  email: z.string().email('Valid email is required').toLowerCase().trim(),
+  password: strongPasswordSchema,
+  confirmPassword: z.string().min(1, 'Password confirmation is required'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
