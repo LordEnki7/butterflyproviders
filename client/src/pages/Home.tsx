@@ -41,16 +41,8 @@ export default function Home() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      console.log('Home: User not authenticated, redirecting to login');
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading]);
+  // Remove automatic redirect - let router handle authentication
+  // The router already handles showing Login vs Home based on auth state
 
   const { data: dashboardData, isLoading: isDashboardLoading } = useQuery<DashboardData>({
     queryKey: ['/api/client/dashboard'],
