@@ -72,6 +72,7 @@ function Router() {
       {isAuthenticated ? (
         <>
           <Route path="/" component={Home} />
+          <Route path="/client-portal" component={Home} />
           <Route path="/billing" component={Billing} />
         </>
       ) : (

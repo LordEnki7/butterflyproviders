@@ -87,6 +87,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userRole: user.role
         });
         
+        // Log response headers to debug cookie setting
+        console.log('Response headers being sent:', res.getHeaders());
+        
         res.json({
           success: true,
           message: "Login successful",
@@ -174,6 +177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sessionId: req.sessionID,
         userId,
         hasSession: !!req.session,
+        cookieHeader: req.headers.cookie,
         sessionData: req.session
       });
       
