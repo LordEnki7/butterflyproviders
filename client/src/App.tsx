@@ -67,12 +67,12 @@ function Router() {
       <Route path="/services/dementia-support" component={DementiaSupport} />
       <Route path="/services/respite-care" component={RespiteCare} />
       <Route path="/client-portal-demo" component={ClientPortalDemo} />
+      <Route path="/client-portal" component={Home} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (
         <>
           <Route path="/" component={Home} />
-          <Route path="/client-portal" component={Home} />
           <Route path="/billing" component={Billing} />
         </>
       ) : (

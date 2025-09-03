@@ -48,9 +48,9 @@ function setupSession(app: Express) {
       httpOnly: false, // Allow JavaScript access for debugging
       secure: false,
       maxAge: sessionTtl,
-      sameSite: false, // Disable sameSite completely for development
+      sameSite: 'lax', // Try lax instead of false
       path: '/',
-      domain: process.env.REPLIT_DEV_DOMAIN || undefined // Use Replit domain
+      // Remove domain completely - let browser decide
     },
   }));
 }
