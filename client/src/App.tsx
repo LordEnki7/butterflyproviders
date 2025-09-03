@@ -14,7 +14,6 @@ import SchedulingDemo from "@/pages/SchedulingDemo";
 import CancellationPolicies from "@/pages/CancellationPolicies";
 import Billing from "@/pages/Billing";
 import CaregiverManagement from "@/pages/CaregiverManagement";
-import Admin from "@/pages/Admin";
 import SignUp from "@/pages/SignUp";
 import PersonalCare from "@/pages/PersonalCare";
 import Companionship from "@/pages/Companionship";
@@ -51,7 +50,6 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/admin" component={Admin} />
       <Route path="/about-us" component={AboutUs} />
       <Route path="/services" component={Services} />
       <Route path="/services/detailed" component={DetailedServices} />
