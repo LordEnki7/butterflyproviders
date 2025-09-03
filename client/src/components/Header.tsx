@@ -12,8 +12,21 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const handleLogout = () => {
-    window.location.href = '/api/logout';
+  const handleLogout = async () => {
+    try {
+      // Remove JWT token from localStorage
+      localStorage.removeItem('auth_token');
+      
+      // Optional: Call server logout endpoint
+      await fetch('/api/logout', { method: 'POST' });
+      
+      // Redirect to home page
+      window.location.href = '/';
+    } catch (error) {
+      // Even if server call fails, still remove token and redirect
+      localStorage.removeItem('auth_token');
+      window.location.href = '/';
+    }
   };
 
   // Handle scroll effect

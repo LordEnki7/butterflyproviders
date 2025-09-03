@@ -146,16 +146,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Logout endpoint
+  // Logout endpoint - JWT version (client-side cleanup)
   app.post('/api/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Logout error:", err);
-        return res.status(500).json({ message: "Logout failed" });
-      }
-      res.clearCookie('sessionId');
-      res.json({ success: true, message: "Logout successful" });
-    });
+    // With JWT, logout is handled client-side by removing the token
+    // Server just confirms the logout request
+    res.json({ success: true, message: "Logout successful" });
   });
 
   // Get current user - JWT version
