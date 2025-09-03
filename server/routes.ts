@@ -1662,8 +1662,30 @@ Thank you for choosing Butterfly Providers for your care needs.
       const validatedData = insertConsultationRequestSchema.parse(req.body);
       const consultation = await storage.createConsultationRequest(validatedData);
       
-      // Send notification email to admin team (you can implement this later)
-      console.log('New consultation request:', consultation);
+      // Send notification email to admin team
+      if (process.env.BREVO_API_KEY) {
+        try {
+          const { EmailTemplates } = await import('./brevoService');
+          await EmailTemplates.consultationNotification(
+            'admin@butterflyproviders.com', // Admin email
+            {
+              name: consultation.name,
+              email: consultation.email || undefined,
+              phone: consultation.phone,
+              serviceType: consultation.serviceType || undefined,
+              urgency: consultation.urgency || undefined,
+              preferredDate: consultation.preferredDate || undefined,
+              preferredTime: consultation.preferredTime || undefined,
+              additionalInfo: consultation.additionalInfo || undefined,
+              submittedAt: new Date().toLocaleString()
+            }
+          );
+          console.log('✅ Consultation notification sent to admin');
+        } catch (emailError) {
+          console.error('❌ Failed to send consultation notification:', emailError);
+          // Don't fail the request if email fails
+        }
+      }
       
       res.status(201).json({
         success: true,

@@ -232,7 +232,96 @@ Butterfly Providers
     });
   },
 
-  // Contact form notification to admin
+  // Consultation request notification to admin team
+  consultationNotification: async (adminEmail: string, consultationData: {
+    name: string;
+    email?: string;
+    phone: string;
+    serviceType?: string;
+    urgency?: string;
+    preferredDate?: string;
+    preferredTime?: string;
+    additionalInfo?: string;
+    submittedAt: string;
+  }) => {
+    return sendEmail({
+      to: adminEmail,
+      from: 'no-reply@butterflyproviders.com',
+      fromName: 'Butterfly Providers Website',
+      subject: `🔔 New Consultation Request from ${consultationData.name}`,
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #EF4444; color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 20px;">🔔 New Consultation Request</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Immediate attention required</p>
+          </div>
+          
+          <div style="background: #F9FAFB; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #374151; margin-top: 0;">Client Information</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${consultationData.name}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${consultationData.phone}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${consultationData.email || 'Not provided'}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Service Type:</td><td style="padding: 8px 0;">${consultationData.serviceType || 'Not specified'}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Urgency:</td><td style="padding: 8px 0;"><strong style="color: ${consultationData.urgency === 'immediately' ? '#EF4444' : '#059669'};">${consultationData.urgency?.replace('-', ' ') || 'within week'}</strong></td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Preferred Date:</td><td style="padding: 8px 0;">${consultationData.preferredDate || 'Any date'}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Preferred Time:</td><td style="padding: 8px 0;">${consultationData.preferredTime || 'Anytime'}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Submitted:</td><td style="padding: 8px 0;">${consultationData.submittedAt}</td></tr>
+            </table>
+          </div>
+          
+          ${consultationData.additionalInfo ? `
+          <div style="background: #FFFBEB; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+            <h3 style="color: #92400E; margin-top: 0;">Additional Information:</h3>
+            <p style="color: #374151; line-height: 1.6; margin: 0;">${consultationData.additionalInfo}</p>
+          </div>
+          ` : ''}
+          
+          <div style="text-align: center; margin-top: 30px; padding: 20px; background: #F0FDF4; border-radius: 8px;">
+            <p style="color: #065F46; margin: 0; font-weight: bold;">
+              📞 Call ${consultationData.name} at ${consultationData.phone} to schedule their consultation
+            </p>
+            ${consultationData.urgency === 'immediately' ? 
+              '<p style="color: #EF4444; margin: 10px 0 0 0; font-weight: bold;">⚠️ URGENT: Client needs care within 24-48 hours</p>' : 
+              ''
+            }
+          </div>
+          
+          <div style="margin-top: 20px; padding: 15px; background: #F3F4F6; border-radius: 8px; font-size: 12px; color: #6B7280;">
+            <p style="margin: 0;">Butterfly Providers | 10720 West Indian School Rd, Phoenix, AZ 85037 | (602) 830-0966</p>
+          </div>
+        </div>
+      `,
+      textContent: `
+New Consultation Request - ${consultationData.name}
+
+Client Information:
+- Name: ${consultationData.name}
+- Phone: ${consultationData.phone}
+- Email: ${consultationData.email || 'Not provided'}
+- Service Type: ${consultationData.serviceType || 'Not specified'}
+- Urgency: ${consultationData.urgency?.replace('-', ' ') || 'within week'}
+- Preferred Date: ${consultationData.preferredDate || 'Any date'}
+- Preferred Time: ${consultationData.preferredTime || 'Anytime'}
+- Submitted: ${consultationData.submittedAt}
+
+${consultationData.additionalInfo ? `
+Additional Information:
+${consultationData.additionalInfo}
+` : ''}
+
+Action Required: Call ${consultationData.name} at ${consultationData.phone} to schedule their consultation.
+
+${consultationData.urgency === 'immediately' ? 'URGENT: Client needs care within 24-48 hours!' : ''}
+
+Butterfly Providers
+10720 West Indian School Rd, Phoenix, AZ 85037
+(602) 830-0966
+      `
+    });
+  },
+
+  // Contact form notification to admin team
   contactNotification: async (adminEmail: string, contactData: {
     name: string;
     email: string;

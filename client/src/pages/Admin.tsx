@@ -831,7 +831,7 @@ export default function Admin() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {(consultationRequests as any[]).map((request: any) => (
+                    {(consultationRequests as any[])?.map((request: any) => (
                       <TableRow key={request.id}>
                         <TableCell className="font-medium">{request.name}</TableCell>
                         <TableCell>{request.phone}</TableCell>
@@ -875,7 +875,7 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {consultationRequests.length === 0 && (
+                    {(consultationRequests as any[])?.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                           No consultation requests yet
