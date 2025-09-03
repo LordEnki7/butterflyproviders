@@ -43,8 +43,8 @@ export default function Login() {
       // Clear auth cache and invalidate queries
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       
-      // Navigate to home page
-      setLocation('/');
+      // Navigate to client portal
+      setLocation('/client-portal');
     },
     onError: (error: any) => {
       toast({
