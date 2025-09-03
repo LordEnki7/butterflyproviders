@@ -139,6 +139,11 @@ export default function Admin() {
     retry: false,
   });
 
+  const { data: consultationRequests = [] } = useQuery({
+    queryKey: ["/api/admin/consultation-requests"],
+    retry: false,
+  });
+
   // Generic mutation for CRUD operations
   const createMutation = useMutation({
     mutationFn: async ({ endpoint, data }: { endpoint: string; data: any }) => {
@@ -487,7 +492,7 @@ export default function Admin() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Dashboard
@@ -519,6 +524,10 @@ export default function Admin() {
             <TabsTrigger value="billing" className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
               Billing
+            </TabsTrigger>
+            <TabsTrigger value="consultations" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Consultations
             </TabsTrigger>
             <TabsTrigger value="inquiries" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
@@ -793,6 +802,86 @@ export default function Admin() {
                         </div>
                       </TableCell>
                     </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="consultations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Consultation Requests</CardTitle>
+                <CardDescription>Incoming requests for consultations and callbacks</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Service Type</TableHead>
+                      <TableHead>Urgency</TableHead>
+                      <TableHead>Preferred Date</TableHead>
+                      <TableHead>Preferred Time</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Submitted</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(consultationRequests as any[]).map((request: any) => (
+                      <TableRow key={request.id}>
+                        <TableCell className="font-medium">{request.name}</TableCell>
+                        <TableCell>{request.phone}</TableCell>
+                        <TableCell>{request.email || 'Not provided'}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {request.serviceType || 'Not specified'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            request.urgency === 'immediately' ? 'destructive' :
+                            request.urgency === 'within-week' ? 'default' : 'secondary'
+                          }>
+                            {request.urgency?.replace('-', ' ') || 'within week'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{request.preferredDate || 'Any date'}</TableCell>
+                        <TableCell>{request.preferredTime || 'Anytime'}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            request.status === 'pending' ? 'outline' :
+                            request.status === 'contacted' ? 'default' :
+                            request.status === 'scheduled' ? 'default' : 'secondary'
+                          }>
+                            {request.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(request.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button variant="outline" size="sm">
+                              Mark Contacted
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              Schedule
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {consultationRequests.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                          No consultation requests yet
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

@@ -1680,6 +1680,17 @@ Thank you for choosing Butterfly Providers for your care needs.
     }
   });
 
+  // Get all consultation requests (admin only)
+  app.get('/api/admin/consultation-requests', isAdminAuth, async (req: any, res) => {
+    try {
+      const requests = await storage.getAllConsultationRequests();
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching consultation requests:", error);
+      res.status(500).json({ message: "Failed to fetch consultation requests" });
+    }
+  });
+
   // ===== CAREGIVER SCHEDULE MANAGEMENT API ROUTES =====
 
   // Get weekly caregiver schedules
