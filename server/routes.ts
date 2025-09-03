@@ -45,10 +45,10 @@ function setupSession(app: Express) {
     saveUninitialized: false,
     name: 'sessionId',
     cookie: {
-      httpOnly: false, // Allow JavaScript access for debugging
+      httpOnly: true, // Try httpOnly for better browser compatibility
       secure: false,
       maxAge: sessionTtl,
-      sameSite: 'lax', // Try lax instead of false
+      sameSite: 'lax',
       path: '/',
       // Remove domain completely - let browser decide
     },
