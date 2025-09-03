@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { isAuthenticated, isAdminAuth, login, register } from "./auth";
 import { db } from "./db";
 import { consultations, jobApplications } from "@shared/schema";
+import jwt from "jsonwebtoken";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { 
@@ -25,82 +26,70 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-// Setup session middleware
-function setupSession(app: Express) {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  
-  // Use PostgreSQL session store for persistence
-  const PgSession = connectPg(session);
-  const sessionStore = new PgSession({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
-  
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'butterfly-secret-key-development',
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    name: 'sessionId',
-    cookie: {
-      httpOnly: true, // Try httpOnly for better browser compatibility
-      secure: false,
-      maxAge: sessionTtl,
-      sameSite: 'lax',
-      path: '/',
-      // Remove domain completely - let browser decide
-    },
-  }));
+// JWT configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'butterfly-jwt-secret-development';
+const JWT_EXPIRES_IN = '7d';
+
+// JWT middleware for protected routes
+function authenticateToken(req: any, res: any, next: any) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
 }
 
 // Admin password - in production, this should be an environment variable
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "butterfly2025";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup session middleware
-  setupSession(app);
+  // No longer need session middleware - using JWT tokens
 
   // ===== AUTHENTICATION ROUTES =====
   
-  // Login endpoint
+  // Login endpoint - JWT version
   app.post('/api/login', async (req, res) => {
     try {
       const validatedData = loginSchema.parse(req.body);
       const user = await login(validatedData.email, validatedData.password);
       
-      // Set user session and save it explicitly
-      (req.session as any).userId = user.id;
-      (req.session as any).userRole = user.role;
+      // Generate JWT token
+      const token = jwt.sign(
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role 
+        },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
       
-      // Force session save before responding
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session error' });
+      console.log('Login successful - JWT token generated:', {
+        userId: user.id,
+        email: user.email,
+        role: user.role
+      });
+      
+      res.json({
+        success: true,
+        message: "Login successful",
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
         }
-        
-        console.log('Login successful - Session saved:', {
-          userId: user.id,
-          sessionId: req.sessionID,
-          userRole: user.role
-        });
-        
-        // Log response headers to debug cookie setting
-        console.log('Response headers being sent:', res.getHeaders());
-        
-        res.json({
-          success: true,
-          message: "Login successful",
-          user: {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-          }
-        });
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -169,21 +158,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Get current user
-  app.get('/api/auth/user', async (req: any, res) => {
+  // Get current user - JWT version
+  app.get('/api/auth/user', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      console.log('Getting user - Session check:', {
-        sessionId: req.sessionID,
+      const userId = req.user.userId;
+      console.log('Getting user - JWT token verified:', {
         userId,
-        hasSession: !!req.session,
-        cookieHeader: req.headers.cookie,
-        sessionData: req.session
+        email: req.user.email,
+        role: req.user.role
       });
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
       
       const user = await storage.getUser(userId);
       

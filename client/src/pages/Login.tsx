@@ -30,23 +30,21 @@ export default function Login() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Store JWT token in localStorage
+      localStorage.setItem('auth_token', data.token);
+      
       toast({
         title: "Login Successful", 
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      // Debug: Log cookies after login
-      console.log('Cookies after login:', document.cookie);
+      console.log('Login successful - JWT token stored in localStorage');
       
-      // Add delay before invalidating queries to ensure cookies are set
-      setTimeout(() => {
-        console.log('About to invalidate queries. Cookies now:', document.cookie);
-        // Clear auth cache and invalidate queries
-        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-        
-        // Navigate using router instead of full page reload
-        setLocation('/');
-      }, 200); // 200ms delay
+      // Clear auth cache and invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Navigate to home page
+      setLocation('/');
     },
     onError: (error: any) => {
       toast({
