@@ -48,7 +48,7 @@ function setupSession(app: Express) {
       httpOnly: false, // Allow JavaScript access for debugging
       secure: false,
       maxAge: sessionTtl,
-      sameSite: 'lax', // Change from 'none' to 'lax' for same-origin requests
+      sameSite: false, // Disable sameSite completely for development
       path: '/',
       domain: undefined // Let Express set the domain automatically
     },
