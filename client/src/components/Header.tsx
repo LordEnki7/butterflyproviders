@@ -49,7 +49,6 @@ export default function Header() {
     { href: '/scheduling', label: 'Scheduling', icon: Calendar },
     { href: '/billing', label: 'Billing', icon: CreditCard },
     { href: '/caregivers', label: 'Caregivers', icon: Users },
-    { href: '/admin', label: 'Admin', icon: Settings },
   ];
 
   if (!isAuthenticated) {
