@@ -24,6 +24,22 @@ export default function MainNavigation() {
     setIsOpen(false);
   }, [location]);
 
+  // Handle body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      // Lock body scroll when menu opens
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll when menu closes
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup function to restore scroll on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const navigationItems = [
     { href: '/about-us', label: 'ABOUT US' },
     { href: '/services', label: 'SERVICES' },

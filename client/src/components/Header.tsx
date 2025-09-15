@@ -129,7 +129,7 @@ export default function Header() {
             <div className="flex items-center space-x-3 px-3 py-2 bg-emerald-50 rounded-lg">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Logged in"></div>
               <span className="text-sm font-medium text-emerald-800">
-                {user?.firstName || 'User'}
+                {(user as any)?.firstName || 'User'}
               </span>
             </div>
             
