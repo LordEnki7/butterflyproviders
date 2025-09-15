@@ -25,7 +25,7 @@ export default function HoursContact() {
     onSuccess: () => {
       toast({
         title: "Thank you for your inquiry!",
-        description: "We'll contact you soon during business hours.",
+        description: "We'll contact you soon during office hours.",
       });
       setFormData({
         firstName: '',

@@ -207,7 +207,7 @@ export default function ScheduleConsultation() {
                   <div className="flex items-center gap-3 text-gray-600">
                     <Clock className="h-5 w-5 text-emerald-600" />
                     <div>
-                      <p className="font-medium">Business Hours</p>
+                      <p className="font-medium">Office Hours</p>
                       <p className="text-sm">Mon-Fri 8AM-5PM</p>
                     </div>
                   </div>

@@ -225,7 +225,7 @@ export default function ConsultationBookingWidget({
                   <SelectContent>
                     <SelectItem value="morning">Morning (8am - 12pm)</SelectItem>
                     <SelectItem value="afternoon">Afternoon (12pm - 5pm)</SelectItem>
-                    <SelectItem value="any">Anytime during business hours</SelectItem>
+                    <SelectItem value="any">Anytime during office hours</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

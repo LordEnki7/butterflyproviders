@@ -243,7 +243,7 @@ export default function Scheduling() {
                     <SelectItem value="morning">Morning (8:00 AM - 12:00 PM)</SelectItem>
                     <SelectItem value="afternoon">Afternoon (12:00 PM - 5:00 PM)</SelectItem>
                     <SelectItem value="evening">Evening (5:00 PM - 8:00 PM)</SelectItem>
-                    <SelectItem value="anytime">Anytime during business hours</SelectItem>
+                    <SelectItem value="anytime">Anytime during office hours</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

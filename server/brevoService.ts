@@ -138,7 +138,7 @@ export const EmailTemplates = {
           <div style="border-top: 1px solid #E5E7EB; padding-top: 20px; text-align: center;">
             <p style="color: #6B7280; font-size: 14px;">
               Questions? Contact us at <a href="tel:602-830-0966" style="color: #059669;">602-830-0966</a><br>
-              <strong>Business Hours:</strong> Monday-Friday 8:00 AM - 5:00 PM
+              <strong>Office Hours:</strong> Monday-Friday 8:00 AM - 5:00 PM
             </p>
             <p style="color: #9CA3AF; font-size: 12px; margin-top: 15px;">
               Butterfly Providers | 10720 West Indian School Rd. Phoenix, AZ 85037
@@ -160,7 +160,7 @@ What's Next?
 Visit https://butterflyproviders.com to access your portal.
 
 Questions? Contact us at 602-830-0966
-Business Hours: Monday-Friday 8:00 AM - 5:00 PM
+Office Hours: Monday-Friday 8:00 AM - 5:00 PM
 
 Butterfly Providers
 10720 West Indian School Rd. Phoenix, AZ 85037

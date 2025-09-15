@@ -178,7 +178,7 @@ export default function DetailedServices() {
 
         {/* Business Hours Notice */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Business Hours</h3>
+          <h3 className="text-lg font-semibold text-blue-900 mb-2">Office Hours</h3>
           <p className="text-blue-800">
             Our administrative office operates Monday through Friday, 8:00 AM to 5:00 PM. 
             Care services are scheduled according to your personalized care plan.
