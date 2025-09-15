@@ -149,6 +149,14 @@ export default function Login() {
                 )}
               />
 
+              {/* Communication Consent */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-xs text-blue-700 leading-relaxed">
+                  I agree to receive text messages and emails from Butterfly Providers regarding my consultation request, 
+                  appointment reminders, and care updates. Standard message and data rates may apply. You can opt out at any time.
+                </p>
+              </div>
+
               <Button
                 type="submit"
                 className="w-full bg-emerald-600 hover:bg-emerald-700"
