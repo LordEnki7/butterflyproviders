@@ -26,6 +26,11 @@ import Services from "@/pages/Services";
 import DetailedServices from "@/pages/DetailedServices";
 import JoinOurTeam from "@/pages/JoinOurTeam";
 import ClientPortalDemo from "@/pages/ClientPortalDemo";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsConditions from "@/pages/TermsConditions";
+import ServiceAgreement from "@/pages/ServiceAgreement";
+import HipaaCompliance from "@/pages/HipaaCompliance";
+import CodeOfEthics from "@/pages/CodeOfEthics";
 
 // No longer need domain redirect with email/password authentication
 
@@ -66,6 +71,11 @@ function Router() {
       <Route path="/services/respite-care" component={RespiteCare} />
       <Route path="/client-portal-demo" component={ClientPortalDemo} />
       <Route path="/client-portal" component={Home} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-conditions" component={TermsConditions} />
+      <Route path="/service-agreement" component={ServiceAgreement} />
+      <Route path="/hipaa-compliance" component={HipaaCompliance} />
+      <Route path="/code-of-ethics" component={CodeOfEthics} />
       
       {/* Authenticated routes */}
       {isAuthenticated ? (

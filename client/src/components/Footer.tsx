@@ -64,13 +64,21 @@ export default function Footer() {
             <div>
               <h4 className="text-sm font-semibold mb-2">Policies</h4>
               <ul className="space-y-1 text-xs">
-                {policies.slice(0, 4).map((policy, index) => (
-                  <li key={index}>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                      {policy}
-                    </a>
-                  </li>
-                ))}
+                {policies.slice(0, 4).map((policy, index) => {
+                  const policyRoutes = {
+                    "Privacy Policy": "/privacy-policy",
+                    "Terms & Conditions": "/terms-conditions", 
+                    "Service Agreement": "/service-agreement",
+                    "HIPAA Compliance": "/hipaa-compliance"
+                  };
+                  return (
+                    <li key={index}>
+                      <a href={policyRoutes[policy as keyof typeof policyRoutes] || "#"} className="text-gray-400 hover:text-white transition-colors">
+                        {policy}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
