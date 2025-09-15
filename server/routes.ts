@@ -227,10 +227,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = registerSchema.parse(req.body);
       const user = await register(validatedData);
+      const clientIP = getClientIP(req);
       
-      // Set user session
-      (req.session as any).userId = user.id;
-      (req.session as any).userRole = user.role;
+      // Generate secure JWT token (same as login)
+      const token = jwt.sign(
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role,
+          loginTime: Date.now(),
+          clientIP: clientIP
+        },
+        JWT_SECRET,
+        { 
+          expiresIn: JWT_EXPIRES_IN,
+          issuer: 'butterfly-providers',
+          subject: user.id
+        }
+      );
       
       // Send welcome email with Brevo
       if (process.env.BREVO_API_KEY) {
@@ -244,15 +258,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      console.log('Registration successful - Session set:', {
+      console.log('Registration successful - JWT token generated:', {
         userId: user.id,
-        sessionId: req.sessionID,
-        userRole: user.role
+        email: user.email,
+        role: user.role
       });
       
       res.status(201).json({
         success: true,
         message: "Registration successful! Welcome to Butterfly Providers.",
+        token,
+        expiresIn: JWT_EXPIRES_IN,
         user: {
           id: user.id,
           email: user.email,

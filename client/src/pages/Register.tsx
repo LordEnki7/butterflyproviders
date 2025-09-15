@@ -33,18 +33,21 @@ export default function Register() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Store JWT token in localStorage
+      localStorage.setItem('auth_token', data.token);
+      
       toast({
         title: "Registration Successful",
         description: `Welcome to Butterfly Providers, ${data.user.firstName}! Redirecting to your portal...`,
       });
-      // Immediately invalidate and refetch user data
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
       
-      // Short delay to allow toast to show, then redirect
-      setTimeout(() => {
-        setLocation('/');
-      }, 1500);
+      console.log('Registration successful - JWT token stored in localStorage');
+      
+      // Clear auth cache and invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Navigate to client portal after registration
+      setLocation('/client-portal');
     },
     onError: (error: any) => {
       toast({
