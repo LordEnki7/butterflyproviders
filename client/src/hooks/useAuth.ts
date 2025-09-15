@@ -5,17 +5,18 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/user"],
+    enabled: !!localStorage.getItem('auth_token'), // Only run query if token exists
     retry: (failureCount, error) => {
-      // Don't retry on 401 errors (unauthorized)
+      // Don't retry on 401/403 errors (unauthorized/expired tokens)
       if (isUnauthorizedError(error as Error)) {
-        // Clear invalid token
+        // Clear invalid token and don't retry
         localStorage.removeItem('auth_token');
         return false;
       }
-      return failureCount < 2; // Reduce retry attempts
+      return failureCount < 1; // Reduce retry attempts even more
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false, // Don't refetch on window focus to avoid unnecessary requests
     refetchInterval: false,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
