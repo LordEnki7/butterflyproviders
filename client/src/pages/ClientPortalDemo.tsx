@@ -6,9 +6,9 @@ import { Link } from 'wouter';
 
 export default function ClientPortalDemo() {
   const user = {
-    firstName: "Demo",
-    lastName: "User",
-    email: "demo@butterflyproviders.com"
+    firstName: "Client",
+    lastName: "Portal",
+    email: "client@example.com"
   };
 
   const careUpdates = [
@@ -16,24 +16,24 @@ export default function ClientPortalDemo() {
       id: "1",
       date: "2025-08-31T23:02:17.399Z",
       type: "Personal Care Session",
-      caregiver: "Sarah Johnson, CNA",
-      notes: "Completed morning routine including assistance with bathing and medication reminder. Client was in good spirits and reported feeling well.",
+      caregiver: "Care Team Member, CNA",
+      notes: "Completed scheduled care activities. Client responded well to assistance and was in good spirits.",
       status: "completed"
     },
     {
       id: "2", 
       date: "2025-08-28T23:02:17.399Z",
       type: "Meal Preparation",
-      caregiver: "Maria Garcia, HHA",
-      notes: "Prepared healthy breakfast and lunch. Discussed nutrition goals with client. Grocery shopping completed for the week.",
+      caregiver: "Care Team Member, HHA",
+      notes: "Prepared nutritious meals and completed weekly grocery planning.",
       status: "completed"
     },
     {
       id: "3",
       date: "2025-08-26T23:02:17.399Z", 
       type: "Companionship Visit",
-      caregiver: "Robert Chen, Companion",
-      notes: "Enjoyed conversation about client's gardening interests. Took a short walk around the neighborhood. Client expressed enjoyment of social interaction.",
+      caregiver: "Care Team Member",
+      notes: "Provided companionship activities and light exercise. Client enjoyed the social interaction.",
       status: "completed"
     }
   ];
@@ -43,27 +43,27 @@ export default function ClientPortalDemo() {
       id: "1",
       date: "2025-09-03T23:02:17.399Z",
       type: "Personal Care & Light Housekeeping", 
-      caregiver: "Sarah Johnson, CNA"
+      caregiver: "Assigned Care Provider"
     },
     {
       id: "2",
       date: "2025-09-05T23:02:17.399Z",
       type: "Transportation to Medical Appointment",
-      caregiver: "Michael Davis, Aide"
+      caregiver: "Assigned Care Provider"
     },
     {
       id: "3", 
       date: "2025-09-07T23:02:17.399Z",
       type: "Meal Prep & Grocery Shopping",
-      caregiver: "Maria Garcia, HHA"
+      caregiver: "Assigned Care Provider"
     }
   ];
 
   const stats = {
-    totalAppointments: 24,
-    completedThisMonth: 8,
+    totalAppointments: 0,
+    completedThisMonth: 0,
     nextAppointment: "2025-09-03T23:02:17.399Z",
-    primaryCaregiver: "Sarah Johnson, CNA"
+    primaryCaregiver: "To be assigned"
   };
 
   return (

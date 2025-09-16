@@ -16,13 +16,13 @@ export default function SchedulingDemo() {
 
   // Demo caregivers data
   const demoCaregiver = {
-    id: "caregiver-001",
-    firstName: "Sarah",
-    lastName: "Johnson",
-    experience: 8,
-    specialties: "Personal Care, Alzheimer's Support, Medication Management",
-    hourlyRate: "35",
-    certification: "CNA, CPR Certified"
+    id: "caregiver-demo",
+    firstName: "Available",
+    lastName: "Caregiver",
+    experience: 5,
+    specialties: "Personal Care, Companionship, Light Housekeeping",
+    hourlyRate: "30",
+    certification: "CNA Certified"
   };
 
   // Demo time slots

@@ -3,22 +3,22 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
-    role: "Daughter of client",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
-    testimonial: "Butterfly Providers has been a blessing for our family. Their caregivers are professional, compassionate, and truly care about mom's wellbeing."
+    name: "Family Member",
+    role: "Client Family",
+    image: "https://ui-avatars.com/api/?name=FM&background=10b981&color=fff&size=100",
+    testimonial: "Butterfly Providers has been a blessing for our family. Their caregivers are professional, compassionate, and truly care about wellbeing."
   },
   {
-    name: "Michael Chen",
-    role: "Son of client",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
-    testimonial: "The peace of mind knowing dad is in good hands is priceless. The care team communicates regularly and goes above and beyond."
+    name: "Client Family",
+    role: "Family Member",
+    image: "https://ui-avatars.com/api/?name=CF&background=10b981&color=fff&size=100",
+    testimonial: "The peace of mind knowing our loved one is in good hands is priceless. The care team communicates regularly and goes above and beyond."
   },
   {
-    name: "Lisa Rodriguez",
-    role: "Family caregiver",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100",
-    testimonial: "Professional, reliable, and caring. I couldn't ask for better support for my mother. Highly recommend Butterfly Providers."
+    name: "Care Recipient",
+    role: "Client",
+    image: "https://ui-avatars.com/api/?name=CR&background=10b981&color=fff&size=100",
+    testimonial: "Professional, reliable, and caring. I couldn't ask for better support. Highly recommend Butterfly Providers."
   }
 ];
 
