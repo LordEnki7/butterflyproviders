@@ -10,7 +10,7 @@ import FloatingActionMenu from '@/components/FloatingActionMenu';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, FileText, MessageSquare, User, Clock, CheckCircle, Settings } from 'lucide-react';
+import { Calendar, FileText, MessageSquare, User, Clock, CheckCircle, Settings, Phone, Mail, AlertTriangle } from 'lucide-react';
 import { Link } from 'wouter';
 
 interface DashboardData {
@@ -267,37 +267,101 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* Quick Actions */}
+          {/* Need Assistance - Integrated Support Center */}
           <div className="lg:col-span-3">
-            <Card className="bg-gradient-to-r from-emerald-50 to-purple-50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-emerald-600" />
-                  Need Assistance?
+            <Card className="bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 border border-emerald-200 shadow-lg">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="flex items-center justify-center gap-2 text-xl">
+                  <MessageSquare className="w-6 h-6 text-emerald-600" />
+                  Need Assistance? We're Here to Help
                 </CardTitle>
+                <p className="text-gray-600 mt-2">Choose the option that best fits your needs - our care team is ready to support you</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <h4 className="font-medium text-gray-900 mb-2">Emergency Care</h4>
-                    <p className="text-sm text-gray-600 mb-3">24/7 emergency support available</p>
-                    <a href="tel:602-830-0966" className="text-emerald-600 font-medium hover:text-emerald-700">
-                      Call Now: 602-830-0966
-                    </a>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Emergency Care */}
+                  <div className="group relative">
+                    <div className="bg-white rounded-xl p-6 border border-red-200 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 h-full">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors duration-300">
+                          <AlertTriangle className="w-8 h-8 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg mb-2">Emergency Care</h3>
+                          <p className="text-sm text-gray-600 mb-4">Immediate 24/7 emergency support when you need it most</p>
+                        </div>
+                        <Button 
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-md"
+                          onClick={() => window.open('tel:602-830-0966', '_self')}
+                          data-testid="button-emergency-call"
+                        >
+                          <Phone className="w-4 h-4 mr-2" />
+                          Call Now: 602-830-0966
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <h4 className="font-medium text-gray-900 mb-2">Schedule Changes</h4>
-                    <p className="text-sm text-gray-600 mb-3">Need to modify your care schedule?</p>
-                    <a href="#contact" className="text-emerald-600 font-medium hover:text-emerald-700">
-                      Contact Care Team
-                    </a>
+
+                  {/* Schedule Changes */}
+                  <div className="group relative">
+                    <div className="bg-white rounded-xl p-6 border border-blue-200 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 h-full">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                          <Calendar className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg mb-2">Schedule Changes</h3>
+                          <p className="text-sm text-gray-600 mb-4">Need to modify appointments or care schedule arrangements</p>
+                        </div>
+                        <Button 
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-md"
+                          onClick={() => window.open('tel:602-830-0966', '_self')}
+                          data-testid="button-schedule-changes"
+                        >
+                          <Phone className="w-4 h-4 mr-2" />
+                          Call Care Team
+                        </Button>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Billing Questions */}
+                  <div className="group relative">
+                    <div className="bg-white rounded-xl p-6 border border-purple-200 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 h-full">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-300">
+                          <FileText className="w-8 h-8 text-purple-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg mb-2">Billing Questions</h3>
+                          <p className="text-sm text-gray-600 mb-4">Account inquiries, payment questions, and billing support</p>
+                        </div>
+                        <Button 
+                          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-md"
+                          onClick={() => window.open('mailto:info@butterflyproviders.com', '_self')}
+                          data-testid="button-billing-support"
+                        >
+                          <Mail className="w-4 h-4 mr-2" />
+                          Email Support
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Contact Info */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
-                    <h4 className="font-medium text-gray-900 mb-2">Billing Questions</h4>
-                    <p className="text-sm text-gray-600 mb-3">Questions about your account or billing?</p>
-                    <a href="mailto:info@butterflyproviders.com" className="text-emerald-600 font-medium hover:text-emerald-700">
-                      Email Support
-                    </a>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>Office Hours:</strong> Monday - Friday, 8:00 AM - 6:00 PM MST
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      For non-urgent matters, you can also visit our{' '}
+                      <Link href="/contact" className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline">
+                        Contact Page
+                      </Link>{' '}
+                      to submit a detailed request.
+                    </p>
                   </div>
                 </div>
               </CardContent>
