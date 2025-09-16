@@ -46,6 +46,8 @@ Preferred communication style: Simple, everyday language.
 - **Responsive Design**: Fully mobile-responsive with hamburger menu, adaptive layouts, and responsive component sizing.
 - **Layout**: Fixed header with specific height (74px) and overflow styling for larger logos. Consolidated contact information in the footer.
 - **Security**: HTTPS only, CSRF protection, input validation via Zod schemas, secure session management, and parameterized queries.
+- **Rate Limiting**: In-memory rate limiting implemented for login attempts with two-tier protection: (1) Soft limit: 3 failed attempts within 5-minute window returns HTTP 429, (2) Hard lockout: 5 failed attempts triggers 15-minute account lock with HTTP 429 response. Rate limiting is keyed by email address only and resets on successful login or server restart. Note: This is suitable for development and single-instance deployments but will not persist across server restarts or multiple instances. For production deployments with load balancing or auto-scaling, implement distributed rate limiting using Redis with combined email+IP keys, enable Express trust proxy configuration, and consider sliding window algorithms for better protection against distributed attacks.
+- **Health Monitoring**: Added `/api/health` (liveness) and `/api/ready` (readiness with database connectivity check) endpoints for monitoring and deployment health checks.
 
 ## External Dependencies
 
