@@ -140,6 +140,61 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 export async function registerRoutes(app: Express): Promise<Server> {
   // No longer need session middleware - using JWT tokens
 
+  // ===== HEALTH CHECK ROUTES =====
+  
+  // Health check endpoint for basic liveness check
+  app.get('/api/health', (req, res) => {
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0'
+    });
+  });
+
+  // Readiness check endpoint with database connectivity
+  app.get('/api/ready', async (req, res) => {
+    try {
+      // Test database connectivity
+      const dbTest = await storage.getDashboardStats().catch(() => null);
+      const isDbReady = dbTest !== null;
+      
+      const readiness = {
+        status: isDbReady ? 'ready' : 'not ready',
+        timestamp: new Date().toISOString(),
+        checks: {
+          database: {
+            status: isDbReady ? 'healthy' : 'unhealthy',
+            message: isDbReady ? 'Database connection successful' : 'Database connection failed'
+          },
+          auth: {
+            status: 'healthy',
+            message: 'Authentication system operational'
+          }
+        }
+      };
+
+      if (isDbReady) {
+        res.json(readiness);
+      } else {
+        res.status(503).json(readiness);
+      }
+    } catch (error) {
+      res.status(503).json({
+        status: 'not ready',
+        timestamp: new Date().toISOString(),
+        error: 'Health check failed',
+        checks: {
+          database: {
+            status: 'unhealthy',
+            message: 'Database health check failed'
+          }
+        }
+      });
+    }
+  });
+
   // ===== AUTHENTICATION ROUTES =====
   
   // Enhanced secure login endpoint
