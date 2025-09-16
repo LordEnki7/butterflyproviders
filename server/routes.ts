@@ -5,8 +5,9 @@ import { isAuthenticated, isAdminAuth, login, register } from "./auth";
 import { db } from "./db";
 import { consultations, jobApplications } from "@shared/schema";
 import jwt from "jsonwebtoken";
-import session from "express-session";
-import connectPg from "connect-pg-simple";
+// Note: session middleware imports removed as client auth now uses JWT
+// Admin auth still references sessions but middleware is not configured
+// TODO: Either implement session middleware for admin auth or migrate admin auth to JWT
 import { 
   insertContactInquirySchema,
   insertConsultationRequestSchema,
