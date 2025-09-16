@@ -53,6 +53,13 @@ interface PaymentHistory {
   notes?: string;
 }
 
+interface BillingSummary {
+  totalOutstanding?: number;
+  totalInvoices?: number;
+  paidThisMonth?: number;
+  overdueCount?: number;
+}
+
 export default function Billing() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -60,19 +67,19 @@ export default function Billing() {
   const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
 
   // Fetch user's invoices
-  const { data: invoices, isLoading: invoicesLoading } = useQuery({
+  const { data: invoices = [], isLoading: invoicesLoading } = useQuery<Invoice[]>({
     queryKey: ['/api/billing/invoices'],
     enabled: !!user,
   });
 
   // Fetch payment history
-  const { data: payments, isLoading: paymentsLoading } = useQuery({
+  const { data: payments = [], isLoading: paymentsLoading } = useQuery<PaymentHistory[]>({
     queryKey: ['/api/billing/payments'],
     enabled: !!user,
   });
 
   // Fetch billing summary
-  const { data: billingSummary } = useQuery({
+  const { data: billingSummary = {} } = useQuery<BillingSummary>({
     queryKey: ['/api/billing/summary'],
     enabled: !!user,
   });

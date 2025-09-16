@@ -584,6 +584,13 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ))}
+                    {(users as any[])?.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          <p className="text-gray-500">No users found</p>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -681,6 +688,13 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ))}
+                    {(clients as any[])?.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          <p className="text-gray-500">No clients found</p>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -717,8 +731,7 @@ export default function Admin() {
                               <SelectValue placeholder="Select client" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="client1">John Doe</SelectItem>
-                              <SelectItem value="client2">Jane Smith</SelectItem>
+                              <SelectItem value="demo">Select a client</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
