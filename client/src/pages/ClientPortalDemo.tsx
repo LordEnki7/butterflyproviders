@@ -220,7 +220,12 @@ export default function ClientPortalDemo() {
                 </Link>
               </Button>
               
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => window.open('tel:602-830-0966', '_self')}
+                data-testid="button-contact-care-team"
+              >
                 <Phone className="h-6 w-6" />
                 <span>Contact Care Team</span>
               </Button>
