@@ -84,9 +84,17 @@ export default function ClientPortalDemo() {
               <Button variant="outline" asChild>
                 <Link href="/scheduling">Book Appointment</Link>
               </Button>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm text-gray-600">Emergency: 602-830-0966</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-red-600" />
+                  <span className="text-sm text-gray-900 font-semibold">Emergency: 602-830-0966</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-blue-600" />
+                  <Link href="tel:602-830-0966" className="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                    Schedule Changes
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -205,7 +213,7 @@ export default function ClientPortalDemo() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2" asChild>
                 <Link href="/scheduling">
                   <CalendarDays className="h-6 w-6" />
@@ -218,16 +226,6 @@ export default function ClientPortalDemo() {
                   <Clock className="h-6 w-6" />
                   <span>View Billing</span>
                 </Link>
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center gap-2"
-                onClick={() => window.open('tel:602-830-0966', '_self')}
-                data-testid="button-contact-care-team"
-              >
-                <Phone className="h-6 w-6" />
-                <span>Contact Care Team</span>
               </Button>
             </div>
           </CardContent>
