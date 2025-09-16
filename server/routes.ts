@@ -27,8 +27,16 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-// JWT configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'butterfly-jwt-secret-development';
+// Validate required environment variables for security
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required for security');
+}
+if (!process.env.ADMIN_PASSWORD) {
+  throw new Error('ADMIN_PASSWORD environment variable is required for security');
+}
+
+// JWT configuration - now secure with required environment variables
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h'; // Shorter expiration for better security
 
 // Security tracking
@@ -126,8 +134,8 @@ function authenticateToken(req: any, res: any, next: any) {
   }
 }
 
-// Admin password - in production, this should be an environment variable
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "butterfly2025";
+// Admin password - now securely loaded from environment variable
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // No longer need session middleware - using JWT tokens
