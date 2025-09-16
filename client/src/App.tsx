@@ -13,7 +13,6 @@ import Scheduling from "@/pages/Scheduling";
 import SchedulingDemo from "@/pages/SchedulingDemo";
 import CancellationPolicies from "@/pages/CancellationPolicies";
 import Billing from "@/pages/Billing";
-import CaregiverManagement from "@/pages/CaregiverManagement";
 import SignUp from "@/pages/SignUp";
 import PersonalCare from "@/pages/PersonalCare";
 import Companionship from "@/pages/Companionship";
@@ -59,7 +58,6 @@ function Router() {
       <Route path="/services" component={Services} />
       <Route path="/services/detailed" component={DetailedServices} />
       <Route path="/join-our-team" component={JoinOurTeam} />
-      <Route path="/caregivers" component={CaregiverManagement} />
       <Route path="/scheduling" component={Scheduling} />
       <Route path="/scheduling-demo" component={SchedulingDemo} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />
