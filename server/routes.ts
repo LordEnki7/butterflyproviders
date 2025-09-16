@@ -388,9 +388,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Client dashboard data endpoint
-  app.get('/api/client/dashboard', isAuthenticated, async (req: any, res) => {
+  app.get('/api/client/dashboard', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -585,9 +585,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected client portal data endpoint
-  app.get('/api/client/dashboard', isAuthenticated, async (req: any, res) => {
+  app.get('/api/client/dashboard', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any)?.userId;
+      const userId = req.user.userId;
       const user = await storage.getUser(userId);
       
       // Return client portal data
@@ -1253,10 +1253,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Instant booking endpoint
-  app.post('/api/scheduling/book-appointment', isAuthenticated, async (req: any, res) => {
+  app.post('/api/scheduling/book-appointment', authenticateToken, async (req: any, res) => {
     try {
       const { caregiverId, serviceId, scheduledDate, duration, clientNotes } = req.body;
-      const userId = (req.session as any)?.userId;
+      const userId = req.user.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
@@ -1296,10 +1296,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cancel appointment endpoint
-  app.post('/api/scheduling/cancel-appointment', isAuthenticated, async (req: any, res) => {
+  app.post('/api/scheduling/cancel-appointment', authenticateToken, async (req: any, res) => {
     try {
       const { appointmentId, reason, policyType = 'standard' } = req.body;
-      const userId = (req.session as any)?.userId;
+      const userId = req.user.userId;
 
       if (!appointmentId || !reason) {
         return res.status(400).json({ message: "Appointment ID and cancellation reason are required" });
@@ -1359,10 +1359,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enhanced booking with reminders
-  app.post('/api/scheduling/book-appointment-with-reminders', isAuthenticated, async (req: any, res) => {
+  app.post('/api/scheduling/book-appointment-with-reminders', authenticateToken, async (req: any, res) => {
     try {
       const { caregiverId, serviceId, scheduledDate, duration, clientNotes, reminders } = req.body;
-      const userId = (req.session as any)?.userId;
+      const userId = req.user.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
@@ -1404,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Book recurring appointment
-  app.post('/api/scheduling/book-recurring-appointment', isAuthenticated, async (req: any, res) => {
+  app.post('/api/scheduling/book-recurring-appointment', authenticateToken, async (req: any, res) => {
     try {
       const { 
         caregiverId, 
@@ -1419,7 +1419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxOccurrences,
         reminders
       } = req.body;
-      const userId = (req.session as any)?.userId;
+      const userId = req.user.userId;
       
       // Find or create client record
       const user = await storage.getUser(userId);
@@ -1595,9 +1595,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== BILLING CLIENT API ROUTES =====
   
-  app.get('/api/billing/invoices', isAuthenticated, async (req: any, res) => {
+  app.get('/api/billing/invoices', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       const invoices = await storage.getInvoicesByUserId(userId);
       
       // Transform invoices to include formatted data for frontend
@@ -1619,9 +1619,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/billing/summary', isAuthenticated, async (req: any, res) => {
+  app.get('/api/billing/summary', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       const summary = await storage.getBillingSummaryByUserId(userId);
       res.json(summary);
     } catch (error) {
@@ -1630,9 +1630,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/billing/payments', isAuthenticated, async (req: any, res) => {
+  app.get('/api/billing/payments', authenticateToken, async (req: any, res) => {
     try {
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       const payments = await storage.getPaymentHistoryByUserId(userId);
       res.json(payments);
     } catch (error) {
@@ -1641,10 +1641,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/billing/invoices/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/billing/invoices/:id', authenticateToken, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       
       const invoice = await storage.getInvoice(id);
       if (!invoice) {
@@ -1685,10 +1685,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/billing/invoices/:id/download', isAuthenticated, async (req: any, res) => {
+  app.get('/api/billing/invoices/:id/download', authenticateToken, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = (req.session as any).userId;
+      const userId = req.user.userId;
       
       const invoice = await storage.getInvoice(id);
       if (!invoice) {
