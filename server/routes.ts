@@ -238,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error(errorMessage);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error instanceof Error ? error.message : 'Unknown error');
       res.status(401).json({ message: error instanceof Error ? error.message : "Login failed" });
     }
   });
@@ -260,7 +260,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await EmailTemplates.welcome(user.email, user.firstName || 'User');
           // Welcome email sent successfully
         } catch (emailError) {
-          console.error('❌ Failed to send welcome email:', emailError);
+          console.error('❌ Failed to send welcome email:', emailError instanceof Error ? emailError.message : 'Email service error');
           // Don't fail registration if email fails
         }
       }
@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: "Invalid form data", errors: error.errors });
       } else {
-        console.error("Registration error:", error);
+        console.error("Registration error:", error instanceof Error ? error.message : 'Unknown error');
         res.status(400).json({ message: error instanceof Error ? error.message : "Registration failed" });
       }
     }
@@ -317,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: user.role,
       });
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error fetching user:", error instanceof Error ? error.message : 'Database error');
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
