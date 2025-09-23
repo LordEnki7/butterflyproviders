@@ -567,35 +567,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== ADMIN AUTHENTICATION ROUTES =====
 
-  // Admin login with password
+  // Admin login endpoint - now using JWT
   app.post('/api/admin/login', async (req, res) => {
     try {
       const { password } = req.body;
       
-      if (password === ADMIN_PASSWORD) {
-        (req.session as any).adminAuthenticated = true;
-        res.json({ success: true, message: "Admin authenticated successfully" });
-      } else {
-        res.status(401).json({ message: "Invalid admin password" });
-      }
+      const adminUser = await adminLogin(password);
+      const token = generateToken({ ...adminUser, clientIP: getClientIP(req) });
+      
+      res.json({ 
+        success: true, 
+        message: "Admin authenticated successfully",
+        token,
+        user: {
+          id: adminUser.id,
+          email: adminUser.email,
+          firstName: adminUser.firstName,
+          lastName: adminUser.lastName,
+          role: adminUser.role
+        }
+      });
     } catch (error) {
       console.error("Error in admin login:", error);
-      res.status(500).json({ message: "Authentication failed" });
+      res.status(401).json({ message: error instanceof Error ? error.message : "Authentication failed" });
     }
   });
 
-  // Check admin authentication status
-  app.get('/api/admin/check-auth', (req, res) => {
-    if ((req.session as any)?.adminAuthenticated) {
-      res.json({ authenticated: true });
-    } else {
-      res.status(401).json({ authenticated: false });
-    }
+  // Check admin authentication status - now using JWT
+  app.get('/api/admin/check-auth', isAdminAuth, (req: any, res) => {
+    res.json({ 
+      authenticated: true,
+      user: {
+        id: req.user.userId,
+        email: req.user.email,
+        role: req.user.role
+      }
+    });
   });
 
-  // Admin logout
+  // Admin logout - with JWT, logout is handled client-side by removing token
   app.post('/api/admin/logout', (req, res) => {
-    (req.session as any).adminAuthenticated = false;
     res.json({ success: true, message: "Admin logged out successfully" });
   });
 
