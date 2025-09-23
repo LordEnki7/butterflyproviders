@@ -208,11 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Generate secure JWT token
         const token = generateToken({ ...user, clientIP });
         
-        console.log('Login successful - JWT token generated:', {
-          userId: user.id,
-          email: user.email,
-          role: user.role
-        });
+        // Login successful - token generated
         
         res.json({
           success: true,
@@ -262,18 +258,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.welcome(user.email, user.firstName || 'User');
-          console.log('✅ Welcome email sent to:', user.email);
+          // Welcome email sent successfully
         } catch (emailError) {
           console.error('❌ Failed to send welcome email:', emailError);
           // Don't fail registration if email fails
         }
       }
       
-      console.log('Registration successful - JWT token generated:', {
-        userId: user.id,
-        email: user.email,
-        role: user.role
-      });
+      // Registration successful - token generated
       
       res.status(201).json({
         success: true,
@@ -309,11 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/user', authenticateToken, async (req: any, res) => {
     try {
       const userId = req.user.userId;
-      console.log('Getting user - JWT token verified:', {
-        userId,
-        email: req.user.email,
-        role: req.user.role
-      });
+      // JWT token verified - fetching user data
       
       const user = await storage.getUser(userId);
       

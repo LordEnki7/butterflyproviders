@@ -7,8 +7,7 @@ if (!process.env.BREVO_API_KEY) {
 const brevoApi = new TransactionalEmailsApi();
 brevoApi.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-// Test the API key by logging it (remove in production)
-console.log('Brevo API Key configured:', process.env.BREVO_API_KEY ? 'Yes (length: ' + process.env.BREVO_API_KEY.length + ')' : 'No');
+// Brevo API Key configured
 
 interface EmailParams {
   to: string;
@@ -24,12 +23,7 @@ interface EmailParams {
 
 export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
   try {
-    // Log email attempt for debugging
-    console.log('📧 Attempting to send email:', {
-      to: emailParams.to,
-      subject: emailParams.subject,
-      from: emailParams.from
-    });
+    // Attempting to send email
     
     const emailPayload: any = {
       to: [{ 
@@ -64,30 +58,13 @@ export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
 
     const result = await brevoApi.sendTransacEmail(emailPayload);
     
-    console.log('✅ Brevo email sent successfully:', {
-      messageId: result.body.messageId,
-      to: emailParams.to,
-      subject: emailParams.subject || 'Template email'
-    });
+    // Brevo email sent successfully
     
     return true;
   } catch (error: any) {
-    console.error('❌ Brevo email send failed:', {
-      error: error.message,
-      to: emailParams.to,
-      subject: emailParams.subject,
-      statusCode: error.response?.status,
-      responseBody: error.response?.body
-    });
+    // Brevo email send failed
     
-    // For now, log the email content so we can see what would have been sent
-    console.log('📋 Email content that would have been sent:');
-    console.log('Subject:', emailParams.subject);
-    console.log('To:', emailParams.to);
-    console.log('From:', emailParams.from);
-    if (emailParams.htmlContent) {
-      console.log('HTML preview (first 200 chars):', emailParams.htmlContent.substring(0, 200) + '...');
-    }
+    // Email content logging removed for security
     
     return false;
   }

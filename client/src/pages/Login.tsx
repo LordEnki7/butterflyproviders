@@ -40,7 +40,7 @@ export default function Login() {
         description: `Welcome back, ${data.user.firstName}!`,
       });
       
-      console.log('Login successful - JWT token stored in localStorage');
+      // Login successful - JWT token stored
       
       // Clear auth cache and invalidate queries
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });

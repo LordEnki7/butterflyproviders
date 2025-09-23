@@ -47,5 +47,5 @@ export function isValidToken(token: string | null): boolean {
 // Helper function to clear auth state when token is invalid
 export function clearAuthState(): void {
   localStorage.removeItem('auth_token');
-  console.log('Auth state cleared due to invalid/expired token');
+  // Auth state cleared due to invalid/expired token
 }

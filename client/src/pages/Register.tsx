@@ -41,7 +41,7 @@ export default function Register() {
         description: `Welcome to Butterfly Providers, ${data.user.firstName}! Redirecting to your portal...`,
       });
       
-      console.log('Registration successful - JWT token stored in localStorage');
+      // Registration successful - JWT token stored
       
       // Clear auth cache and invalidate queries
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });

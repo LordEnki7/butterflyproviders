@@ -96,7 +96,7 @@ export function useAuth() {
         // We can safely use the base64url decoder from authUtils if needed for expiry check
         // But for now, if isValidToken passed, we know the token is valid
         // We could extract expiry info if needed for warnings
-        console.log('JWT token is valid and not expired');
+        // JWT token is valid and not expired
       } catch (error) {
         // Should not happen since isValidToken passed, but handle gracefully
         clearAuthState();
@@ -105,15 +105,7 @@ export function useAuth() {
     }
   }, [hasValidToken, user]);
 
-  // Add debugging but reduce noise
-  const debugState = { 
-    user: user ? { id: user.id, email: user.email } : null, 
-    isLoading, 
-    error: error?.message, 
-    isAuthenticated: !!user,
-    hasValidToken
-  };
-  console.log('useAuth:', debugState);
+  // Authentication state management
 
   return {
     user,

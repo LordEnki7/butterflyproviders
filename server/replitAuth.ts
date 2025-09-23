@@ -14,7 +14,7 @@ if (!process.env.REPLIT_DOMAINS) {
 
 const getOidcConfig = memoize(
   async () => {
-    console.log("Initializing OIDC config with REPL_ID:", process.env.REPL_ID);
+    // Initializing OIDC config
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
       process.env.REPL_ID!
@@ -62,7 +62,7 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  console.log("Upserting user with claims:", claims);
+  // Upserting user with authentication data
   try {
     const user = await storage.upsertUser({
       id: claims["sub"],
@@ -71,7 +71,7 @@ async function upsertUser(
       lastName: claims["last_name"],
       profileImageUrl: claims["profile_image_url"],
     });
-    console.log("User upserted successfully:", user);
+    // User upserted successfully
     return user;
   } catch (error) {
     console.error("Error upserting user:", error);
@@ -92,13 +92,13 @@ export async function setupAuth(app: Express) {
     verified: passport.AuthenticateCallback
   ) => {
     try {
-      console.log("Authentication verify callback triggered");
+      // Authentication verify callback triggered
       const user = {};
       updateUserSession(user, tokens);
       const claims = tokens.claims();
       if (claims) {
         await upsertUser(claims);
-        console.log("User authenticated successfully:", claims.sub);
+        // User authenticated successfully
       } else {
         console.error("No claims found in tokens");
       }
@@ -117,7 +117,7 @@ export async function setupAuth(app: Express) {
     allDomains.push("butterflyproviders.com");
   }
   
-  console.log("Setting up authentication for domains:", allDomains);
+  // Setting up authentication for domains
 
   for (const domain of allDomains) {
     const strategy = new Strategy(
@@ -130,7 +130,7 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
-    console.log(`Configured authentication strategy for domain: ${domain}`);
+    // Configured authentication strategy for domain
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
@@ -145,7 +145,7 @@ export async function setupAuth(app: Express) {
       return res.redirect(`https://${replitDomain}/api/login`);
     }
     
-    console.log(`Login attempt from hostname: ${req.hostname}, using domain: ${domain}`);
+    // Login attempt from hostname
     
     passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
@@ -156,14 +156,13 @@ export async function setupAuth(app: Express) {
   app.get("/api/callback", (req, res, next) => {
     const domain = req.hostname;
     
-    console.log(`Callback from hostname: ${req.hostname}, using domain: ${domain}, query:`, req.query);
-    console.log("Request headers:", req.headers);
+    // Authentication callback received
     
     const strategyName = `replitauth:${domain}`;
-    console.log(`Attempting to use strategy: ${strategyName}`);
+    // Using authentication strategy
     
     passport.authenticate(strategyName, (err: any, user: any, info: any) => {
-      console.log("Authentication callback result:", { err, user, info });
+      // Authentication callback completed
       
       if (err) {
         console.error("Authentication error:", err);
@@ -171,7 +170,7 @@ export async function setupAuth(app: Express) {
       }
       
       if (!user) {
-        console.log("No user returned from authentication, info:", info);
+        // No user returned from authentication
         return res.redirect("/api/login?error=no_user");
       }
       
@@ -181,7 +180,7 @@ export async function setupAuth(app: Express) {
           return res.redirect("/api/login?error=login_failed");
         }
         
-        console.log("User successfully logged in, redirecting to home");
+        // User successfully logged in, redirecting to home
         return res.redirect("/");
       });
     })(req, res, next);

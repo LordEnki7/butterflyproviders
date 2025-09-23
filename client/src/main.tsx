@@ -14,12 +14,12 @@ if (authToken) {
     
     // If token is expired, clear it immediately
     if (expiry <= now) {
-      console.log('Clearing expired auth token on app startup');
+      // Clearing expired auth token on app startup
       localStorage.removeItem('auth_token');
     }
   } catch (error) {
     // Invalid token format, clear it
-    console.log('Clearing invalid auth token on app startup');
+    // Clearing invalid auth token on app startup
     localStorage.removeItem('auth_token');
   }
 }
