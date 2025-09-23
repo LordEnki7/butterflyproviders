@@ -1,13 +1,37 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import { storage } from './storage';
 
-// Middleware to check if user is authenticated
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  if (req.session && (req.session as any).userId) {
-    return next();
+// Validate required environment variables
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required for security');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// JWT authentication middleware for all authenticated routes
+export const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
   }
-  return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.user = decoded;
+    next();
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
 };
 
 // Hash password utility
@@ -71,16 +95,48 @@ export const register = async (userData: {
   return user;
 };
 
-// Admin authentication middleware
-export const isAdminAuth = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // Check if admin session exists
-    if ((req.session as any)?.adminAuthenticated) {
+// Admin authentication middleware - JWT with role check
+export const isAdminAuth = (req: any, res: any, next: any) => {
+  // First authenticate the token
+  authenticateToken(req, res, () => {
+    // Then check if user has admin role
+    if (req.user && req.user.role === 'admin') {
       return next();
     }
-    
-    return res.status(401).json({ message: "Admin authentication required" });
-  } catch (error) {
-    res.status(500).json({ message: "Authentication error" });
+    return res.status(403).json({ message: 'Admin access required' });
+  });
+};
+
+// Helper function to generate JWT tokens
+export const generateToken = (user: any): string => {
+  const payload = {
+    userId: user.id,
+    email: user.email,
+    role: user.role || 'client',
+    clientIP: user.clientIP
+  };
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+};
+
+// Admin login function
+export const adminLogin = async (password: string) => {
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (!ADMIN_PASSWORD) {
+    throw new Error('Admin password not configured');
   }
+  
+  if (password !== ADMIN_PASSWORD) {
+    throw new Error('Invalid admin password');
+  }
+  
+  // Return admin user object for token generation
+  return {
+    id: 'admin',
+    email: 'admin@butterflyproviders.com',
+    role: 'admin',
+    firstName: 'Admin',
+    lastName: 'User'
+  };
 };

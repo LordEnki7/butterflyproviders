@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { isAuthenticated, isAdminAuth, login, register } from "./auth";
+import { authenticateToken, isAdminAuth, login, register, generateToken, adminLogin } from "./auth";
 import { db } from "./db";
 import { consultations, jobApplications } from "@shared/schema";
 import jwt from "jsonwebtoken";
@@ -108,32 +108,7 @@ function isRateLimited(email: string): boolean {
   return timeSinceLastAttempt < RATE_LIMIT_WINDOW && attempts.attempts >= RATE_LIMIT_MAX_ATTEMPTS;
 }
 
-// Enhanced JWT middleware for protected routes
-function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access token required' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    
-    // Additional security check: ensure token hasn't been tampered with
-    if (!decoded.userId || !decoded.email || !decoded.role) {
-      return res.status(403).json({ message: 'Invalid token structure' });
-    }
-    
-    req.user = decoded;
-    next();
-  } catch (err) {
-    if (err instanceof jwt.TokenExpiredError) {
-      return res.status(403).json({ message: 'Token expired, please login again' });
-    }
-    return res.status(403).json({ message: 'Invalid or expired token' });
-  }
-}
+// JWT middleware is now imported from auth.ts
 
 // Admin password - now securely loaded from environment variable
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -230,22 +205,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Record successful login
         recordLoginAttempt(email, true);
         
-        // Generate secure JWT token with additional claims
-        const token = jwt.sign(
-          { 
-            userId: user.id, 
-            email: user.email, 
-            role: user.role,
-            loginTime: Date.now(),
-            clientIP: clientIP
-          },
-          JWT_SECRET,
-          { 
-            expiresIn: JWT_EXPIRES_IN,
-            issuer: 'butterfly-providers',
-            subject: user.id
-          }
-        );
+        // Generate secure JWT token
+        const token = generateToken({ ...user, clientIP });
         
         console.log('Login successful - JWT token generated:', {
           userId: user.id,
@@ -293,22 +254,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await register(validatedData);
       const clientIP = getClientIP(req);
       
-      // Generate secure JWT token (same as login)
-      const token = jwt.sign(
-        { 
-          userId: user.id, 
-          email: user.email, 
-          role: user.role,
-          loginTime: Date.now(),
-          clientIP: clientIP
-        },
-        JWT_SECRET,
-        { 
-          expiresIn: JWT_EXPIRES_IN,
-          issuer: 'butterfly-providers',
-          subject: user.id
-        }
-      );
+      // Generate secure JWT token
+      const token = generateToken({ ...user, clientIP });
       
       // Send welcome email with Brevo
       if (process.env.BREVO_API_KEY) {
