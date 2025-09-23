@@ -10,7 +10,6 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Scheduling from "@/pages/Scheduling";
-import SchedulingDemo from "@/pages/SchedulingDemo";
 import CancellationPolicies from "@/pages/CancellationPolicies";
 import Billing from "@/pages/Billing";
 import SignUp from "@/pages/SignUp";
@@ -24,7 +23,6 @@ import AboutUs from "@/pages/AboutUs";
 import Services from "@/pages/Services";
 import DetailedServices from "@/pages/DetailedServices";
 import JoinOurTeam from "@/pages/JoinOurTeam";
-import ClientPortalDemo from "@/pages/ClientPortalDemo";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsConditions from "@/pages/TermsConditions";
 import ServiceAgreement from "@/pages/ServiceAgreement";
@@ -36,8 +34,7 @@ import CodeOfEthics from "@/pages/CodeOfEthics";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   
-  // Add debugging
-  console.log('Router - Auth state:', { isAuthenticated, isLoading });
+  // Authentication state management
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -59,7 +56,6 @@ function Router() {
       <Route path="/services/detailed" component={DetailedServices} />
       <Route path="/join-our-team" component={JoinOurTeam} />
       <Route path="/scheduling" component={Scheduling} />
-      <Route path="/scheduling-demo" component={SchedulingDemo} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />
       <Route path="/services/personal-care" component={PersonalCare} />
       <Route path="/services/companionship" component={Companionship} />
@@ -67,7 +63,6 @@ function Router() {
       <Route path="/services/transportation" component={Transportation} />
       <Route path="/services/dementia-support" component={DementiaSupport} />
       <Route path="/services/respite-care" component={RespiteCare} />
-      <Route path="/client-portal-demo" component={ClientPortalDemo} />
       <Route path="/client-portal" component={Home} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-conditions" component={TermsConditions} />
