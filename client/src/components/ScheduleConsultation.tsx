@@ -129,7 +129,7 @@ export default function ScheduleConsultation() {
                     </label>
                     <Input
                       type="tel"
-                      placeholder="(602) 555-0123"
+                      placeholder=""
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       required
