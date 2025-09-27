@@ -200,7 +200,7 @@ export default function ConsultationBookingWidget({
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   required
-                  placeholder="(602) 555-0123"
+                  placeholder=""
                 />
               </div>
 
