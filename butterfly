@@ -1,0 +1,7 @@
+git config user.email "butterflyproviders007@gmail.com"
+git config user.name "Shawn Williams"
+git add .
+git commit -m "Deploy Butterfly Providers - production ready"
+git remote add origin https://github.com/LordEnki7/butterflyproviders.git
+git branch -M main
+git push -u origin main
