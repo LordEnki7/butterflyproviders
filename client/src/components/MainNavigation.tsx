@@ -122,7 +122,7 @@ export default function MainNavigation() {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-lg transition-all duration-300 ${
+        <div className={`md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-lg transition-all duration-300 z-40 ${
           isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
         }`}>
           <div className="px-4 py-6 space-y-3">
