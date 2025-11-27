@@ -37,7 +37,7 @@ export default function ConsultationBookingWidget({
 
   const consultationMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return await apiRequest('POST', '/api/consultations', data);
+      return await apiRequest('POST', '/api/consultation', data);
     },
     onSuccess: () => {
       setIsSubmitted(true);
