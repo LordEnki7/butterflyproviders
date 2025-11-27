@@ -122,43 +122,45 @@ export default function MainNavigation() {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-lg transition-all duration-300 z-40 ${
-          isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}>
-          <div className="px-4 py-6 space-y-3">
-            {navigationItems.map((item, index) => {
-              const isActive = location === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div 
-                    className={`block p-4 rounded-lg transition-all duration-200 hover:scale-105 ${
-                      isActive ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-emerald-50 text-gray-700 hover:text-emerald-700'
-                    }`}
-                    style={{ 
-                      animationDelay: `${index * 100}ms`,
-                      opacity: 0,
-                      animation: `slideInLeft 0.4s ease-out forwards ${index * 100}ms`
-                    }}
+        {isOpen && (
+          <div className={`md:hidden fixed top-[74px] left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 max-h-[calc(100vh-74px)] overflow-y-auto`}>
+            <div className="px-4 py-6 space-y-3">
+              {navigationItems.map((item, index) => {
+                const isActive = location === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
                   >
-                    <span className="font-medium">{item.label}</span>
+                    <div 
+                      onClick={() => setIsOpen(false)}
+                      className={`block p-4 rounded-lg transition-all duration-200 cursor-pointer ${
+                        isActive ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-emerald-50 text-gray-700 hover:text-emerald-700'
+                      }`}
+                      style={{ 
+                        animationDelay: `${index * 100}ms`,
+                        opacity: 0,
+                        animation: `slideInLeft 0.4s ease-out forwards ${index * 100}ms`
+                      }}
+                    >
+                      <span className="font-medium">{item.label}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+              
+              <div className="pt-4 border-t border-gray-200">
+                <Link href="/register">
+                  <div onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-200">
+                      Sign Up
+                    </Button>
                   </div>
                 </Link>
-              );
-            })}
-            
-            <div className="pt-4 border-t border-gray-200">
-              <Link href="/register">
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-200">
-                  Sign Up
-                </Button>
-              </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );
