@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, Phone, Mail, MessageSquare, X } from 'lucide-react';
+import { Plus, Phone, Mail, X } from 'lucide-react';
 
 const actionItems = [
-  {
-    icon: Calendar,
-    label: 'Schedule Care',
-    href: '/scheduling-demo',
-    color: 'bg-emerald-500 hover:bg-emerald-600'
-  },
   {
     icon: Phone,
     label: 'Call Now',
@@ -20,12 +14,6 @@ const actionItems = [
     label: 'Email Us',
     href: 'mailto:info@butterflyproviders.com',
     color: 'bg-purple-500 hover:bg-purple-600'
-  },
-  {
-    icon: MessageSquare,
-    label: 'Contact Form',
-    action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }),
-    color: 'bg-orange-500 hover:bg-orange-600'
   }
 ];
 
@@ -33,11 +21,7 @@ export default function FloatingActionMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleItemClick = (item: typeof actionItems[0]) => {
-    if (item.action) {
-      item.action();
-    } else if (item.href) {
-      window.open(item.href, item.href.startsWith('tel:') || item.href.startsWith('mailto:') ? '_self' : '_blank');
-    }
+    window.open(item.href, item.href.startsWith('tel:') || item.href.startsWith('mailto:') ? '_self' : '_blank');
     setIsOpen(false);
   };
 
