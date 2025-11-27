@@ -47,7 +47,7 @@ export default function MainNavigation() {
   ];
 
   return (
-    <header className={`bg-white/95 border-b relative overflow-hidden transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
+    <header className={`bg-white/95 border-b relative overflow-visible transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
       isScrolled ? 'shadow-lg backdrop-blur-md bg-white/98' : 'shadow-sm backdrop-blur-sm'
     }`} style={{height: isScrolled ? '64px' : '74px'}}>
       <div className="container mx-auto px-4 py-0 relative">
@@ -123,7 +123,7 @@ export default function MainNavigation() {
 
         {/* Mobile Menu Dropdown */}
         {isOpen && (
-          <div className={`md:hidden fixed top-[74px] left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 max-h-[calc(100vh-74px)] overflow-y-auto`}>
+          <div className={`md:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 w-full`}>
             <div className="px-4 py-6 space-y-3">
               {navigationItems.map((item, index) => {
                 const isActive = location === item.href;
