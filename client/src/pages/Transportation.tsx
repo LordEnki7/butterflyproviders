@@ -1,8 +1,13 @@
+import { useEffect } from 'react';
 import { ArrowLeft, Car, MapPin, ShoppingBag, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 
 export default function Transportation() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-purple-50">
       {/* Navigation */}
@@ -196,9 +201,11 @@ export default function Transportation() {
                 Schedule Transportation
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600" asChild>
-              <a href="tel:602-830-0966" className="text-white hover:text-blue-600">Call 602-830-0966</a>
-            </Button>
+            <a href="tel:602-830-0966">
+              <Button size="lg" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600">
+                Call 602-830-0966
+              </Button>
+            </a>
           </div>
         </div>
       </div>
