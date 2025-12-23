@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import caregiverImage from '@assets/pictue of a black caregiver helping an elderly person_1753906192114.png';
-import { Link } from 'wouter';
 
 export default function Hero() {
   return (
