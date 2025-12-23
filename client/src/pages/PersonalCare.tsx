@@ -124,7 +124,7 @@ export default function PersonalCare() {
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600" asChild>
-              <a href="tel:602-830-0966">Call 602-830-0966</a>
+              <a href="tel:602-830-0966" className="text-white hover:text-emerald-600">Call 602-830-0966</a>
             </Button>
           </div>
         </div>
