@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
+import ContactBar from './ContactBar';
 
 export default function MainNavigation() {
   const [location] = useLocation();
@@ -47,9 +48,11 @@ export default function MainNavigation() {
   ];
 
   return (
-    <header className={`bg-white/95 border-b relative overflow-visible transition-all duration-300 z-50 fixed top-0 left-0 right-0 ${
-      isScrolled ? 'shadow-lg backdrop-blur-md bg-white/98' : 'shadow-sm backdrop-blur-sm'
-    }`} style={{height: isScrolled ? '64px' : '74px'}}>
+    <>
+      <ContactBar />
+      <header className={`bg-white/95 border-b relative overflow-visible transition-all duration-300 z-50 fixed left-0 right-0 ${
+        isScrolled ? 'shadow-lg backdrop-blur-md bg-white/98' : 'shadow-sm backdrop-blur-sm'
+      }`} style={{height: isScrolled ? '64px' : '74px', top: '36px'}}>
       <div className="container mx-auto px-4 py-0 relative">
         <div className="flex items-center relative -my-20">
           <Link href="/" className="flex-shrink-0 relative z-10 group">
@@ -163,5 +166,6 @@ export default function MainNavigation() {
         )}
       </div>
     </header>
+    </>
   );
 }
