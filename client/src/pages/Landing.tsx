@@ -2,14 +2,12 @@ import { useEffect } from 'react';
 import MainNavigation from '@/components/MainNavigation';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
-import ClientPortal from '@/components/ClientPortal';
-import ScheduleConsultation from '@/components/ScheduleConsultation';
+import FindCaregiverForm from '@/components/FindCaregiverForm';
 import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import FloatingActionMenu from '@/components/FloatingActionMenu';
-import ConsultationBookingWidget from '@/components/ConsultationBookingWidget';
 
 export default function Landing() {
   useEffect(() => {
@@ -32,8 +30,7 @@ export default function Landing() {
       <main>
         <Hero />
         <Services />
-        <ClientPortal />
-        <ScheduleConsultation />
+        <FindCaregiverForm />
         <Testimonials />
         <About />
       </main>

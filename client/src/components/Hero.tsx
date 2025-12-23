@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import caregiverImage from '@assets/pictue of a black caregiver helping an elderly person_1753906192114.png';
-import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
-import ConsultationBookingWidget from '@/components/ConsultationBookingWidget';
+import { Link } from 'wouter';
 
 export default function Hero() {
   return (
@@ -19,11 +17,12 @@ export default function Hero() {
               Professional, non-medical home care services designed to help you or your loved ones maintain independence and dignity in the comfort of home.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <ConsultationBookingWidget 
-                variant="button" 
-                size="lg"
-                className="px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold h-auto"
-              />
+              <Button 
+                onClick={() => document.getElementById('find-caregiver')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold h-auto transition-all duration-200 hover:scale-105"
+              >
+                Find a Caregiver
+              </Button>
               <Button 
                 variant="outline"
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}

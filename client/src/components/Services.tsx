@@ -1,55 +1,42 @@
 import { Users, Utensils, Car, Brain, Home, HandHeart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 
 const services = [
   {
-    title: "Personal Care Assistance",
-    description: "Comprehensive hands-on care including bathing, dressing, grooming, toileting, feeding assistance, and mobility support.",
+    title: "Personal Care",
     icon: HandHeart,
     color: "purple",
-    bgGradient: "from-purple-100 to-purple-50",
-    link: "/services"
+    link: "/services/personal-care"
   },
   {
-    title: "Homemaking & Domestic Support", 
-    description: "Complete home maintenance including housekeeping, laundry, meal preparation, grocery shopping, and basic pet care.",
-    icon: Home,
-    color: "blue",
-    bgGradient: "from-blue-100 to-blue-50",
-    link: "/services"
-  },
-  {
-    title: "Companionship & Emotional Support",
-    description: "Social interaction, wellness monitoring, recreational activities, and emotional engagement to enhance quality of life.",
+    title: "Companionship", 
     icon: Users,
     color: "orange",
-    bgGradient: "from-orange-100 to-orange-50",
-    link: "/services"
+    link: "/services/companionship"
   },
   {
-    title: "Errands & Transportation Assistance",
-    description: "Safe escort services to appointments, grocery trips, errands, and social outings for independence outside the home.",
+    title: "Meal Preparation",
+    icon: Utensils,
+    color: "blue",
+    link: "/services/meal-prep"
+  },
+  {
+    title: "Transportation",
     icon: Car,
     color: "pink",
-    bgGradient: "from-pink-100 to-pink-50",
-    link: "/services"
+    link: "/services/transportation"
   },
   {
-    title: "Specialized Memory Care",
-    description: "Expert care and support for individuals with Alzheimer's, dementia, and other memory-related conditions.",
+    title: "Dementia Support",
     icon: Brain,
     color: "emerald",
-    bgGradient: "from-emerald-100 to-emerald-50",
-    link: "/services"
+    link: "/services/dementia-support"
   },
   {
-    title: "Additional Support Services",
-    description: "Medication reminders, respite care, safety monitoring, light exercise support, and technology assistance.",
-    icon: Utensils,
+    title: "Respite Care",
+    icon: Home,
     color: "gray",
-    bgGradient: "from-gray-100 to-gray-50",
-    link: "/services"
+    link: "/services/respite-care"
   }
 ];
 
@@ -79,34 +66,20 @@ export default function Services() {
             const iconBgColor = colorMap[service.color as keyof typeof colorMap]?.split(' ')[0] || 'bg-gray-500';
             
             return (
-              <div 
-                key={index}
-                className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 hover:scale-105"
-              >
-                <div className={`w-12 h-12 ${iconBgColor} rounded-lg flex items-center justify-center mr-4 flex-shrink-0`}>
-                  <Icon className="text-white" size={24} />
+              <Link key={index} href={service.link}>
+                <div 
+                  className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  <div className={`w-12 h-12 ${iconBgColor} rounded-lg flex items-center justify-center mr-4 flex-shrink-0`}>
+                    <Icon className="text-white" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{service.title}</h3>
-                  <p className="text-sm text-gray-600">Professional care services</p>
-                </div>
-              </div>
+              </Link>
             );
           })}
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-6">
-            Want to learn more about our comprehensive care services?
-          </p>
-          <Link href="/services/detailed">
-            <Button 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 font-semibold transition-all duration-200 hover:scale-105"
-            >
-              View Detailed Services
-            </Button>
-          </Link>
         </div>
       </div>
     </section>

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Phone, Mail, Shield } from 'lucide-react';
+import { Link } from 'wouter';
 import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 const policies = [
-  "Privacy Policy",
-  "Terms & Conditions", 
-  "Service Agreement",
-  "HIPAA Compliance",
-  "Code of Ethics"
+  { name: "Privacy Policy", route: "/privacy-policy" },
+  { name: "Terms & Conditions", route: "/terms-conditions" },
+  { name: "Service Agreement", route: "/service-agreement" },
+  { name: "HIPAA Compliance", route: "/hipaa-compliance" }
 ];
 
 export default function Footer() {
@@ -55,7 +55,7 @@ export default function Footer() {
                   Monday - Friday
                 </li>
                 <li className="text-gray-400">
-                  8:00 AM - 5:00 PM
+                  9:00 AM - 5:00 PM
                 </li>
               </ul>
             </div>
@@ -64,21 +64,13 @@ export default function Footer() {
             <div>
               <h4 className="text-sm font-semibold mb-2">Policies</h4>
               <ul className="space-y-1 text-xs">
-                {policies.slice(0, 4).map((policy, index) => {
-                  const policyRoutes = {
-                    "Privacy Policy": "/privacy-policy",
-                    "Terms & Conditions": "/terms-conditions", 
-                    "Service Agreement": "/service-agreement",
-                    "HIPAA Compliance": "/hipaa-compliance"
-                  };
-                  return (
-                    <li key={index}>
-                      <a href={policyRoutes[policy as keyof typeof policyRoutes] || "#"} className="text-gray-400 hover:text-white transition-colors">
-                        {policy}
-                      </a>
-                    </li>
-                  );
-                })}
+                {policies.map((policy, index) => (
+                  <li key={index}>
+                    <Link href={policy.route} className="text-gray-400 hover:text-white transition-colors">
+                      {policy.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
