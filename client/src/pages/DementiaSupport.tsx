@@ -203,7 +203,7 @@ export default function DementiaSupport() {
                 Schedule Consultation
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600" asChild>
               <a href="tel:602-830-0966">Call 602-830-0966</a>
             </Button>
           </div>

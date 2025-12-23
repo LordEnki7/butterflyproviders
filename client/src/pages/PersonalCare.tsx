@@ -123,7 +123,7 @@ export default function PersonalCare() {
                 Schedule Consultation
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600" asChild>
               <a href="tel:602-830-0966">Call 602-830-0966</a>
             </Button>
           </div>
