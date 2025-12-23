@@ -25,7 +25,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '140px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '74px' }}>
       <MainNavigation />
       <main>
         <Hero />
