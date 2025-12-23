@@ -14,6 +14,7 @@ import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import healthcarePhoto from '@assets/stock_images/professional_healthc_a263da21.jpg';
 
 interface WorkExperience {
   title: string;
@@ -141,13 +142,31 @@ export default function JoinOurTeam() {
 
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-emerald-50 to-purple-50 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Join Our <span className="text-emerald-600">Care Team</span>
-            </h1>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Make a meaningful difference in people's lives while building a rewarding career in home care services.
-            </p>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  Join Our <span className="text-emerald-600">Care Team</span>
+                </h1>
+                <p className="text-xl text-gray-700 leading-relaxed mb-6">
+                  Make a meaningful difference in people's lives while building a rewarding career in home care services.
+                </p>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  At Butterfly Providers, we are dedicated to{' '}
+                  <Link href="/services" className="text-emerald-600 hover:underline font-medium">
+                    supporting lives through compassionate care
+                  </Link>
+                  . Join our team of professionals making a real impact every day.
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={healthcarePhoto}
+                  alt="Healthcare professional helping patient"
+                  className="rounded-2xl shadow-xl w-full max-w-md h-auto object-cover"
+                />
+              </div>
+            </div>
           </div>
         </section>
 

@@ -42,8 +42,8 @@ export default function ConsultationBookingWidget({
     onSuccess: () => {
       setIsSubmitted(true);
       toast({
-        title: "Consultation Scheduled!",
-        description: "We'll contact you within 24 hours to confirm your appointment.",
+        title: "Request Submitted!",
+        description: "We'll contact you within 24 hours to discuss your care needs.",
       });
       setTimeout(() => {
         setOpen(false);
@@ -111,16 +111,16 @@ export default function ConsultationBookingWidget({
         <div className={`bg-gradient-to-br from-emerald-50 to-purple-50 p-6 rounded-2xl shadow-lg ${className}`}>
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto">
-              <Calendar className="w-8 h-8 text-white" />
+              <User className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Consultation</h3>
+            <h3 className="text-xl font-bold text-gray-900">Find a Caregiver</h3>
             <p className="text-gray-600">
-              Schedule a no-obligation consultation to discuss your care needs
+              Connect with a compassionate caregiver for your care needs
             </p>
             <Button
               className={`bg-emerald-600 hover:bg-emerald-700 text-white w-full ${baseClasses} ${sizeClasses[size]}`}
             >
-              Schedule Now
+              Get Started
             </Button>
           </div>
         </div>
@@ -131,8 +131,8 @@ export default function ConsultationBookingWidget({
       <Button
         className={`bg-emerald-600 hover:bg-emerald-700 text-white ${baseClasses} ${sizeClasses[size]} ${className}`}
       >
-        <Calendar className="w-4 h-4 mr-2" />
-        Consultation
+        <User className="w-4 h-4 mr-2" />
+        Find a Caregiver
       </Button>
     );
   };
@@ -151,10 +151,10 @@ export default function ConsultationBookingWidget({
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-gray-900">Thank You!</h3>
               <p className="text-gray-600">
-                Your consultation has been scheduled successfully.
+                Your caregiver request has been submitted successfully.
               </p>
               <p className="text-sm text-gray-500">
-                We'll contact you within 24 hours to confirm your appointment.
+                We'll contact you within 24 hours to discuss your care needs.
               </p>
             </div>
           </div>
@@ -162,8 +162,8 @@ export default function ConsultationBookingWidget({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-emerald-600" />
-                Schedule Consultation
+                <User className="w-5 h-5 text-emerald-600" />
+                Find a Caregiver
               </DialogTitle>
             </DialogHeader>
 
@@ -268,7 +268,7 @@ export default function ConsultationBookingWidget({
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                   disabled={consultationMutation.isPending || !formData.agreeToContact}
                 >
-                  {consultationMutation.isPending ? "Scheduling..." : "Schedule Consultation"}
+                  {consultationMutation.isPending ? "Submitting..." : "Find a Caregiver"}
                 </Button>
               </div>
             </form>

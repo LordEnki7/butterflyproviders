@@ -4,7 +4,7 @@ import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import FloatingActionMenu from '@/components/FloatingActionMenu';
-import ConsultationBookingWidget from '@/components/ConsultationBookingWidget';
+import FindCaregiverForm from '@/components/FindCaregiverForm';
 import { ArrowLeft, Users, Utensils, Car, Brain, Home, HandHeart, Clock, Stethoscope, Moon, Heart } from 'lucide-react';
 import { Link } from 'wouter';
 
@@ -219,32 +219,8 @@ export default function Services() {
           </div>
         </section>
 
-        {/* Contact CTA Section with Consultation Widget */}
-        <section className="py-16 bg-gradient-to-br from-emerald-50 to-purple-50">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="text-center lg:text-left">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
-                <p className="text-lg text-gray-700 mb-8">
-                  Contact us today for a consultation to discuss your specific care needs and develop a personalized care plan.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <ConsultationBookingWidget size="lg" />
-                  <Button 
-                    variant="outline"
-                    asChild
-                    className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-8 py-3 font-semibold transition-all duration-200"
-                  >
-                    <a href="tel:602-830-0966">Call: 602-830-0966</a>
-                  </Button>
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <ConsultationBookingWidget variant="card" className="max-w-sm" />
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Find a Caregiver Section */}
+        <FindCaregiverForm />
       </main>
 
       <Footer />
