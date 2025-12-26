@@ -44,6 +44,7 @@ export default function MainNavigation() {
   const navigationItems = [
     { href: '/about-us', label: 'ABOUT US' },
     { href: '/services', label: 'SERVICES' },
+    { href: '/#find-caregiver', label: 'FIND A CAREGIVER' },
     { href: '/join-our-team', label: 'JOIN OUR TEAM' }
   ];
 

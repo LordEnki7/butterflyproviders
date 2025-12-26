@@ -24,7 +24,7 @@ export default function Hero() {
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => window.location.href = '/services'}
                 className="border-2 border-emerald-600 text-emerald-600 px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold hover:bg-emerald-600 hover:text-white h-auto transition-all duration-200 hover:scale-105"
               >
                 Learn More

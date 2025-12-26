@@ -14,7 +14,7 @@ export default function AboutUs() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '140px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '110px' }}>
       <MainNavigation />
       
       <main className="pt-8">
@@ -47,10 +47,13 @@ export default function AboutUs() {
               <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">About Us</h2>
               <div className="text-gray-700 leading-relaxed space-y-6 text-lg">
                 <p>
-                  Butterfly Providers is dedicated to delivering compassionate, reliable, and personalized care to those we serve. We understand that each individual's needs are unique, and we take pride in offering support that promotes dignity, independence, and well-being.
+                  Butterfly Providers is dedicated to delivering compassionate, reliable, and personalized non-medical care that enhances quality of life. We understand that each individual's needs, routines, and experiences are unique, which is why our services are thoughtfully tailored to promote dignity, independence, comfort, and overall well-being within the home.
                 </p>
                 <p>
-                  Just like a butterfly's transformation, we believe in helping people grow, heal, and embrace new possibilities—guiding each journey with integrity, respect, and understanding.
+                  Our caregivers are carefully selected and trained to provide dependable assistance while building meaningful, respectful relationships with those we serve. We believe exceptional care extends beyond daily tasks—it is rooted in empathy, trust, and genuine human connection. By honoring personal choices and fostering a safe, supportive environment, we help individuals maintain independence and confidence in their everyday lives.
+                </p>
+                <p>
+                  Inspired by the butterfly's transformation, we believe in supporting growth, resilience, and new possibilities at every stage of life. Butterfly Providers is committed to guiding each journey with integrity, compassion, and understanding—ensuring every individual feels valued, empowered, and cared for with the respect they deserve.
                 </p>
               </div>
             </div>

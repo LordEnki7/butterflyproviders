@@ -28,6 +28,7 @@ import TermsConditions from "@/pages/TermsConditions";
 import ServiceAgreement from "@/pages/ServiceAgreement";
 import HipaaCompliance from "@/pages/HipaaCompliance";
 import CodeOfEthics from "@/pages/CodeOfEthics";
+import CaregiverApplication from "@/pages/CaregiverApplication";
 
 // No longer need domain redirect with email/password authentication
 
@@ -55,6 +56,7 @@ function Router() {
       <Route path="/services" component={Services} />
       <Route path="/services/detailed" component={DetailedServices} />
       <Route path="/join-our-team" component={JoinOurTeam} />
+      <Route path="/apply" component={CaregiverApplication} />
       <Route path="/scheduling" component={Scheduling} />
       <Route path="/cancellation-policies" component={CancellationPolicies} />
       <Route path="/services/personal-care" component={PersonalCare} />

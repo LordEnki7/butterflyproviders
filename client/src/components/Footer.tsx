@@ -5,9 +5,7 @@ import butterflyLogo from "@assets/IMG_0338_1753896135644.png";
 
 const policies = [
   { name: "Privacy Policy", route: "/privacy-policy" },
-  { name: "Terms & Conditions", route: "/terms-conditions" },
-  { name: "Service Agreement", route: "/service-agreement" },
-  { name: "HIPAA Compliance", route: "/hipaa-compliance" }
+  { name: "Terms of Use", route: "/terms-conditions" }
 ];
 
 export default function Footer() {
@@ -49,7 +47,7 @@ export default function Footer() {
           <div className="flex-1 ml-4 md:ml-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-sm relative z-10">
             {/* Hours of Operation */}
             <div>
-              <h4 className="text-sm font-semibold mb-2">Hours</h4>
+              <h4 className="text-sm font-semibold mb-2">Office Hours</h4>
               <ul className="space-y-1 text-xs">
                 <li className="text-gray-400">
                   Monday - Friday
@@ -86,8 +84,8 @@ export default function Footer() {
                 </li>
                 <li className="text-gray-400">
                   <Mail className="inline mr-2" size={12} />
-                  <a href="mailto:info@butterflyproviders.com" className="hover:text-white transition-colors">
-                    info@butterflyproviders.com
+                  <a href="mailto:contactus@butterflyproviders.com" className="hover:text-white transition-colors">
+                    contactus@butterflyproviders.com
                   </a>
                 </li>
               </ul>

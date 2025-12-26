@@ -1,0 +1,62 @@
+Learn more (button on home page)
+Should direct to service page when selected
+
+Header
+Add Find a caregiver (Link to connect with care form) 
+
+Join our team
+	Remove the face of the application and add make it a clickable link. Like “APPLY TODAY”
+A this tagline at the top of the page: Looking for a rewarding job that provides a sense of joy and fulfillment? Great, Butterfly providers are looking for compassionate in-home companion caregivers (non-medical aide). No work experience, no problem we offer full on the job training. Click the link below and apply today!
+Add this: 
+Why Join Butterfly Providers?
+At Butterfly Providers, we believe caregivers are the heart of everything we do. We are committed to creating a supportive, respectful workplace where team members feel valued, heard, and empowered to make a meaningful difference every day. When you join our team, you become part of a mission-driven organization that prioritizes compassion, integrity, and quality care.
+
+We understand that great care starts with supporting our caregivers. That’s why we focus on clear communication, consistent scheduling, ongoing support, and opportunities for growth. Our team members are treated with dignity and professionalism, and we foster an environment where your work is appreciated and your contributions truly matter.
+
+Inspired by the butterfly’s transformation, we believe in growth—not only for those we serve, but for our caregivers as well. At Butterfly Providers, you’re more than an employee; you’re a trusted partner in helping individuals live with independence, confidence, and respect. If you’re passionate about helping others and want to be part of a caring, purpose-driven team, Butterfly Providers is the place for you.
+This is take them to another page to complete the application, please.  This needs to be a very detailed application. I have listed all the fields for the application below. ALL APPLICATION FEILDS ARE REQUIRED. I like the picture thanks. 
+First Name (separate box)
+Last Name  (separate box)
+Gender
+Phone Number 
+Email address 
+Current Address 
+Any work experience as a non-medical caregiver? (yes/no)
+Provide work experience 
+Name of company 
+Postion
+Start and end date (or current)
+Job description 
+Reason for leaving if not current 
+I consent to background and fingerprints (add that back)
+Other lanaguges spoken?
+Please provide a list of work related skills
+Please provide your work avaliablity (best is this can be a checkbox question)
+Are you willing to work overnight?
+Are you willing to become a in-home non-medical aid to clients with the following attributes? (These are yes/no questions)
+Alzheimer’s/Demenita clients 
+Behavioral/Disability clients
+Clients with pets (Cats or dogs etc..)
+Comfortable with smoking clients
+Upload resume
+		
+The footer:
+Please update terms and conditions to “Terms of Use”. Privacy Policy and Terms of Us should be clickable. I have attached the content to but on these pages.
+Remove “Serice Agreement
+Remove HIPPA compliant
+Change Hours to “Office Hours”
+Change email to contactus@butterflyprioviders.com
+
+Can we add text us to this please:
+The back to home button and the logo orientation as well as the login/sign up is still there. Also there is a blank white spot on the top under the scroll lock, can we remove that extra section. Just want to make sure everything still looks very professional and aligned. 
+
+Footer on each page, Still has that white box: Screenshot below.
+
+About us page
+Update with his verbiage. I really just would like it to be more lengthy.
+Butterfly Providers is dedicated to delivering compassionate, reliable, and personalized non-medical care that enhances quality of life. We understand that each individual’s needs, routines, and experiences are unique, which is why our services are thoughtfully tailored to promote dignity, independence, comfort, and overall well-being within the home.
+
+Our caregivers are carefully selected and trained to provide dependable assistance while building meaningful, respectful relationships with those we serve. We believe exceptional care extends beyond daily tasks—it is rooted in empathy, trust, and genuine human connection. By honoring personal choices and fostering a safe, supportive environment, we help individuals maintain independence and confidence in their everyday lives.
+
+Inspired by the butterfly’s transformation, we believe in supporting growth, resilience, and new possibilities at every stage of life. Butterfly Providers is committed to guiding each journey with integrity, compassion, and understanding—ensuring every individual feels valued, empowered, and cared for with the respect they deserve.
+

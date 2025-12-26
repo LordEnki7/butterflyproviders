@@ -1,136 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
-import FloatingActionMenu from '@/components/FloatingActionMenu';
-import { ArrowLeft, Plus, Minus, Users, Heart, Shield, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Heart, Users, Shield } from 'lucide-react';
 import { Link } from 'wouter';
-import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import healthcarePhoto from '@assets/stock_images/professional_healthc_a263da21.jpg';
 
-interface WorkExperience {
-  title: string;
-  startDate: string;
-  endDate: string;
-  reasonForLeaving: string;
-}
-
 export default function JoinOurTeam() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    workExperience: [] as WorkExperience[],
-    backgroundCheckConsent: false,
-    fingerprintConsent: false,
-    additionalNotes: ''
-  });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const { toast } = useToast();
-
   useEffect(() => {
+    window.scrollTo(0, 0);
     document.title = 'Join Our Team - Butterfly Providers';
   }, []);
 
-  const jobApplicationMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const applicationData = {
-        ...data,
-        workExperience: JSON.stringify(data.workExperience)
-      };
-      return await apiRequest('POST', '/api/job-applications', applicationData);
-    },
-    onSuccess: () => {
-      setIsSubmitted(true);
-      toast({
-        title: "Application Submitted!",
-        description: "We'll review your application and contact you within 5 business days.",
-      });
-      setTimeout(() => {
-        setIsSubmitted(false);
-        resetForm();
-      }, 5000);
-    },
-    onError: (error) => {
-      toast({
-        title: "Application Failed",
-        description: "Please try again or call us directly at 602-830-0966.",
-        variant: "destructive",
-      });
-      console.error('Job application error:', error);
-    }
-  });
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      workExperience: [],
-      backgroundCheckConsent: false,
-      fingerprintConsent: false,
-      additionalNotes: ''
-    });
-  };
-
-  const addWorkExperience = () => {
-    setFormData(prev => ({
-      ...prev,
-      workExperience: [...prev.workExperience, { title: '', startDate: '', endDate: '', reasonForLeaving: '' }]
-    }));
-  };
-
-  const removeWorkExperience = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      workExperience: prev.workExperience.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateWorkExperience = (index: number, field: keyof WorkExperience, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      workExperience: prev.workExperience.map((exp, i) => 
-        i === index ? { ...exp, [field]: value } : exp
-      )
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.backgroundCheckConsent || !formData.fingerprintConsent) {
-      toast({
-        title: "Consent Required",
-        description: "Please agree to both background check and fingerprint requirements.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (formData.workExperience.length === 0) {
-      toast({
-        title: "Work Experience Required",
-        description: "Please add at least one work experience entry.",
-        variant: "destructive",
-      });
-      return;
-    }
-    jobApplicationMutation.mutate(formData);
-  };
-
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '140px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '110px' }}>
       <MainNavigation />
       
       <main className="pt-8">
-        {/* Back Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <Link href="/">
             <Button variant="outline" className="group hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200">
@@ -140,7 +27,6 @@ export default function JoinOurTeam() {
           </Link>
         </div>
 
-        {/* Hero Section */}
         <section className="bg-gradient-to-br from-emerald-50 to-purple-50 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -148,16 +34,19 @@ export default function JoinOurTeam() {
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                   Join Our <span className="text-emerald-600">Care Team</span>
                 </h1>
-                <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                  Make a meaningful difference in people's lives while building a rewarding career in home care services.
-                </p>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  At Butterfly Providers, we are dedicated to{' '}
-                  <Link href="/services" className="text-emerald-600 hover:underline font-medium">
-                    supporting lives through compassionate care
-                  </Link>
-                  . Join our team of professionals making a real impact every day.
-                </p>
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg mb-6">
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    Looking for a rewarding job that provides a sense of joy and fulfillment? Great, Butterfly Providers are looking for compassionate in-home companion caregivers (non-medical aide). No work experience, no problem – we offer full on the job training. Click the link below and apply today!
+                  </p>
+                </div>
+                <Link href="/apply">
+                  <Button 
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg font-bold h-auto transition-all duration-200 hover:scale-105 shadow-lg"
+                    data-testid="button-apply-today"
+                  >
+                    APPLY TODAY
+                  </Button>
+                </Link>
               </div>
               <div className="flex justify-center">
                 <img 
@@ -170,268 +59,75 @@ export default function JoinOurTeam() {
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-12">
+        <section className="py-16 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">
+              Why Join <span className="text-emerald-600">Butterfly Providers?</span>
+            </h2>
+            <div className="bg-gradient-to-br from-emerald-50 to-purple-50 p-8 md:p-12 rounded-2xl shadow-lg">
+              <div className="text-gray-700 leading-relaxed space-y-6 text-lg">
+                <p>
+                  At Butterfly Providers, we believe caregivers are the heart of everything we do. We are committed to creating a supportive, respectful workplace where team members feel valued, heard, and empowered to make a meaningful difference every day. When you join our team, you become part of a mission-driven organization that prioritizes compassion, integrity, and quality care.
+                </p>
+                <p>
+                  We understand that great care starts with supporting our caregivers. That's why we focus on clear communication, consistent scheduling, ongoing support, and opportunities for growth. Our team members are treated with dignity and professionalism, and we foster an environment where your work is appreciated and your contributions truly matter.
+                </p>
+                <p>
+                  Inspired by the butterfly's transformation, we believe in growth—not only for those we serve, but for our caregivers as well. At Butterfly Providers, you're more than an employee; you're a trusted partner in helping individuals live with independence, confidence, and respect. If you're passionate about helping others and want to be part of a caring, purpose-driven team, Butterfly Providers is the place for you.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="text-center">
+              <div className="text-center bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
                 <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Meaningful Work</h3>
                 <p className="text-gray-600">Make a real difference in people's lives every day</p>
               </div>
-              <div className="text-center">
+              <div className="text-center bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
                 <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Flexible Schedule</h3>
                 <p className="text-gray-600">Work-life balance with scheduling options</p>
               </div>
-              <div className="text-center">
+              <div className="text-center bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
                 <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Competitive Benefits</h3>
-                <p className="text-gray-600">Comprehensive training and competitive compensation</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Full Training</h3>
+                <p className="text-gray-600">Comprehensive on-the-job training provided</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Job Application Form */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            {isSubmitted ? (
-              <Card className="text-center py-12">
-                <CardContent>
-                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-12 h-12 text-emerald-600" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Application Submitted!</h2>
-                  <p className="text-lg text-gray-600 mb-2">
-                    Thank you for your interest in joining our team.
-                  </p>
-                  <p className="text-gray-600">
-                    We'll review your application and contact you within 5 business days.
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-center text-gray-900">
-                    Career Application
-                  </CardTitle>
-                  <p className="text-center text-gray-600">
-                    Join our compassionate care team and make a difference in people's lives
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Personal Information */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Personal Information</h3>
-                      
-                      <div>
-                        <Label htmlFor="name">Full Name *</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="email">Email Address *</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                            required
-                            className="mt-1"
-                          />
-                        </div>
-                        
-                        <div>
-                          <Label htmlFor="phone">Phone Number *</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            value={formData.phone}
-                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                            required
-                            className="mt-1"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Work Experience */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b pb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">Work Experience</h3>
-                        <Button
-                          type="button"
-                          onClick={addWorkExperience}
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Experience
-                        </Button>
-                      </div>
-
-                      {formData.workExperience.length === 0 && (
-                        <p className="text-gray-500 italic">Click "Add Experience" to add your work history</p>
-                      )}
-
-                      {formData.workExperience.map((exp, index) => (
-                        <Card key={index} className="p-4 border-l-4 border-emerald-600">
-                          <div className="flex justify-between items-start mb-4">
-                            <h4 className="font-medium text-gray-900">Position {index + 1}</h4>
-                            <Button
-                              type="button"
-                              onClick={() => removeWorkExperience(index)}
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 hover:bg-red-50"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="md:col-span-2">
-                              <Label htmlFor={`title-${index}`}>Job Title *</Label>
-                              <Input
-                                id={`title-${index}`}
-                                value={exp.title}
-                                onChange={(e) => updateWorkExperience(index, 'title', e.target.value)}
-                                required
-                                className="mt-1"
-                              />
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor={`startDate-${index}`}>Start Date *</Label>
-                              <Input
-                                id={`startDate-${index}`}
-                                type="date"
-                                value={exp.startDate}
-                                onChange={(e) => updateWorkExperience(index, 'startDate', e.target.value)}
-                                required
-                                className="mt-1"
-                              />
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor={`endDate-${index}`}>End Date *</Label>
-                              <Input
-                                id={`endDate-${index}`}
-                                type="date"
-                                value={exp.endDate}
-                                onChange={(e) => updateWorkExperience(index, 'endDate', e.target.value)}
-                                required
-                                className="mt-1"
-                              />
-                            </div>
-                            
-                            <div className="md:col-span-2">
-                              <Label htmlFor={`reason-${index}`}>Reason for Leaving *</Label>
-                              <Input
-                                id={`reason-${index}`}
-                                value={exp.reasonForLeaving}
-                                onChange={(e) => updateWorkExperience(index, 'reasonForLeaving', e.target.value)}
-                                required
-                                className="mt-1"
-                              />
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-
-                    {/* Background Check Consent */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Required Consents</h3>
-                      
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          id="backgroundCheck"
-                          checked={formData.backgroundCheckConsent}
-                          onCheckedChange={(checked) => 
-                            setFormData(prev => ({ ...prev, backgroundCheckConsent: !!checked }))
-                          }
-                          className="mt-1"
-                        />
-                        <div>
-                          <Label htmlFor="backgroundCheck" className="text-sm font-medium">
-                            I consent to a background check *
-                          </Label>
-                          <p className="text-sm text-gray-600">
-                            A background check is required for all caregiving positions to ensure client safety.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          id="fingerprintCheck"
-                          checked={formData.fingerprintConsent}
-                          onCheckedChange={(checked) => 
-                            setFormData(prev => ({ ...prev, fingerprintConsent: !!checked }))
-                          }
-                          className="mt-1"
-                        />
-                        <div>
-                          <Label htmlFor="fingerprintCheck" className="text-sm font-medium">
-                            I consent to fingerprinting *
-                          </Label>
-                          <p className="text-sm text-gray-600">
-                            Fingerprinting is required for all caregiving positions as part of our security screening process.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Additional Notes */}
-                    <div>
-                      <Label htmlFor="additionalNotes">Additional Information</Label>
-                      <Textarea
-                        id="additionalNotes"
-                        value={formData.additionalNotes}
-                        onChange={(e) => setFormData(prev => ({ ...prev, additionalNotes: e.target.value }))}
-                        placeholder="Tell us about your motivation for caregiving, relevant certifications, or any other information you'd like to share..."
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      disabled={jobApplicationMutation.isPending}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 font-semibold text-lg h-auto transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
-                    >
-                      {jobApplicationMutation.isPending ? 'Submitting Application...' : 'Submit Application'}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            )}
+        <section className="py-16 bg-gradient-to-r from-emerald-600 to-emerald-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Make a Difference?</h2>
+            <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
+              Start your rewarding career as a caregiver today. Click below to complete your application.
+            </p>
+            <Link href="/apply">
+              <Button 
+                className="bg-white text-emerald-600 hover:bg-gray-100 px-10 py-4 text-lg font-bold h-auto transition-all duration-200 hover:scale-105 shadow-lg"
+                data-testid="button-apply-cta"
+              >
+                APPLY TODAY
+              </Button>
+            </Link>
           </div>
         </section>
       </main>
 
       <Footer />
       <ScrollToTop />
-      <FloatingActionMenu />
     </div>
   );
 }
