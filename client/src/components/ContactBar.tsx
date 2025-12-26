@@ -30,7 +30,7 @@ export default function ContactBar() {
           <span className="text-emerald-300">|</span>
           
           <a 
-            href="mailto:info@butterflyproviders.com" 
+            href="mailto:contactus@butterflyproviders.com" 
             className="flex items-center gap-2 hover:text-emerald-200 transition-colors text-sm md:text-base"
             data-testid="link-email"
           >

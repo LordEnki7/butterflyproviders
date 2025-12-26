@@ -155,7 +155,7 @@ export default function Services() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingTop: '140px' }}>
+    <div className="min-h-screen bg-white" style={{ paddingTop: '110px' }}>
       <MainNavigation />
       
       <main className="pt-8">
