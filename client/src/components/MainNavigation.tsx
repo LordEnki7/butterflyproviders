@@ -86,27 +86,8 @@ export default function MainNavigation() {
             })}
           </nav>
 
-          {/* Login/Register buttons - positioned to the right */}
-          <div className="hidden md:flex space-x-2 ml-auto">
-            <Link href="/login">
-              <Button variant="outline" className="transition-all duration-200 hover:scale-105 hover:border-emerald-600 hover:text-emerald-600">
-                Login
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg">
-                Sign Up
-              </Button>
-            </Link>
-          </div>
-
           {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center space-x-2">
-            <Link href="/login">
-              <Button variant="outline" size="sm" className="text-xs">
-                Login
-              </Button>
-            </Link>
+          <div className="md:hidden flex items-center">
             <Button 
               variant="outline" 
               size="icon"
@@ -153,15 +134,6 @@ export default function MainNavigation() {
                 );
               })}
               
-              <div className="pt-4 border-t border-gray-200">
-                <Link href="/register">
-                  <div onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-200">
-                      Sign Up
-                    </Button>
-                  </div>
-                </Link>
-              </div>
             </div>
           </div>
         )}
