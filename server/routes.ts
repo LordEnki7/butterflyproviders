@@ -363,7 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.contactNotification(
-            'admin@butterflyproviders.com', // Admin email - change this to your admin email
+            'butterflyproviders@gmail.com', // Admin email
             {
               name: `${validatedData.firstName} ${validatedData.lastName}`,
               email: validatedData.email,
@@ -416,7 +416,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.contactNotification(
-            'admin@butterflyproviders.com', // Admin email
+            'butterflyproviders@gmail.com', // Admin email
             {
               name,
               email,
@@ -1649,7 +1649,7 @@ Thank you for choosing Butterfly Providers for your care needs.
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.consultationNotification(
-            'admin@butterflyproviders.com', // Admin email
+            'butterflyproviders@gmail.com', // Admin email
             {
               name: consultation.name,
               email: consultation.email || undefined,
