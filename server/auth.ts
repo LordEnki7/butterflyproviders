@@ -134,7 +134,7 @@ export const adminLogin = async (password: string) => {
   // Return admin user object for token generation
   return {
     id: 'admin',
-    email: 'admin@butterflyproviders.com',
+    email: 'contactus@butterflyproviders.com',
     role: 'admin',
     firstName: 'Admin',
     lastName: 'User'

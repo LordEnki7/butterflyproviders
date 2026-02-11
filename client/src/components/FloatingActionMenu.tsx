@@ -12,7 +12,7 @@ const actionItems = [
   {
     icon: Mail,
     label: 'Email Us',
-    href: 'mailto:info@butterflyproviders.com',
+    href: 'mailto:contactus@butterflyproviders.com',
     color: 'bg-purple-500 hover:bg-purple-600'
   }
 ];

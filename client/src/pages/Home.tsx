@@ -338,7 +338,7 @@ export default function Home() {
                         </div>
                         <Button 
                           className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-md"
-                          onClick={() => window.open('mailto:info@butterflyproviders.com', '_self')}
+                          onClick={() => window.open('mailto:contactus@butterflyproviders.com', '_self')}
                           data-testid="button-billing-support"
                         >
                           <Mail className="w-4 h-4 mr-2" />

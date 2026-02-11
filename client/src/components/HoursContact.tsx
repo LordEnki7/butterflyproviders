@@ -82,8 +82,8 @@ export default function HoursContact() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Email</p>
-                  <a href="mailto:info@butterflyproviders.com" className="text-purple-500 font-semibold hover:text-purple-600 transition-colors">
-                    info@butterflyproviders.com
+                  <a href="mailto:contactus@butterflyproviders.com" className="text-purple-500 font-semibold hover:text-purple-600 transition-colors">
+                    contactus@butterflyproviders.com
                   </a>
                 </div>
               </div>

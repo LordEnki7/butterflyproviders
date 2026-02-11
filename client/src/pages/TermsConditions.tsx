@@ -262,7 +262,7 @@ export default function TermsConditions() {
               </p>
               <div className="space-y-2 text-gray-700">
                 <p><strong>Phone:</strong> <a href="tel:602-830-0966" className="text-blue-600 hover:underline">602-830-0966</a></p>
-                <p><strong>Email:</strong> <a href="mailto:info@butterflyproviders.com" className="text-blue-600 hover:underline">info@butterflyproviders.com</a></p>
+                <p><strong>Email:</strong> <a href="mailto:contactus@butterflyproviders.com" className="text-blue-600 hover:underline">contactus@butterflyproviders.com</a></p>
                 <p><strong>Address:</strong> 10720 West Indian School Rd., Phoenix, AZ 85037</p>
               </div>
             </CardContent>
