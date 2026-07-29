@@ -1,0 +1,541 @@
+Initializing deployment
+Cloning Repo github.com/LordEnki7/butterflyproviders.git to /etc/dokploy/applications/butterfly-providers-butterflyproviders-4kpz3h/code: ✅
+Cloning into '/etc/dokploy/applications/butterfly-providers-butterflyproviders-4kpz3h/code'...
+remote: Enumerating objects: 209, done.
+remote: Counting objects:   0% (1/209)        
+remote: Counting objects:   1% (3/209)        
+remote: Counting objects:   2% (5/209)        
+remote: Counting objects:   3% (7/209)        
+remote: Counting objects:   4% (9/209)        
+remote: Counting objects:   5% (11/209)        
+remote: Counting objects:   6% (13/209)        
+remote: Counting objects:   7% (15/209)        
+remote: Counting objects:   8% (17/209)        
+remote: Counting objects:   9% (19/209)        
+remote: Counting objects:  10% (21/209)        
+remote: Counting objects:  11% (23/209)        
+remote: Counting objects:  12% (26/209)        
+remote: Counting objects:  13% (28/209)        
+remote: Counting objects:  14% (30/209)        
+remote: Counting objects:  15% (32/209)        
+remote: Counting objects:  16% (34/209)        
+remote: Counting objects:  17% (36/209)        
+remote: Counting objects:  18% (38/209)        
+remote: Counting objects:  19% (40/209)        
+remote: Counting objects:  20% (42/209)        
+remote: Counting objects:  21% (44/209)        
+remote: Counting objects:  22% (46/209)        
+remote: Counting objects:  23% (49/209)        
+remote: Counting objects:  24% (51/209)        
+remote: Counting objects:  25% (53/209)        
+remote: Counting objects:  26% (55/209)        
+remote: Counting objects:  27% (57/209)        
+remote: Counting objects:  28% (59/209)        
+remote: Counting objects:  29% (61/209)        
+remote: Counting objects:  30% (63/209)        
+remote: Counting objects:  31% (65/209)        
+remote: Counting objects:  32% (67/209)        
+remote: Counting objects:  33% (69/209)        
+remote: Counting objects:  34% (72/209)        
+remote: Counting objects:  35% (74/209)        
+remote: Counting objects:  36% (76/209)        
+remote: Counting objects:  37% (78/209)        
+remote: Counting objects:  38% (80/209)        
+remote: Counting objects:  39% (82/209)        
+remote: Counting objects:  40% (84/209)        
+remote: Counting objects:  41% (86/209)        
+remote: Counting objects:  42% (88/209)        
+remote: Counting objects:  43% (90/209)        
+remote: Counting objects:  44% (92/209)        
+remote: Counting objects:  45% (95/209)        
+remote: Counting objects:  46% (97/209)        
+remote: Counting objects:  47% (99/209)        
+remote: Counting objects:  48% (101/209)        
+remote: Counting objects:  49% (103/209)        
+remote: Counting objects:  50% (105/209)        
+remote: Counting objects:  51% (107/209)        
+remote: Counting objects:  52% (109/209)        
+remote: Counting objects:  53% (111/209)        
+remote: Counting objects:  54% (113/209)        
+remote: Counting objects:  55% (115/209)        
+remote: Counting objects:  56% (118/209)        
+remote: Counting objects:  57% (120/209)        
+remote: Counting objects:  58% (122/209)        
+remote: Counting objects:  59% (124/209)        
+remote: Counting objects:  60% (126/209)        
+remote: Counting objects:  61% (128/209)        
+remote: Counting objects:  62% (130/209)        
+remote: Counting objects:  63% (132/209)        
+remote: Counting objects:  64% (134/209)        
+remote: Counting objects:  65% (136/209)        
+remote: Counting objects:  66% (138/209)        
+remote: Counting objects:  67% (141/209)        
+remote: Counting objects:  68% (143/209)        
+remote: Counting objects:  69% (145/209)        
+remote: Counting objects:  70% (147/209)        
+remote: Counting objects:  71% (149/209)        
+remote: Counting objects:  72% (151/209)        
+remote: Counting objects:  73% (153/209)        
+remote: Counting objects:  74% (155/209)        
+remote: Counting objects:  75% (157/209)        
+remote: Counting objects:  76% (159/209)        
+remote: Counting objects:  77% (161/209)        
+remote: Counting objects:  78% (164/209)        
+remote: Counting objects:  79% (166/209)        
+remote: Counting objects:  80% (168/209)        
+remote: Counting objects:  81% (170/209)        
+remote: Counting objects:  82% (172/209)        
+remote: Counting objects:  83% (174/209)        
+remote: Counting objects:  84% (176/209)        
+remote: Counting objects:  85% (178/209)        
+remote: Counting objects:  86% (180/209)        
+remote: Counting objects:  87% (182/209)        
+remote: Counting objects:  88% (184/209)        
+remote: Counting objects:  89% (187/209)        
+remote: Counting objects:  90% (189/209)        
+remote: Counting objects:  91% (191/209)        
+remote: Counting objects:  92% (193/209)        
+remote: Counting objects:  93% (195/209)        
+remote: Counting objects:  94% (197/209)        
+remote: Counting objects:  95% (199/209)        
+remote: Counting objects:  96% (201/209)        
+remote: Counting objects:  97% (203/209)        
+remote: Counting objects:  98% (205/209)        
+remote: Counting objects:  99% (207/209)        
+remote: Counting objects: 100% (209/209)        
+remote: Counting objects: 100% (209/209), done.
+remote: Compressing objects:   0% (1/180)        
+remote: Compressing objects:   1% (2/180)        
+remote: Compressing objects:   2% (4/180)        
+remote: Compressing objects:   3% (6/180)        
+remote: Compressing objects:   4% (8/180)        
+remote: Compressing objects:   5% (9/180)        
+remote: Compressing objects:   6% (11/180)        
+remote: Compressing objects:   7% (13/180)        
+remote: Compressing objects:   8% (15/180)        
+remote: Compressing objects:   9% (17/180)        
+remote: Compressing objects:  10% (18/180)        
+remote: Compressing objects:  11% (20/180)        
+remote: Compressing objects:  12% (22/180)        
+remote: Compressing objects:  13% (24/180)        
+remote: Compressing objects:  14% (26/180)        
+remote: Compressing objects:  15% (27/180)        
+remote: Compressing objects:  16% (29/180)        
+remote: Compressing objects:  17% (31/180)        
+remote: Compressing objects:  18% (33/180)        
+remote: Compressing objects:  19% (35/180)        
+remote: Compressing objects:  20% (36/180)        
+remote: Compressing objects:  21% (38/180)        
+remote: Compressing objects:  22% (40/180)        
+remote: Compressing objects:  23% (42/180)        
+remote: Compressing objects:  24% (44/180)        
+remote: Compressing objects:  25% (45/180)        
+remote: Compressing objects:  26% (47/180)        
+remote: Compressing objects:  27% (49/180)        
+remote: Compressing objects:  28% (51/180)        
+remote: Compressing objects:  29% (53/180)        
+remote: Compressing objects:  30% (54/180)        
+remote: Compressing objects:  31% (56/180)        
+remote: Compressing objects:  32% (58/180)        
+remote: Compressing objects:  33% (60/180)        
+remote: Compressing objects:  34% (62/180)        
+remote: Compressing objects:  35% (63/180)        
+remote: Compressing objects:  36% (65/180)        
+remote: Compressing objects:  37% (67/180)        
+remote: Compressing objects:  38% (69/180)        
+remote: Compressing objects:  39% (71/180)        
+remote: Compressing objects:  40% (72/180)        
+remote: Compressing objects:  41% (74/180)        
+remote: Compressing objects:  42% (76/180)        
+remote: Compressing objects:  43% (78/180)        
+remote: Compressing objects:  44% (80/180)        
+remote: Compressing objects:  45% (81/180)        
+remote: Compressing objects:  46% (83/180)        
+remote: Compressing objects:  47% (85/180)        
+remote: Compressing objects:  48% (87/180)        
+remote: Compressing objects:  49% (89/180)        
+remote: Compressing objects:  50% (90/180)        
+remote: Compressing objects:  51% (92/180)        
+remote: Compressing objects:  52% (94/180)        
+remote: Compressing objects:  53% (96/180)        
+remote: Compressing objects:  54% (98/180)        
+remote: Compressing objects:  55% (99/180)        
+remote: Compressing objects:  56% (101/180)        
+remote: Compressing objects:  57% (103/180)        
+remote: Compressing objects:  58% (105/180)        
+remote: Compressing objects:  59% (107/180)        
+remote: Compressing objects:  60% (108/180)        
+remote: Compressing objects:  61% (110/180)        
+remote: Compressing objects:  62% (112/180)        
+remote: Compressing objects:  63% (114/180)        
+remote: Compressing objects:  64% (116/180)        
+remote: Compressing objects:  65% (117/180)        
+remote: Compressing objects:  66% (119/180)        
+remote: Compressing objects:  67% (121/180)        
+remote: Compressing objects:  68% (123/180)        
+remote: Compressing objects:  69% (125/180)        
+remote: Compressing objects:  70% (126/180)        
+remote: Compressing objects:  71% (128/180)        
+remote: Compressing objects:  72% (130/180)        
+remote: Compressing objects:  73% (132/180)        
+remote: Compressing objects:  74% (134/180)        
+remote: Compressing objects:  75% (135/180)        
+remote: Compressing objects:  76% (137/180)        
+remote: Compressing objects:  77% (139/180)        
+remote: Compressing objects:  78% (141/180)        
+remote: Compressing objects:  79% (143/180)        
+remote: Compressing objects:  80% (144/180)        
+remote: Compressing objects:  81% (146/180)        
+remote: Compressing objects:  82% (148/180)        
+remote: Compressing objects:  83% (150/180)        
+remote: Compressing objects:  84% (152/180)        
+remote: Compressing objects:  85% (153/180)        
+remote: Compressing objects:  86% (155/180)        
+remote: Compressing objects:  87% (157/180)        
+remote: Compressing objects:  88% (159/180)        
+remote: Compressing objects:  89% (161/180)        
+remote: Compressing objects:  90% (162/180)        
+remote: Compressing objects:  91% (164/180)        
+remote: Compressing objects:  92% (166/180)        
+remote: Compressing objects:  93% (168/180)        
+remote: Compressing objects:  94% (170/180)        
+remote: Compressing objects:  95% (171/180)        
+remote: Compressing objects:  96% (173/180)        
+remote: Compressing objects:  97% (175/180)        
+remote: Compressing objects:  98% (177/180)        
+remote: Compressing objects:  99% (179/180)        
+remote: Compressing objects: 100% (180/180)        
+remote: Compressing objects: 100% (180/180), done.
+Receiving objects:   0% (1/209)
+Receiving objects:   1% (3/209)
+Receiving objects:   2% (5/209)
+Receiving objects:   3% (7/209)
+Receiving objects:   4% (9/209)
+Receiving objects:   5% (11/209)
+Receiving objects:   6% (13/209)
+Receiving objects:   7% (15/209)
+Receiving objects:   8% (17/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:   9% (19/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  10% (21/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  11% (23/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  12% (26/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  13% (28/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  14% (30/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  15% (32/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  16% (34/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  17% (36/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  18% (38/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  19% (40/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  20% (42/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  21% (44/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  22% (46/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  23% (49/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  24% (51/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  25% (53/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  26% (55/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  27% (57/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  28% (59/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  29% (61/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  30% (63/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  31% (65/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  32% (67/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  33% (69/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  34% (72/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  35% (74/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  36% (76/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  37% (78/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  38% (80/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  39% (82/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  40% (84/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  41% (86/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  42% (88/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  43% (90/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  44% (92/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  45% (95/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  46% (97/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  47% (99/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  48% (101/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  49% (103/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  50% (105/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  51% (107/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  52% (109/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  53% (111/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  54% (113/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  55% (115/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  56% (118/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  57% (120/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  58% (122/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  59% (124/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  60% (126/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  61% (128/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  62% (130/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  63% (132/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  64% (134/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  65% (136/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  66% (138/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  67% (141/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  68% (143/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  69% (145/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  70% (147/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  71% (149/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  72% (151/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  73% (153/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  74% (155/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  75% (157/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  76% (159/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  77% (161/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  78% (164/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  79% (166/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  80% (168/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  81% (170/209), 30.53 MiB | 61.04 MiB/s
+remote: Total 209 (delta 47), reused 162 (delta 27), pack-reused 0 (from 0)
+Receiving objects:  82% (172/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  83% (174/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  84% (176/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  85% (178/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  86% (180/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  87% (182/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  88% (184/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  89% (187/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  90% (189/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  91% (191/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  92% (193/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  93% (195/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  94% (197/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  95% (199/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  96% (201/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  97% (203/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  98% (205/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects:  99% (207/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects: 100% (209/209), 30.53 MiB | 61.04 MiB/s
+Receiving objects: 100% (209/209), 45.39 MiB | 69.27 MiB/s, done.
+Resolving deltas:   0% (0/47)
+Resolving deltas:   2% (1/47)
+Resolving deltas:   4% (2/47)
+Resolving deltas:   6% (3/47)
+Resolving deltas:   8% (4/47)
+Resolving deltas:  10% (5/47)
+Resolving deltas:  12% (6/47)
+Resolving deltas:  14% (7/47)
+Resolving deltas:  17% (8/47)
+Resolving deltas:  19% (9/47)
+Resolving deltas:  21% (10/47)
+Resolving deltas:  23% (11/47)
+Resolving deltas:  25% (12/47)
+Resolving deltas:  27% (13/47)
+Resolving deltas:  29% (14/47)
+Resolving deltas:  31% (15/47)
+Resolving deltas:  34% (16/47)
+Resolving deltas:  36% (17/47)
+Resolving deltas:  38% (18/47)
+Resolving deltas:  40% (19/47)
+Resolving deltas:  42% (20/47)
+Resolving deltas:  44% (21/47)
+Resolving deltas:  46% (22/47)
+Resolving deltas:  48% (23/47)
+Resolving deltas:  51% (24/47)
+Resolving deltas:  53% (25/47)
+Resolving deltas:  55% (26/47)
+Resolving deltas:  57% (27/47)
+Resolving deltas:  59% (28/47)
+Resolving deltas:  61% (29/47)
+Resolving deltas:  63% (30/47)
+Resolving deltas:  65% (31/47)
+Resolving deltas:  68% (32/47)
+Resolving deltas:  70% (33/47)
+Resolving deltas:  72% (34/47)
+Resolving deltas:  74% (35/47)
+Resolving deltas:  76% (36/47)
+Resolving deltas:  78% (37/47)
+Resolving deltas:  80% (38/47)
+Resolving deltas:  82% (39/47)
+Resolving deltas:  85% (40/47)
+Resolving deltas:  87% (41/47)
+Resolving deltas:  89% (42/47)
+Resolving deltas:  91% (43/47)
+Resolving deltas:  93% (44/47)
+Resolving deltas:  95% (45/47)
+Resolving deltas:  97% (46/47)
+Resolving deltas: 100% (47/47)
+Resolving deltas: 100% (47/47), done.
+Building butterfly-providers-butterflyproviders-4kpz3h
+#0 building with "default" instance using docker driver
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.09kB done
+#1 DONE 0.0s
+#2 [internal] load metadata for docker.io/library/node:20-alpine
+#2 DONE 0.3s
+#3 [internal] load .dockerignore
+#3 transferring context: 117B done
+#3 DONE 0.0s
+#4 [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#4 DONE 0.0s
+#5 [internal] load build context
+#5 transferring context: 53.77MB 0.3s done
+#5 DONE 0.3s
+#6 [builder 2/6] WORKDIR /app
+#6 CACHED
+#7 [builder 3/6] COPY package*.json ./
+#7 DONE 0.2s
+#8 [builder 4/6] RUN npm ci
+#8 6.801 npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+#8 8.168 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+#8 ...
+#9 [runner 4/5] RUN npm ci --omit=dev --omit=optional
+#9 6.095 npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+#9 7.389 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+#9 9.778 npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+#9 9.890 npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+#9 10.08 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+#9 ...
+#8 [builder 4/6] RUN npm ci
+#8 11.26 npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+#8 11.47 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+#8 11.47 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+#8 11.53 npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+#8 11.81 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+#8 19.52 npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+#8 ...
+#9 [runner 4/5] RUN npm ci --omit=dev --omit=optional
+#9 14.85 npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+#9 20.83
+#9 20.83 added 508 packages, and audited 509 packages in 20s
+#9 20.83
+#9 20.83 78 packages are looking for funding
+#9 20.83   run `npm fund` for details
+#9 20.87
+#9 20.87 22 vulnerabilities (2 low, 5 moderate, 15 high)
+#9 20.87
+#9 20.87 To address issues that do not require attention, run:
+#9 20.87   npm audit fix
+#9 20.87
+#9 20.87 To address all issues (including breaking changes), run:
+#9 20.87   npm audit fix --force
+#9 20.87
+#9 20.87 Run `npm audit` for details.
+#9 20.88 npm notice
+#9 20.88 npm notice New major version of npm available! 10.8.2 -> 12.0.1
+#9 20.88 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.1
+#9 20.88 npm notice To update run: npm install -g npm@12.0.1
+#9 20.88 npm notice
+#9 DONE 21.8s
+#8 [builder 4/6] RUN npm ci
+#8 24.04
+#8 24.04 added 622 packages, and audited 623 packages in 23s
+#8 24.04
+#8 24.04 90 packages are looking for funding
+#8 24.04   run `npm fund` for details
+#8 24.10
+#8 24.10 31 vulnerabilities (3 low, 11 moderate, 17 high)
+#8 24.10
+#8 24.10 To address issues that do not require attention, run:
+#8 24.10   npm audit fix
+#8 24.10
+#8 24.10 To address all issues (including breaking changes), run:
+#8 24.10   npm audit fix --force
+#8 24.10
+#8 24.10 Run `npm audit` for details.
+#8 24.11 npm notice
+#8 24.11 npm notice New major version of npm available! 10.8.2 -> 12.0.1
+#8 24.11 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.1
+#8 24.11 npm notice To update run: npm install -g npm@12.0.1
+#8 24.11 npm notice
+#8 DONE 24.7s
+#10 [builder 5/6] COPY . .
+#10 DONE 0.8s
+#11 [builder 6/6] RUN npm run build
+#11 0.422
+#11 0.422 > rest-express@1.0.0 build
+#11 0.422 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+#11 0.422
+#11 0.672 vite v5.4.19 building for production...
+#11 1.159 transforming...
+#11 1.196 Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+#11 1.196   npx update-browserslist-db@latest
+#11 1.196   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+#11 6.875 ✓ 2174 modules transformed.
+#11 7.295 rendering chunks...
+#11 7.307 computing gzip size...
+#11 7.329
+#11 7.329 (!) Some chunks are larger than 500 kB after minification. Consider:
+#11 7.329 - Using dynamic import() to code-split the application
+#11 7.329 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+#11 7.329 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#11 7.330 ../dist/public/index.html                                                                                   1.27 kB │ gzip:   0.65 kB
+#11 7.330 ../dist/public/assets/professional_healthc_a263da21-bH2xid1J.jpg                                          132.31 kB
+#11 7.330 ../dist/public/assets/IMG_0338_1753896135644-CgQhW_7R.png                                                 260.26 kB
+#11 7.330 ../dist/public/assets/pictue of a black caregiver helping an elderly person_1753906192114-BBLw1vJL.png  2,411.89 kB
+#11 7.330 ../dist/public/assets/index-BJI5nLnp.css                                                                   93.44 kB │ gzip:  14.88 kB
+#11 7.330 ../dist/public/assets/index-CTgzEbPT.js                                                                   765.88 kB │ gzip: 205.76 kB
+#11 7.330 ✓ built in 6.21s
+#11 7.399 ▲ [WARNING] Duplicate member "cancelAppointment" in class body [duplicate-class-member]
+#11 7.399
+#11 7.399     server/storage.ts:493:8:
+#11 7.399       493 │   async cancelAppointment(id: string, reason?: string): Promise<A...
+#11 7.399           ╵         ~~~~~~~~~~~~~~~~~
+#11 7.399
+#11 7.399   The original member "cancelAppointment" is here:
+#11 7.399
+#11 7.399     server/storage.ts:449:8:
+#11 7.399       449 │   async cancelAppointment(appointmentId: string, cancellationData: {
+#11 7.399           ╵         ~~~~~~~~~~~~~~~~~
+#11 7.399
+#11 7.400 ▲ [WARNING] Duplicate member "createRecurringAppointment" in class body [duplicate-class-member]
+#11 7.400
+#11 7.400     server/storage.ts:1058:8:
+#11 7.400       1058 │   async createRecurringAppointment(recurringData: InsertRecurrin...
+#11 7.400            ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.400
+#11 7.400   The original member "createRecurringAppointment" is here:
+#11 7.400
+#11 7.400     server/storage.ts:508:8:
+#11 7.400       508 │   async createRecurringAppointment(recurring: InsertAppointmentRe...
+#11 7.400           ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.400
+#11 7.400 ▲ [WARNING] Duplicate member "getRecurringAppointments" in class body [duplicate-class-member]
+#11 7.400
+#11 7.400     server/storage.ts:1066:8:
+#11 7.400       1066 │   async getRecurringAppointments(clientId?: string): Promise<Rec...
+#11 7.400            ╵         ~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.400
+#11 7.400   The original member "getRecurringAppointments" is here:
+#11 7.400
+#11 7.400     server/storage.ts:513:8:
+#11 7.400       513 │   async getRecurringAppointments(appointmentId: string): Promise<...
+#11 7.400           ╵         ~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.400
+#11 7.406 ▲ [WARNING] Duplicate member "updateRecurringAppointment" in class body [duplicate-class-member]
+#11 7.406
+#11 7.406     server/storage.ts:1081:8:
+#11 7.406       1081 │   async updateRecurringAppointment(id: string, updateData: Parti...
+#11 7.406            ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.406
+#11 7.406   The original member "updateRecurringAppointment" is here:
+#11 7.406
+#11 7.406     server/storage.ts:518:8:
+#11 7.406       518 │   async updateRecurringAppointment(id: string, recurringData: Par...
+#11 7.406           ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+#11 7.406
+#11 7.406 4 warnings
+#11 7.406
+#11 7.406   dist/index.js  127.3kb
+#11 7.406
+#11 7.406 ⚡ Done in 21ms
+#11 DONE 7.5s
+#12 [runner 5/5] COPY --from=builder /app/dist ./dist
+#12 DONE 0.3s
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 20.3s done
+#13 exporting manifest sha256:5498df8c9799d300e7c8a890339ada251befa831a66e90ec9ff48872debcc046
+#13 exporting manifest sha256:5498df8c9799d300e7c8a890339ada251befa831a66e90ec9ff48872debcc046 done
+#13 exporting config sha256:f85fa7014225b11699eb2fe69b536f073913516a6b7b08367ad4035b4639d94d 0.0s done
+#13 exporting attestation manifest sha256:131fc807e29787925bd7aa3747efef928863ab00b3282802591380e85cee94e7 0.1s done
+#13 exporting manifest list sha256:0dc61ae37437aca5c9821f922e597b14509417a27582357a0dd09d67fb998912
+#13 exporting manifest list sha256:0dc61ae37437aca5c9821f922e597b14509417a27582357a0dd09d67fb998912 0.0s done
+#13 naming to docker.io/library/butterfly-providers-butterflyproviders-4kpz3h:latest done
+#13 unpacking to docker.io/library/butterfly-providers-butterflyproviders-4kpz3h:latest
+#13 unpacking to docker.io/library/butterfly-providers-butterflyproviders-4kpz3h:latest 4.1s done
+#13 DONE 24.6s
+✅ Docker build completed.
