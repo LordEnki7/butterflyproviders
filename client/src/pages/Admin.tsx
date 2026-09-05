@@ -31,7 +31,8 @@ import {
   FileText,
   Settings,
   Mail,
-  Receipt
+  Receipt,
+  Download
 } from "lucide-react";
 
 // Form schemas
@@ -86,7 +87,10 @@ export default function Admin() {
   useEffect(() => {
     const checkAdminAuth = async () => {
       try {
-        const response = await fetch("/api/admin/check-auth");
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch("/api/admin/check-auth", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         if (response.ok) {
           setIsAdminAuthenticated(true);
         }
@@ -143,6 +147,42 @@ export default function Admin() {
     queryKey: ["/api/admin/consultation-requests"],
     retry: false,
   });
+
+  const { data: jobApplications = [] } = useQuery({
+    queryKey: ["/api/admin/job-applications"],
+    retry: false,
+    enabled: isAdminAuthenticated,
+  });
+
+  const updateApplicationStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await apiRequest("PATCH", `/api/admin/job-applications/${id}/status`, { status });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/job-applications"] });
+      toast({ title: "Application updated", description: "The applicant status has been saved." });
+    },
+    onError: () => toast({ title: "Update failed", description: "Could not update this application.", variant: "destructive" }),
+  });
+
+  const downloadResume = async (application: any) => {
+    const token = localStorage.getItem('auth_token');
+    const response = await fetch(`/api/admin/job-applications/${application.id}/resume`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) {
+      toast({ title: "Download failed", description: "The resume could not be downloaded.", variant: "destructive" });
+      return;
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${application.name}-resume`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Generic mutation for CRUD operations
   const createMutation = useMutation({
@@ -473,6 +513,7 @@ export default function Admin() {
             onClick={async () => {
               try {
                 await fetch("/api/admin/logout", { method: "POST" });
+                localStorage.removeItem('auth_token');
                 setIsAdminAuthenticated(false);
                 toast({
                   title: "Logged out",
@@ -492,7 +533,7 @@ export default function Admin() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-11">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Dashboard
@@ -532,6 +573,10 @@ export default function Admin() {
             <TabsTrigger value="inquiries" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
               Inquiries
+            </TabsTrigger>
+            <TabsTrigger value="applications" className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4" />
+              Applications
             </TabsTrigger>
           </TabsList>
 
@@ -932,6 +977,85 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="applications">
+            <Card>
+              <CardHeader>
+                <CardTitle>Caregiver Applications</CardTitle>
+                <CardDescription>Review applicants, resumes, and hiring status</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Applicant</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Skills & availability</TableHead>
+                      <TableHead>Submitted</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Resume</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(jobApplications as any[]).map((application: any) => {
+                      let details: any = {};
+                      try { details = JSON.parse(application.additionalNotes || '{}'); } catch {}
+                      const availability = Object.entries(details.availability || {})
+                        .filter(([, enabled]) => enabled)
+                        .map(([period]) => period)
+                        .join(', ');
+                      return (
+                        <TableRow key={application.id}>
+                          <TableCell>
+                            <div className="font-medium">{application.name}</div>
+                            <div className="text-sm text-muted-foreground">{details.address}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{application.email}</div>
+                            <div className="text-sm text-muted-foreground">{application.phone}</div>
+                          </TableCell>
+                          <TableCell className="max-w-xs">
+                            <div className="truncate">{details.skills || 'Not provided'}</div>
+                            <div className="text-sm text-muted-foreground capitalize">{availability || 'No availability selected'}</div>
+                          </TableCell>
+                          <TableCell>{application.createdAt ? new Date(application.createdAt).toLocaleDateString() : '—'}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={application.status || 'pending'}
+                              onValueChange={(status) => updateApplicationStatus.mutate({ id: application.id, status })}
+                            >
+                              <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="reviewed">Reviewed</SelectItem>
+                                <SelectItem value="interview">Interview</SelectItem>
+                                <SelectItem value="hired">Hired</SelectItem>
+                                <SelectItem value="rejected">Rejected</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            {details.resume ? (
+                              <Button variant="outline" size="sm" onClick={() => downloadResume(application)}>
+                                <Download className="w-4 h-4 mr-2" /> Download
+                              </Button>
+                            ) : <span className="text-sm text-muted-foreground">None</span>}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {(jobApplications as any[]).length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          No caregiver applications yet
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

@@ -91,7 +91,28 @@ export default function CaregiverApplication() {
 
   const onSubmit = async (data: ApplicationFormData) => {
     try {
-      console.log('Application submitted:', data, resumeFile);
+      if (resumeFile) {
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ];
+        if (!allowedTypes.includes(resumeFile.type) || resumeFile.size > 5 * 1024 * 1024) {
+          throw new Error('Resume must be a PDF, DOC, or DOCX file no larger than 5 MB.');
+        }
+      }
+
+      const payload = new FormData();
+      payload.append('applicationData', JSON.stringify(data));
+      if (resumeFile) payload.append('resume', resumeFile);
+
+      const response = await fetch('/api/job-applications', {
+        method: 'POST',
+        body: payload,
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Failed to submit application');
+
       toast({
         title: "Application Submitted!",
         description: "Thank you for your interest. We will review your application and contact you soon.",
@@ -101,7 +122,7 @@ export default function CaregiverApplication() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "There was a problem submitting your application. Please try again.",
+        description: error instanceof Error ? error.message : "There was a problem submitting your application. Please try again.",
         variant: "destructive",
       });
     }
@@ -562,7 +583,16 @@ export default function CaregiverApplication() {
                       <input
                         type="file"
                         accept=".pdf,.doc,.docx"
-                        onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          if (file && file.size > 5 * 1024 * 1024) {
+                            toast({ title: "File too large", description: "Resume must be 5 MB or smaller.", variant: "destructive" });
+                            e.target.value = '';
+                            setResumeFile(null);
+                            return;
+                          }
+                          setResumeFile(file);
+                        }}
                         className="hidden"
                         id="resume-upload"
                         data-testid="input-resume"
@@ -570,7 +600,7 @@ export default function CaregiverApplication() {
                       <label htmlFor="resume-upload" className="cursor-pointer">
                         <Upload className="mx-auto h-12 w-12 text-gray-400" />
                         <p className="mt-2 text-sm text-gray-600">
-                          {resumeFile ? resumeFile.name : 'Click to upload your resume (PDF, DOC, DOCX)'}
+                          {resumeFile ? resumeFile.name : 'Click to upload your resume (optional — PDF, DOC, DOCX; max 5 MB)'}
                         </p>
                       </label>
                     </div>
@@ -600,10 +630,11 @@ export default function CaregiverApplication() {
 
                 <Button 
                   type="submit" 
+                  disabled={form.formState.isSubmitting}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 text-lg font-semibold"
                   data-testid="button-submit-application"
                 >
-                  Submit Application
+                  {form.formState.isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </form>
             </Form>

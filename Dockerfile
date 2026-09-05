@@ -33,5 +33,6 @@ EXPOSE 5000
 
 ENV NODE_ENV=production
 ENV PORT=5000
+ENV RESUME_UPLOAD_DIR=/app/private_uploads/resumes
 
 CMD ["node", "dist/index.js"]

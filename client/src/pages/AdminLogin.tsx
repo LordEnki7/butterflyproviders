@@ -43,6 +43,8 @@ export default function AdminLogin({ onSuccess }: AdminLoginProps) {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        localStorage.setItem('auth_token', result.token);
         toast({
           title: "Success",
           description: "Admin access granted",

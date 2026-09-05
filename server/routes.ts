@@ -1,220 +1,4 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { authenticateToken, isAdminAuth, login, register, generateToken, adminLogin } from "./auth";
-import { db } from "./db";
-import { consultations, jobApplications } from "@shared/schema";
-import jwt from "jsonwebtoken";
-// Note: session middleware imports removed as client auth now uses JWT
-// Admin auth still references sessions but middleware is not configured
-// TODO: Either implement session middleware for admin auth or migrate admin auth to JWT
-import { 
-  insertContactInquirySchema,
-  insertConsultationRequestSchema,
-  clientSignupSchema,
-  loginSchema,
-  registerSchema,
-  insertClientSchema,
-  insertCaregiverSchema,
-  insertCaregiverAvailabilitySchema,
-  insertCaregiverTimeOffSchema,
-  insertAppointmentSchema,
-  insertAppointmentRecurringSchema,
-  insertCareUpdateSchema,
-  insertServiceSchema,
-  insertInvoiceSchema,
-  insertInvoiceItemSchema,
-  insertBillingSchema
-} from "@shared/schema";
-import { z } from "zod";
-
-// Validate required environment variables for security
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required for security');
-}
-if (!process.env.ADMIN_PASSWORD) {
-  throw new Error('ADMIN_PASSWORD environment variable is required for security');
-}
-
-// JWT configuration - now secure with required environment variables
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = '24h'; // Shorter expiration for better security
-
-// Security tracking
-const loginAttempts = new Map<string, { attempts: number; lastAttempt: Date; lockedUntil?: Date }>();
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_WINDOW = 5 * 60 * 1000; // 5 minutes
-const RATE_LIMIT_MAX_ATTEMPTS = 3;
-
-// Security helper functions
-function getClientIP(req: any): string {
-  return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-}
-
-function isAccountLocked(email: string): boolean {
-  const attempts = loginAttempts.get(email);
-  if (!attempts) return false;
-  
-  if (attempts.lockedUntil && attempts.lockedUntil > new Date()) {
-    return true;
-  }
-  
-  // Clear expired lockout
-  if (attempts.lockedUntil && attempts.lockedUntil <= new Date()) {
-    loginAttempts.delete(email);
-    return false;
-  }
-  
-  return false;
-}
-
-function recordLoginAttempt(email: string, success: boolean) {
-  const now = new Date();
-  const attempts = loginAttempts.get(email) || { attempts: 0, lastAttempt: now };
-  
-  if (success) {
-    // Clear attempts on successful login
-    loginAttempts.delete(email);
-    return;
-  }
-  
-  // Check if we're within the rate limit window
-  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
-  if (timeSinceLastAttempt > RATE_LIMIT_WINDOW) {
-    // Reset attempts if outside rate limit window
-    attempts.attempts = 1;
-  } else {
-    attempts.attempts += 1;
-  }
-  
-  attempts.lastAttempt = now;
-  
-  // Lock account if too many attempts
-  if (attempts.attempts >= MAX_LOGIN_ATTEMPTS) {
-    attempts.lockedUntil = new Date(now.getTime() + LOCKOUT_DURATION);
-  }
-  
-  loginAttempts.set(email, attempts);
-}
-
-function isRateLimited(email: string): boolean {
-  const attempts = loginAttempts.get(email);
-  if (!attempts) return false;
-  
-  const now = new Date();
-  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
-  
-  return timeSinceLastAttempt < RATE_LIMIT_WINDOW && attempts.attempts >= RATE_LIMIT_MAX_ATTEMPTS;
-}
-
-// JWT middleware is now imported from auth.ts
-
-// Admin password - now securely loaded from environment variable
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
-export async function registerRoutes(app: Express): Promise<Server> {
-  // No longer need session middleware - using JWT tokens
-
-  // ===== HEALTH CHECK ROUTES =====
-  
-  // Health check endpoint for basic liveness check
-  app.get('/api/health', (req, res) => {
-    res.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0'
-    });
-  });
-
-  // Readiness check endpoint with database connectivity
-  app.get('/api/ready', async (req, res) => {
-    try {
-      // Test database connectivity
-      const dbTest = await storage.getDashboardStats().catch(() => null);
-      const isDbReady = dbTest !== null;
-      
-      const readiness = {
-        status: isDbReady ? 'ready' : 'not ready',
-        timestamp: new Date().toISOString(),
-        checks: {
-          database: {
-            status: isDbReady ? 'healthy' : 'unhealthy',
-            message: isDbReady ? 'Database connection successful' : 'Database connection failed'
-          },
-          auth: {
-            status: 'healthy',
-            message: 'Authentication system operational'
-          }
-        }
-      };
-
-      if (isDbReady) {
-        res.json(readiness);
-      } else {
-        res.status(503).json(readiness);
-      }
-    } catch (error) {
-      res.status(503).json({
-        status: 'not ready',
-        timestamp: new Date().toISOString(),
-        error: 'Health check failed',
-        checks: {
-          database: {
-            status: 'unhealthy',
-            message: 'Database health check failed'
-          }
-        }
-      });
-    }
-  });
-
-  // ===== AUTHENTICATION ROUTES =====
-  
-  // Enhanced secure login endpoint
-  app.post('/api/login', async (req, res) => {
-    try {
-      const validatedData = loginSchema.parse(req.body);
-      const email = validatedData.email.toLowerCase().trim();
-      const clientIP = getClientIP(req);
-      
-      // Check if account is locked
-      if (isAccountLocked(email)) {
-        const attempts = loginAttempts.get(email);
-        const unlockTime = attempts?.lockedUntil;
-        const minutesLeft = unlockTime ? Math.ceil((unlockTime.getTime() - Date.now()) / 60000) : 0;
-        
-        return res.status(429).json({ 
-          message: `Account temporarily locked. Try again in ${minutesLeft} minutes.`,
-          lockedUntil: unlockTime 
-        });
-      }
-      
-      // Check rate limiting
-      if (isRateLimited(email)) {
-        return res.status(429).json({ 
-          message: "Too many login attempts. Please wait a few minutes before trying again." 
-        });
-      }
-      
-      try {
-        const user = await login(email, validatedData.password);
-        
-        // Record successful login
-        recordLoginAttempt(email, true);
-        
-        // Generate secure JWT token
-        const token = generateToken({ ...user, clientIP });
-        
-        // Login successful - token generated
-        
-        res.json({
-          success: true,
-          message: "Login successful",
-          token,
-          expiresIn: JWT_EXPIRES_IN,
+,
           user: {
             id: user.id,
             email: user.email,
@@ -1815,27 +1599,110 @@ Thank you for choosing Butterfly Providers for your care needs.
   });
 
   // ===== JOB APPLICATION ENDPOINT =====
+
+  app.get('/api/admin/job-applications', isAdminAuth, async (_req, res) => {
+    try {
+      const applications = await db
+        .select()
+        .from(jobApplications)
+        .orderBy(desc(jobApplications.createdAt));
+      res.json(applications);
+    } catch (error) {
+      console.error('Error loading job applications:', error);
+      res.status(500).json({ message: 'Failed to load job applications' });
+    }
+  });
+
+  app.patch('/api/admin/job-applications/:id/status', isAdminAuth, async (req, res) => {
+    try {
+      const status = z.enum(['pending', 'reviewed', 'interview', 'hired', 'rejected']).parse(req.body.status);
+      const [application] = await db
+        .update(jobApplications)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(jobApplications.id, req.params.id))
+        .returning();
+      if (!application) return res.status(404).json({ message: 'Application not found' });
+      res.json(application);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: 'Invalid application status' });
+      console.error('Error updating job application:', error);
+      res.status(500).json({ message: 'Failed to update application' });
+    }
+  });
+
+  app.get('/api/admin/job-applications/:id/resume', isAdminAuth, async (req, res) => {
+    try {
+      const [application] = await db
+        .select()
+        .from(jobApplications)
+        .where(eq(jobApplications.id, req.params.id))
+        .limit(1);
+      if (!application) return res.status(404).json({ message: 'Application not found' });
+
+      const details = application.additionalNotes ? JSON.parse(application.additionalNotes) : {};
+      const resume = details.resume;
+      if (!resume?.storedName) return res.status(404).json({ message: 'No resume attached' });
+
+      const resumePath = path.resolve(resumeDirectory, path.basename(resume.storedName));
+      if (!fs.existsSync(resumePath)) return res.status(404).json({ message: 'Resume file not found' });
+      res.download(resumePath, path.basename(resume.originalName || 'resume'));
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      res.status(500).json({ message: 'Failed to download resume' });
+    }
+  });
   
   // Public job application endpoint
-  app.post('/api/job-applications', async (req, res) => {
+  app.post('/api/job-applications', resumeUpload.single('resume'), async (req, res) => {
     try {
-      const { name, email, phone, workExperience, backgroundCheckConsent, fingerprintConsent, additionalNotes } = req.body;
-      
-      if (!name || !email || !phone || !workExperience || !backgroundCheckConsent || !fingerprintConsent) {
-        return res.status(400).json({ message: 'Name, email, phone, work experience, and consents are required' });
+      const data = JSON.parse(req.body.applicationData || '{}');
+      if (!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.skills || data.consentBackground !== true) {
+        if (req.file) fs.unlink(req.file.path, () => undefined);
+        return res.status(400).json({ message: 'Please complete all required application fields and consents.' });
       }
 
-      // Create job application entry directly
       const [application] = await db
         .insert(jobApplications)
         .values({
-          name,
-          email,
-          phone,
-          workExperience,
-          backgroundCheckConsent,
-          fingerprintConsent,
-          additionalNotes,
+          name: `${data.firstName} ${data.lastName}`.trim(),
+          email: data.email,
+          phone: data.phone,
+          workExperience: JSON.stringify({
+            hasExperience: data.hasExperience,
+            companyName: data.companyName,
+            position: data.position,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            jobDescription: data.jobDescription,
+            reasonForLeaving: data.reasonForLeaving,
+          }),
+          backgroundCheckConsent: true,
+          fingerprintConsent: true,
+          additionalNotes: JSON.stringify({
+            gender: data.gender,
+            address: data.address,
+            otherLanguages: data.otherLanguages,
+            skills: data.skills,
+            availability: {
+              mornings: !!data.availabilityMornings,
+              afternoons: !!data.availabilityAfternoons,
+              evenings: !!data.availabilityEvenings,
+              weekends: !!data.availabilityWeekends,
+            },
+            preferences: {
+              overnight: data.willingOvernight,
+              alzheimers: data.willingAlzheimers,
+              behavioral: data.willingBehavioral,
+              pets: data.willingPets,
+              smoking: data.willingSmoking,
+            },
+            resume: req.file ? {
+              storedName: req.file.filename,
+              originalName: path.basename(req.file.originalname),
+              mimeType: req.file.mimetype,
+              size: req.file.size,
+            } : null,
+          }),
           status: 'pending'
         })
         .returning();
@@ -1852,8 +1719,16 @@ Thank you for choosing Butterfly Providers for your care needs.
       });
     } catch (error) {
       console.error('Error creating job application:', error);
+      if (req.file) fs.unlink(req.file.path, () => undefined);
       res.status(500).json({ message: 'Failed to submit job application' });
     }
+  });
+
+  app.use((error: unknown, _req: any, res: any, next: any) => {
+    if (error instanceof multer.MulterError) {
+      return res.status(400).json({ message: error.code === 'LIMIT_FILE_SIZE' ? 'Resume must be 5 MB or smaller.' : 'Resume upload failed.' });
+    }
+    next(error);
   });
 
   const httpServer = createServer(app);
