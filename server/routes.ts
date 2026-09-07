@@ -1,4 +1,234 @@
-     // Check rate limiting
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { authenticateToken, isAdminAuth, login, register, generateToken, adminLogin } from "./auth";
+import { db } from "./db";
+import { consultations, jobApplications, jobApplicationStatusSchema } from "@shared/schema";
+import { desc, eq } from "drizzle-orm";
+import jwt from "jsonwebtoken";
+// Note: session middleware imports removed as client auth now uses JWT
+// Admin auth still references sessions but middleware is not configured
+// TODO: Either implement session middleware for admin auth or migrate admin auth to JWT
+import { 
+  insertContactInquirySchema,
+  insertConsultationRequestSchema,
+  clientSignupSchema,
+  loginSchema,
+  registerSchema,
+  insertClientSchema,
+  insertCaregiverSchema,
+  insertCaregiverAvailabilitySchema,
+  insertCaregiverTimeOffSchema,
+  insertAppointmentSchema,
+  insertAppointmentRecurringSchema,
+  insertCareUpdateSchema,
+  insertServiceSchema,
+  insertInvoiceSchema,
+  insertInvoiceItemSchema,
+  insertBillingSchema
+} from "@shared/schema";
+import { z } from "zod";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import { registerJobApplicationRoute } from "./jobApplicationRoute";
+import { getHiringAlertRecipient } from "./hiringAlertConfig";
+import {
+  getContactAlertRecipient,
+  getConsultationAlertRecipient,
+} from "./inquiryAlertConfig";
+
+const resumeDirectory = process.env.RESUME_UPLOAD_DIR || path.resolve(process.cwd(), "private_uploads/resumes");
+fs.mkdirSync(resumeDirectory, { recursive: true });
+const resumeUpload = multer({
+  storage: multer.diskStorage({
+    destination: resumeDirectory,
+    filename: (_req, file, callback) => {
+      const extension = path.extname(file.originalname).toLowerCase();
+      callback(null, `${crypto.randomUUID()}${extension}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, callback) => {
+    const allowedMimeTypes = new Set([
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]);
+    const allowedExtensions = new Set([".pdf", ".doc", ".docx"]);
+    callback(null, allowedMimeTypes.has(file.mimetype) && allowedExtensions.has(path.extname(file.originalname).toLowerCase()));
+  },
+});
+
+// Validate required environment variables for security
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required for security');
+}
+if (!process.env.ADMIN_PASSWORD) {
+  throw new Error('ADMIN_PASSWORD environment variable is required for security');
+}
+
+// JWT configuration - now secure with required environment variables
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = '24h'; // Shorter expiration for better security
+
+// Security tracking
+const loginAttempts = new Map<string, { attempts: number; lastAttempt: Date; lockedUntil?: Date }>();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_WINDOW = 5 * 60 * 1000; // 5 minutes
+const RATE_LIMIT_MAX_ATTEMPTS = 3;
+
+// Security helper functions
+function getClientIP(req: any): string {
+  return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
+}
+
+function isAccountLocked(email: string): boolean {
+  const attempts = loginAttempts.get(email);
+  if (!attempts) return false;
+  
+  if (attempts.lockedUntil && attempts.lockedUntil > new Date()) {
+    return true;
+  }
+  
+  // Clear expired lockout
+  if (attempts.lockedUntil && attempts.lockedUntil <= new Date()) {
+    loginAttempts.delete(email);
+    return false;
+  }
+  
+  return false;
+}
+
+function recordLoginAttempt(email: string, success: boolean) {
+  const now = new Date();
+  const attempts = loginAttempts.get(email) || { attempts: 0, lastAttempt: now };
+  
+  if (success) {
+    // Clear attempts on successful login
+    loginAttempts.delete(email);
+    return;
+  }
+  
+  // Check if we're within the rate limit window
+  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
+  if (timeSinceLastAttempt > RATE_LIMIT_WINDOW) {
+    // Reset attempts if outside rate limit window
+    attempts.attempts = 1;
+  } else {
+    attempts.attempts += 1;
+  }
+  
+  attempts.lastAttempt = now;
+  
+  // Lock account if too many attempts
+  if (attempts.attempts >= MAX_LOGIN_ATTEMPTS) {
+    attempts.lockedUntil = new Date(now.getTime() + LOCKOUT_DURATION);
+  }
+  
+  loginAttempts.set(email, attempts);
+}
+
+function isRateLimited(email: string): boolean {
+  const attempts = loginAttempts.get(email);
+  if (!attempts) return false;
+  
+  const now = new Date();
+  const timeSinceLastAttempt = now.getTime() - attempts.lastAttempt.getTime();
+  
+  return timeSinceLastAttempt < RATE_LIMIT_WINDOW && attempts.attempts >= RATE_LIMIT_MAX_ATTEMPTS;
+}
+
+// JWT middleware is now imported from auth.ts
+
+// Admin password - now securely loaded from environment variable
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const HIRING_ALERT_RECIPIENT = getHiringAlertRecipient();
+const CONTACT_ALERT_RECIPIENT = getContactAlertRecipient();
+const CONSULTATION_ALERT_RECIPIENT = getConsultationAlertRecipient();
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // No longer need session middleware - using JWT tokens
+
+  // ===== HEALTH CHECK ROUTES =====
+  
+  // Health check endpoint for basic liveness check
+  app.get('/api/health', (req, res) => {
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0'
+    });
+  });
+
+  // Readiness check endpoint with database connectivity
+  app.get('/api/ready', async (req, res) => {
+    try {
+      // Test database connectivity
+      const dbTest = await storage.getDashboardStats().catch(() => null);
+      const isDbReady = dbTest !== null;
+      
+      const readiness = {
+        status: isDbReady ? 'ready' : 'not ready',
+        timestamp: new Date().toISOString(),
+        checks: {
+          database: {
+            status: isDbReady ? 'healthy' : 'unhealthy',
+            message: isDbReady ? 'Database connection successful' : 'Database connection failed'
+          },
+          auth: {
+            status: 'healthy',
+            message: 'Authentication system operational'
+          }
+        }
+      };
+
+      if (isDbReady) {
+        res.json(readiness);
+      } else {
+        res.status(503).json(readiness);
+      }
+    } catch (error) {
+      res.status(503).json({
+        status: 'not ready',
+        timestamp: new Date().toISOString(),
+        error: 'Health check failed',
+        checks: {
+          database: {
+            status: 'unhealthy',
+            message: 'Database health check failed'
+          }
+        }
+      });
+    }
+  });
+
+  // ===== AUTHENTICATION ROUTES =====
+  
+  // Enhanced secure login endpoint
+  app.post('/api/login', async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      const email = validatedData.email.toLowerCase().trim();
+      const clientIP = getClientIP(req);
+      
+      // Check if account is locked
+      if (isAccountLocked(email)) {
+        const attempts = loginAttempts.get(email);
+        const unlockTime = attempts?.lockedUntil;
+        const minutesLeft = unlockTime ? Math.ceil((unlockTime.getTime() - Date.now()) / 60000) : 0;
+        
+        return res.status(429).json({ 
+          message: `Account temporarily locked. Try again in ${minutesLeft} minutes.`,
+          lockedUntil: unlockTime 
+        });
+      }
+      
+      // Check rate limiting
       if (isRateLimited(email)) {
         return res.status(429).json({ 
           message: "Too many login attempts. Please wait a few minutes before trying again." 
