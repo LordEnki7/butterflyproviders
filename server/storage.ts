@@ -8,7 +8,6 @@ import {
   caregiverAvailability,
   caregiverTimeOff,
   appointments,
-  appointmentRecurring,
   appointmentReminders,
   recurringAppointments,
   generatedAppointments,
@@ -36,8 +35,6 @@ import {
   type InsertCaregiverTimeOff,
   type Appointment,
   type InsertAppointment,
-  type AppointmentRecurring,
-  type InsertAppointmentRecurring,
   type AppointmentReminder,
   type InsertAppointmentReminder,
   type RecurringAppointment,
@@ -59,10 +56,42 @@ import {
 import { db } from "./db";
 import { eq, desc, and, sql, count, sum, gte, lte } from "drizzle-orm";
 
+export type AppointmentCancellation = {
+  cancelReason: string;
+  cancelledBy: string;
+  cancellationFee?: number;
+  refundAmount?: number;
+};
+
+export function buildAppointmentCancellationUpdate(
+  cancellation: string | AppointmentCancellation,
+  cancelledAt = new Date(),
+) {
+  if (typeof cancellation === "string") {
+    return {
+      status: "cancelled",
+      cancelReason: cancellation,
+      cancelledAt,
+      updatedAt: cancelledAt,
+    };
+  }
+
+  return {
+    status: "cancelled",
+    cancelReason: cancellation.cancelReason,
+    cancelledBy: cancellation.cancelledBy,
+    cancellationFee: cancellation.cancellationFee?.toString(),
+    refundAmount: cancellation.refundAmount?.toString(),
+    cancelledAt,
+    updatedAt: cancelledAt,
+  };
+}
+
 // Interface for storage operations
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: Partial<UpsertUser>): Promise<User>;
   updateUser(id: string, userData: Partial<UpsertUser>): Promise<User>;
@@ -110,12 +139,7 @@ export interface IStorage {
   
   // Appointment operations
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
-  cancelAppointment(appointmentId: string, cancellationData: {
-    cancelReason: string;
-    cancelledBy: string;
-    cancellationFee?: number;
-    refundAmount?: number;
-  }): Promise<Appointment>;
+  cancelAppointment(appointmentId: string, cancellationData: AppointmentCancellation): Promise<Appointment>;
   getAllAppointments(): Promise<Appointment[]>;
   getAppointment(id: string): Promise<Appointment | undefined>;
   getAppointmentsByClient(clientId: string): Promise<Appointment[]>;
@@ -125,12 +149,6 @@ export interface IStorage {
   deleteAppointment(id: string): Promise<void>;
   confirmAppointment(id: string): Promise<Appointment>;
   cancelAppointment(id: string, reason?: string): Promise<Appointment>;
-  
-  // Recurring appointment operations
-  createRecurringAppointment(recurring: InsertAppointmentRecurring): Promise<AppointmentRecurring>;
-  getRecurringAppointments(appointmentId: string): Promise<AppointmentRecurring[]>;
-  updateRecurringAppointment(id: string, recurring: Partial<InsertAppointmentRecurring>): Promise<AppointmentRecurring>;
-  deleteRecurringAppointment(id: string): Promise<void>;
   
   // Scheduling operations
   checkAvailability(caregiverId: string, date: Date, duration: number): Promise<boolean>;
@@ -193,6 +211,24 @@ export class DatabaseStorage implements IStorage {
 
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profileImageUrl: userData.profileImageUrl,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return user;
   }
 
@@ -336,6 +372,9 @@ export class DatabaseStorage implements IStorage {
         isActive: caregivers.isActive,
         createdAt: caregivers.createdAt,
         updatedAt: caregivers.updatedAt,
+        userId: caregivers.userId,
+        profileImage: caregivers.profileImage,
+        timezone: caregivers.timezone,
       })
       .from(caregivers)
       .innerJoin(caregiverAvailability, eq(caregivers.id, caregiverAvailability.caregiverId))
@@ -446,23 +485,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Cancel appointment with fee calculation
-  async cancelAppointment(appointmentId: string, cancellationData: {
-    cancelReason: string;
-    cancelledBy: string;
-    cancellationFee?: number;
-    refundAmount?: number;
-  }): Promise<Appointment> {
+  async cancelAppointment(appointmentId: string, cancellationData: AppointmentCancellation): Promise<Appointment>;
+  async cancelAppointment(appointmentId: string, reason?: string): Promise<Appointment>;
+  async cancelAppointment(
+    appointmentId: string,
+    cancellation: string | AppointmentCancellation = "",
+  ): Promise<Appointment> {
     const [cancelledAppointment] = await db
       .update(appointments)
-      .set({
-        status: 'cancelled',
-        cancelReason: cancellationData.cancelReason,
-        cancelledBy: cancellationData.cancelledBy,
-        cancellationFee: cancellationData.cancellationFee?.toString(),
-        refundAmount: cancellationData.refundAmount?.toString(),
-        cancelledAt: new Date(),
-        updatedAt: new Date(),
-      })
+      .set(buildAppointmentCancellationUpdate(cancellation))
       .where(eq(appointments.id, appointmentId))
       .returning();
     return cancelledAppointment;
@@ -488,44 +519,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(appointments.id, id))
       .returning();
     return appointment;
-  }
-
-  async cancelAppointment(id: string, reason?: string): Promise<Appointment> {
-    const [appointment] = await db
-      .update(appointments)
-      .set({ 
-        status: "cancelled", 
-        cancelledAt: new Date(),
-        cancelReason: reason,
-        updatedAt: new Date() 
-      })
-      .where(eq(appointments.id, id))
-      .returning();
-    return appointment;
-  }
-
-  // Recurring appointment operations
-  async createRecurringAppointment(recurring: InsertAppointmentRecurring): Promise<AppointmentRecurring> {
-    const [created] = await db.insert(appointmentRecurring).values(recurring).returning();
-    return created;
-  }
-
-  async getRecurringAppointments(appointmentId: string): Promise<AppointmentRecurring[]> {
-    return await db.select().from(appointmentRecurring)
-      .where(eq(appointmentRecurring.appointmentId, appointmentId));
-  }
-
-  async updateRecurringAppointment(id: string, recurringData: Partial<InsertAppointmentRecurring>): Promise<AppointmentRecurring> {
-    const [updated] = await db
-      .update(appointmentRecurring)
-      .set(recurringData)
-      .where(eq(appointmentRecurring.id, id))
-      .returning();
-    return updated;
-  }
-
-  async deleteRecurringAppointment(id: string): Promise<void> {
-    await db.delete(appointmentRecurring).where(eq(appointmentRecurring.id, id));
   }
 
   // Scheduling operations
@@ -1178,7 +1171,7 @@ export class DatabaseStorage implements IStorage {
               status: "scheduled",
               priority: "normal",
               clientNotes: pattern.clientNotes,
-              estimatedCost: 0,
+              estimatedCost: "0",
             })
             .returning();
 

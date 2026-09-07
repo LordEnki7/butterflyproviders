@@ -1,4 +1,26 @@
-,
+     // Check rate limiting
+      if (isRateLimited(email)) {
+        return res.status(429).json({ 
+          message: "Too many login attempts. Please wait a few minutes before trying again." 
+        });
+      }
+      
+      try {
+        const user = await login(email, validatedData.password);
+        
+        // Record successful login
+        recordLoginAttempt(email, true);
+        
+        // Generate secure JWT token
+        const token = generateToken({ ...user, clientIP });
+        
+        // Login successful - token generated
+        
+        res.json({
+          success: true,
+          message: "Login successful",
+          token,
+          expiresIn: JWT_EXPIRES_IN,
           user: {
             id: user.id,
             email: user.email,
@@ -143,11 +165,11 @@
       const inquiry = await storage.createContactInquiry(validatedData);
       
       // Send notification email to admin using Brevo
-      if (process.env.BREVO_API_KEY) {
+      if (process.env.BREVO_API_KEY && CONTACT_ALERT_RECIPIENT) {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.contactNotification(
-            'contactus@butterflyproviders.com', // Admin email
+            CONTACT_ALERT_RECIPIENT,
             {
               name: `${validatedData.firstName} ${validatedData.lastName}`,
               email: validatedData.email,
@@ -196,11 +218,11 @@
       });
 
       // Send consultation notification to admin using Brevo
-      if (process.env.BREVO_API_KEY) {
+      if (process.env.BREVO_API_KEY && CONSULTATION_ALERT_RECIPIENT) {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.contactNotification(
-            'contactus@butterflyproviders.com', // Admin email
+            CONSULTATION_ALERT_RECIPIENT,
             {
               name,
               email,
@@ -339,6 +361,102 @@
   });
 
   // ===== ADMIN ROUTES =====
+
+  const parseApplicationNotes = (value: string | null) => {
+    if (!value) return {};
+    try {
+      return JSON.parse(value);
+    } catch {
+      return {};
+    }
+  };
+
+  const serializeApplication = (application: typeof jobApplications.$inferSelect) => {
+    const notes = parseApplicationNotes(application.additionalNotes);
+    let workExperience: unknown = {};
+    try {
+      workExperience = JSON.parse(application.workExperience);
+    } catch {
+      workExperience = {};
+    }
+
+    return {
+      ...application,
+      workExperience,
+      additionalNotes: {
+        ...notes,
+        resume: notes.resume ? {
+          originalName: notes.resume.originalName,
+          mimeType: notes.resume.mimeType,
+          size: notes.resume.size,
+        } : null,
+      },
+      hasResume: Boolean(notes.resume?.storedName),
+    };
+  };
+
+  app.get('/api/admin/job-applications', isAdminAuth, async (_req, res) => {
+    try {
+      const applications = await db.select().from(jobApplications).orderBy(desc(jobApplications.createdAt));
+      res.json(applications.map(serializeApplication));
+    } catch (error) {
+      console.error("Error fetching job applications:", error);
+      res.status(500).json({ message: "Failed to fetch job applications" });
+    }
+  });
+
+  app.get('/api/admin/job-applications/:id', isAdminAuth, async (req, res) => {
+    try {
+      const [application] = await db.select().from(jobApplications).where(eq(jobApplications.id, req.params.id)).limit(1);
+      if (!application) return res.status(404).json({ message: "Application not found" });
+      res.json(serializeApplication(application));
+    } catch (error) {
+      console.error("Error fetching job application:", error);
+      res.status(500).json({ message: "Failed to fetch job application" });
+    }
+  });
+
+  app.patch('/api/admin/job-applications/:id/status', isAdminAuth, async (req, res) => {
+    try {
+      const status = jobApplicationStatusSchema.parse(req.body.status);
+      const [application] = await db
+        .update(jobApplications)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(jobApplications.id, req.params.id))
+        .returning();
+      if (!application) return res.status(404).json({ message: "Application not found" });
+      res.json(serializeApplication(application));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid application status" });
+      }
+      console.error("Error updating job application status:", error);
+      res.status(500).json({ message: "Failed to update application status" });
+    }
+  });
+
+  app.get('/api/admin/job-applications/:id/resume', isAdminAuth, async (req, res) => {
+    try {
+      const [application] = await db.select().from(jobApplications).where(eq(jobApplications.id, req.params.id)).limit(1);
+      if (!application) return res.status(404).json({ message: "Application not found" });
+
+      const resume = parseApplicationNotes(application.additionalNotes).resume;
+      if (!resume?.storedName) return res.status(404).json({ message: "No resume was submitted" });
+
+      const storedName = path.basename(resume.storedName);
+      const resumePath = path.resolve(resumeDirectory, storedName);
+      if (path.dirname(resumePath) !== path.resolve(resumeDirectory) || !fs.existsSync(resumePath)) {
+        return res.status(404).json({ message: "Resume file not found" });
+      }
+
+      res.download(resumePath, path.basename(resume.originalName || "resume"), (error) => {
+        if (error && !res.headersSent) res.status(500).json({ message: "Failed to download resume" });
+      });
+    } catch (error) {
+      console.error("Error downloading job application resume:", error);
+      res.status(500).json({ message: "Failed to download resume" });
+    }
+  });
 
   // Admin dashboard with analytics
   app.get('/api/admin/dashboard', isAdminAuth, async (req: any, res) => {
@@ -1429,11 +1547,11 @@ Thank you for choosing Butterfly Providers for your care needs.
       const consultation = await storage.createConsultationRequest(validatedData);
       
       // Send notification email to admin team
-      if (process.env.BREVO_API_KEY) {
+      if (process.env.BREVO_API_KEY && CONSULTATION_ALERT_RECIPIENT) {
         try {
           const { EmailTemplates } = await import('./brevoService');
           await EmailTemplates.consultationNotification(
-            'contactus@butterflyproviders.com', // Admin email
+            CONSULTATION_ALERT_RECIPIENT,
             {
               name: consultation.name,
               email: consultation.email || undefined,
@@ -1599,129 +1717,22 @@ Thank you for choosing Butterfly Providers for your care needs.
   });
 
   // ===== JOB APPLICATION ENDPOINT =====
-
-  app.get('/api/admin/job-applications', isAdminAuth, async (_req, res) => {
-    try {
-      const applications = await db
-        .select()
-        .from(jobApplications)
-        .orderBy(desc(jobApplications.createdAt));
-      res.json(applications);
-    } catch (error) {
-      console.error('Error loading job applications:', error);
-      res.status(500).json({ message: 'Failed to load job applications' });
-    }
-  });
-
-  app.patch('/api/admin/job-applications/:id/status', isAdminAuth, async (req, res) => {
-    try {
-      const status = z.enum(['pending', 'reviewed', 'interview', 'hired', 'rejected']).parse(req.body.status);
-      const [application] = await db
-        .update(jobApplications)
-        .set({ status, updatedAt: new Date() })
-        .where(eq(jobApplications.id, req.params.id))
-        .returning();
-      if (!application) return res.status(404).json({ message: 'Application not found' });
-      res.json(application);
-    } catch (error) {
-      if (error instanceof z.ZodError) return res.status(400).json({ message: 'Invalid application status' });
-      console.error('Error updating job application:', error);
-      res.status(500).json({ message: 'Failed to update application' });
-    }
-  });
-
-  app.get('/api/admin/job-applications/:id/resume', isAdminAuth, async (req, res) => {
-    try {
-      const [application] = await db
-        .select()
-        .from(jobApplications)
-        .where(eq(jobApplications.id, req.params.id))
-        .limit(1);
-      if (!application) return res.status(404).json({ message: 'Application not found' });
-
-      const details = application.additionalNotes ? JSON.parse(application.additionalNotes) : {};
-      const resume = details.resume;
-      if (!resume?.storedName) return res.status(404).json({ message: 'No resume attached' });
-
-      const resumePath = path.resolve(resumeDirectory, path.basename(resume.storedName));
-      if (!fs.existsSync(resumePath)) return res.status(404).json({ message: 'Resume file not found' });
-      res.download(resumePath, path.basename(resume.originalName || 'resume'));
-    } catch (error) {
-      console.error('Error downloading resume:', error);
-      res.status(500).json({ message: 'Failed to download resume' });
-    }
-  });
   
-  // Public job application endpoint
-  app.post('/api/job-applications', resumeUpload.single('resume'), async (req, res) => {
-    try {
-      const data = JSON.parse(req.body.applicationData || '{}');
-      if (!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.skills || data.consentBackground !== true) {
-        if (req.file) fs.unlink(req.file.path, () => undefined);
-        return res.status(400).json({ message: 'Please complete all required application fields and consents.' });
-      }
-
+  registerJobApplicationRoute(app, {
+    upload: resumeUpload.single("resume"),
+    insertApplication: async (values) => {
       const [application] = await db
         .insert(jobApplications)
-        .values({
-          name: `${data.firstName} ${data.lastName}`.trim(),
-          email: data.email,
-          phone: data.phone,
-          workExperience: JSON.stringify({
-            hasExperience: data.hasExperience,
-            companyName: data.companyName,
-            position: data.position,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            jobDescription: data.jobDescription,
-            reasonForLeaving: data.reasonForLeaving,
-          }),
-          backgroundCheckConsent: true,
-          fingerprintConsent: true,
-          additionalNotes: JSON.stringify({
-            gender: data.gender,
-            address: data.address,
-            otherLanguages: data.otherLanguages,
-            skills: data.skills,
-            availability: {
-              mornings: !!data.availabilityMornings,
-              afternoons: !!data.availabilityAfternoons,
-              evenings: !!data.availabilityEvenings,
-              weekends: !!data.availabilityWeekends,
-            },
-            preferences: {
-              overnight: data.willingOvernight,
-              alzheimers: data.willingAlzheimers,
-              behavioral: data.willingBehavioral,
-              pets: data.willingPets,
-              smoking: data.willingSmoking,
-            },
-            resume: req.file ? {
-              storedName: req.file.filename,
-              originalName: path.basename(req.file.originalname),
-              mimeType: req.file.mimetype,
-              size: req.file.size,
-            } : null,
-          }),
-          status: 'pending'
-        })
+        .values(values)
         .returning();
-
-      res.json({
-        message: 'Job application submitted successfully',
-        application: {
-          id: application.id,
-          name: application.name,
-          email: application.email,
-          phone: application.phone,
-          status: application.status
-        }
-      });
-    } catch (error) {
-      console.error('Error creating job application:', error);
-      if (req.file) fs.unlink(req.file.path, () => undefined);
-      res.status(500).json({ message: 'Failed to submit job application' });
-    }
+      return application;
+    },
+    emailEnabled: () => Boolean(process.env.BREVO_API_KEY),
+    loadEmailTemplates: async () => {
+      const { EmailTemplates } = await import("./brevoService");
+      return EmailTemplates;
+    },
+    staffEmail: HIRING_ALERT_RECIPIENT,
   });
 
   app.use((error: unknown, _req: any, res: any, next: any) => {

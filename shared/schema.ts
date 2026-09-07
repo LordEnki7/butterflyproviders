@@ -105,6 +105,10 @@ export const insertConsultationSchema = createInsertSchema(consultations).omit({
 });
 
 // Job applications
+export const jobApplicationStatuses = ["pending", "reviewed", "interview", "hired", "rejected"] as const;
+export const jobApplicationStatusSchema = z.enum(jobApplicationStatuses);
+export type JobApplicationStatus = z.infer<typeof jobApplicationStatusSchema>;
+
 export const jobApplications = pgTable("job_applications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
@@ -114,7 +118,7 @@ export const jobApplications = pgTable("job_applications", {
   backgroundCheckConsent: boolean("background_check_consent").notNull(),
   fingerprintConsent: boolean("fingerprint_consent").notNull(),
   additionalNotes: text("additional_notes"),
-  status: varchar("status").default("pending"), // 'pending', 'reviewed', 'interview', 'hired', 'rejected'
+  status: varchar("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -224,6 +228,9 @@ export const appointments = pgTable("appointments", {
   completedAt: timestamp("completed_at"),
   cancelledAt: timestamp("cancelled_at"),
   cancelReason: varchar("cancel_reason"),
+  cancelledBy: varchar("cancelled_by"),
+  cancellationFee: decimal("cancellation_fee", { precision: 8, scale: 2 }),
+  refundAmount: decimal("refund_amount", { precision: 8, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -71,3 +71,8 @@ Preferred communication style: Simple, everyday language.
 - **Vite**: Build tool and development server.
 - **TypeScript**: Static type checking.
 - **ESBuild**: Production bundling for server code.
+
+## Environment Variables
+- **`HIRING_ALERT_RECIPIENT`**: Email address that receives staff notifications for new job applications. It is required and validated at startup in production. Set it to an explicit safe test mailbox in development or staging; when omitted outside production, applicant confirmations can still send but the staff hiring alert is skipped.
+- **`CONTACT_ALERT_RECIPIENT`**: Email address that receives new contact-form notifications. It is required and validated at startup in production. Set it to an explicit safe test mailbox in development or staging; when omitted outside production, contact inquiries are still stored but the email alert is skipped.
+- **`CONSULTATION_ALERT_RECIPIENT`**: Email address that receives new consultation notifications from both consultation request endpoints. It is required and validated at startup in production. Set it to an explicit safe test mailbox in development or staging; when omitted outside production, consultation requests are still stored but the email alert is skipped.

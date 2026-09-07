@@ -1,0 +1,1 @@
+- [Private resume storage](private-resume-storage.md) — caregiver resumes require a persistent Dokploy volume and must remain outside publicly served assets.

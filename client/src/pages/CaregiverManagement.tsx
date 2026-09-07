@@ -75,25 +75,25 @@ export default function CaregiverManagement() {
   const [selectedWeekStart, setSelectedWeekStart] = useState(startOfWeek(new Date()));
 
   // Fetch caregivers
-  const { data: caregivers, isLoading: caregiversLoading } = useQuery({
+  const { data: caregivers, isLoading: caregiversLoading } = useQuery<Caregiver[]>({
     queryKey: ['/api/admin/caregivers'],
     enabled: !!user,
   });
 
   // Fetch caregiver availability
-  const { data: availability } = useQuery({
+  const { data: availability } = useQuery<CaregiverAvailability[]>({
     queryKey: ['/api/admin/caregiver-availability'],
     enabled: !!user,
   });
 
   // Fetch caregiver time off
-  const { data: timeOffRequests } = useQuery({
+  const { data: timeOffRequests } = useQuery<CaregiverTimeOff[]>({
     queryKey: ['/api/admin/caregiver-time-off'],
     enabled: !!user,
   });
 
   // Fetch weekly schedules
-  const { data: weeklySchedules } = useQuery({
+  const { data: weeklySchedules } = useQuery<CaregiverSchedule[]>({
     queryKey: ['/api/admin/caregiver-schedules', format(selectedWeekStart, 'yyyy-MM-dd')],
     enabled: !!user,
   });

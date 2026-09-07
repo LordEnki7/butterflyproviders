@@ -21,6 +21,16 @@ interface EmailParams {
   params?: Record<string, any>;
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character] || character);
+}
+
 export async function sendEmail(emailParams: EmailParams): Promise<boolean> {
   try {
     // Attempting to send email
@@ -352,6 +362,93 @@ ${contactData.message}
 
 Reply to: ${contactData.email}
       `
+    });
+  },
+
+  jobApplicationConfirmation: async (to: string, applicantName: string) => {
+    const safeName = escapeHtml(applicantName);
+    return sendEmail({
+      to,
+      toName: applicantName,
+      from: 'no-reply@butterflyproviders.com',
+      fromName: 'Butterfly Providers Careers',
+      subject: 'We received your application - Butterfly Providers',
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #059669; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">Application received</h1>
+          </div>
+          <div style="padding: 24px 0; color: #374151; line-height: 1.6;">
+            <p>Hello ${safeName},</p>
+            <p>Thank you for applying to join Butterfly Providers. We have received your application and our team will review it.</p>
+            <p>If your experience matches our current needs, a member of our team will contact you about next steps.</p>
+            <p>You do not need to submit your application again.</p>
+          </div>
+          <div style="border-top: 1px solid #E5E7EB; padding-top: 16px; color: #6B7280; font-size: 14px;">
+            <p>Questions? Contact us at 602-830-0966.</p>
+            <p>Butterfly Providers | 10720 West Indian School Rd. Phoenix, AZ 85037</p>
+          </div>
+        </div>
+      `,
+      textContent: `
+Hello ${applicantName},
+
+Thank you for applying to join Butterfly Providers. We have received your application and our team will review it.
+
+If your experience matches our current needs, a member of our team will contact you about next steps. You do not need to submit your application again.
+
+Questions? Contact us at 602-830-0966.
+
+Butterfly Providers
+10720 West Indian School Rd. Phoenix, AZ 85037
+      `,
+    });
+  },
+
+  jobApplicationNotification: async (staffEmail: string, applicationData: {
+    name: string;
+    email: string;
+    phone: string;
+    submittedAt: string;
+    hasResume: boolean;
+  }) => {
+    const safeName = escapeHtml(applicationData.name);
+    const safeEmail = escapeHtml(applicationData.email);
+    const safePhone = escapeHtml(applicationData.phone);
+    const safeSubmittedAt = escapeHtml(applicationData.submittedAt);
+    return sendEmail({
+      to: staffEmail,
+      from: 'no-reply@butterflyproviders.com',
+      fromName: 'Butterfly Providers Careers',
+      subject: 'New job application received - Butterfly Providers',
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #1E40AF; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">New job application</h1>
+          </div>
+          <div style="background: #F8FAFC; padding: 20px; margin-top: 20px; border-radius: 8px; color: #374151;">
+            <p><strong>Name:</strong> ${safeName}</p>
+            <p><strong>Email:</strong> ${safeEmail}</p>
+            <p><strong>Phone:</strong> ${safePhone}</p>
+            <p><strong>Submitted:</strong> ${safeSubmittedAt}</p>
+            <p><strong>Resume provided:</strong> ${applicationData.hasResume ? 'Yes' : 'No'}</p>
+          </div>
+          <p style="color: #374151; line-height: 1.6;">Sign in to the staff dashboard to review the full application${applicationData.hasResume ? ' and securely download the resume' : ''}.</p>
+          <p style="color: #6B7280; font-size: 13px;">For applicant privacy, no resume is attached to this email.</p>
+        </div>
+      `,
+      textContent: `
+New job application
+
+Name: ${applicationData.name}
+Email: ${applicationData.email}
+Phone: ${applicationData.phone}
+Submitted: ${applicationData.submittedAt}
+Resume provided: ${applicationData.hasResume ? 'Yes' : 'No'}
+
+Sign in to the staff dashboard to review the full application${applicationData.hasResume ? ' and securely download the resume' : ''}.
+For applicant privacy, no resume is attached to this email.
+      `,
     });
   }
 };
